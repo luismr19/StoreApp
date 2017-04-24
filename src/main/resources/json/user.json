@@ -1,0 +1,29 @@
+{
+  "id": 1,
+  "username": "admin",
+  "firstname": "admin",
+  "lastname": "admin",
+  "email": "admin@admin.com",
+  "enabled": true,
+  "lastPasswordResetDate": "2016-01-01 06:00",
+  "address": {
+    "id": 1,
+    "country": "Mexico",
+    "state": "Jalisco",
+    "street": "Terranova",
+    "district": "Vallarta Norte",
+    "number": 190,
+    "interior": "b",
+    "zipCode": 49116
+  },
+  "authorities": [
+    {
+      "id": 1,
+      "name": "ROLE_USER"
+    },
+    {
+      "id": 2,
+      "name": "ROLE_ADMIN"
+    }
+  ]
+}

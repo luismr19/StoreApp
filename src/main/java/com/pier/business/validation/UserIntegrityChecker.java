@@ -33,6 +33,7 @@ public class UserIntegrityChecker extends IntegrityCheckerImpl<User, UserDao> {
 	
 	@Override
 	public boolean checkIfDuplicate(User user){
+		errors.clear();
 		boolean result= (userDao.find("email", user.getEmail()).size()>0)||(userDao.find("username", user.getEmail()).size()>0);
 		if(result)
 		errors.add("email or username already exist");

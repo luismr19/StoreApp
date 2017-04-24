@@ -3,9 +3,7 @@ package com.pier.rest.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,14 +13,21 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "PRODUCT")
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="name")
 public class Product implements ObjectModel<Long>{
 	
 	@Id
@@ -30,8 +35,9 @@ public class Product implements ObjectModel<Long>{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 		
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name="BRAND_ID")
+	@Cascade(CascadeType.SAVE_UPDATE)
 	private Brand brand;
 	
 	@Column(name="PRICE",nullable= false, precision=7, scale=2)    // Creates the database field with this size.
@@ -49,11 +55,13 @@ public class Product implements ObjectModel<Long>{
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="PRODUCT_CATEGORY", joinColumns={@JoinColumn(name="PRODUCT_ID" ,referencedColumnName="PRODUCT_ID")},
 	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID", referencedColumnName="ID")})
+	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
 	private List<Category> categories;	
 	
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name="TYPE_ID")
+	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
 	private ProductType productType;
 	
 	@Column(name="EXISTENCE", length=50, unique=false, nullable=false)

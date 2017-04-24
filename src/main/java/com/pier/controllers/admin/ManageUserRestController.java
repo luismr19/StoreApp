@@ -45,7 +45,7 @@ public class ManageUserRestController {
 	}
 	
 	@RequestMapping(value="/users/",method=RequestMethod.POST)
-	public ResponseEntity<List<String>> createUser(@RequestBody User user,UriComponentsBuilder ucBuilder){
+	public ResponseEntity<?> createUser(@RequestBody User user,UriComponentsBuilder ucBuilder){
 		
 		if(!userCheker.checkIfDuplicate(user) && userCheker.checkIfValid(user)){
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -53,7 +53,7 @@ public class ManageUserRestController {
 		HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());
         
-		return new ResponseEntity<List<String>>(headers,HttpStatus.CREATED);
+		return new ResponseEntity<HttpHeaders>(headers,HttpStatus.CREATED);
 		}else{
 			return new ResponseEntity<List<String>>(userCheker.getErrors(),HttpStatus.FOUND);
 		}

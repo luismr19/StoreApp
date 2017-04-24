@@ -11,8 +11,8 @@ import com.pier.service.GenericDao;
 public class IntegrityCheckerImpl<E extends ObjectModel,T extends GenericDao> implements IntegrityChecker<E, T > {
 	
 	@Autowired
-	T dao;
-	List<String> errors;
+	protected T dao;
+	protected List<String> errors;
  
 	public IntegrityCheckerImpl(){
 		errors=new ArrayList<String>();
@@ -38,7 +38,7 @@ public class IntegrityCheckerImpl<E extends ObjectModel,T extends GenericDao> im
 		return errors;
 	}
 	
-	public void setErrors(List<String> errors){
+	protected void setErrors(List<String> errors){
 		this.errors=errors;
 	}
 

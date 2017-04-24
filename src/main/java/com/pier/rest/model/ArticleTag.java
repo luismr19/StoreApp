@@ -1,49 +1,41 @@
 package com.pier.rest.model;
 
-import java.util.List;
-
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import javax.persistence.JoinColumn;
 
 @Entity
-@Table(name = "TYPE")
-public class ProductType implements ObjectModel<Long>{
+@Table(name="TAGS")
+public class ArticleTag {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name="NAME", length=50, unique=true)
+	@Column(name="NAME", length=20, unique=true)
 	@NotNull
-	@Size(min=4, max=40)
+	@Size(max=20)
 	private String name;
-	
-	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "productType")	
-	private List<Product> products;
-	
-	public ProductType() {		
-	}	
+		
+	@ManyToMany(mappedBy="tags")
+	private Set<Article> articles;
 
-	public ProductType(String name) {
-		super();
-		this.name = name;
-	}
-
-	@Override
 	public Long getId() {
 		return id;
 	}
@@ -52,6 +44,7 @@ public class ProductType implements ObjectModel<Long>{
 		this.id = id;
 	}
 
+	@JsonValue
 	public String getName() {
 		return name;
 	}
@@ -60,14 +53,15 @@ public class ProductType implements ObjectModel<Long>{
 		this.name = name;
 	}
 
-	public List<Product> getProducts() {
-		return products;
+	@JsonIgnore
+	public Set<Article> getArticles() {
+		return articles;
 	}
 
-	public void setProducts(List<Product> products) {
-		this.products = products;
+	public void setArticles(Set<Article> articles) {
+		this.articles = articles;
 	}
 	
 	
 
-}
+ }

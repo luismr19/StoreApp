@@ -1,17 +1,16 @@
 package com.pier.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-
-import org.junit.Before;
+import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-
 import com.pier.DomainAwareBase;
 import com.pier.rest.model.Brand;
 import com.pier.rest.model.Product;
@@ -59,10 +58,10 @@ public class BrandDaoImplTest extends DomainAwareBase {
 		
 		
 		
-		List<Product> products= Arrays.asList(product1,product2);
+		Set<Product> products= new HashSet<Product>(Arrays.asList(product1,product2));
 		
 		product1.setBrand(muscleTech);
-		product2.setBrand(on);
+		product2.setBrand(muscleTech);
 		muscleTech.setProducts(products);		
 		brandDao.add(muscleTech);
 		
