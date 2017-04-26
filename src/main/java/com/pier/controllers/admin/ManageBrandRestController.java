@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +43,7 @@ public class ManageBrandRestController {
 		return new ResponseEntity<Brand>(brand,HttpStatus.NOT_FOUND);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(method=RequestMethod.POST)
 	public ResponseEntity<?> createBrand(@RequestBody Brand brand, UriComponentsBuilder ucBuilder){
 
@@ -57,6 +59,7 @@ public class ManageBrandRestController {
 		return new ResponseEntity<List<String>>(checker.getErrors(),HttpStatus.CONFLICT);
 		}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)
 	public ResponseEntity<?> updateBrand(@PathVariable long id,@RequestBody Brand brand){
 
@@ -72,6 +75,7 @@ public class ManageBrandRestController {
 		return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 		}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
 	public ResponseEntity<Brand> deleteBrand(@PathVariable long id){
 		Brand brand=brandDao.find(id);

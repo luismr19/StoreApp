@@ -8,6 +8,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Embeddable
 public class OrderDetailId implements Serializable{	
 
@@ -17,7 +22,9 @@ public class OrderDetailId implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@ManyToOne
-	@JoinColumn(name = "ORDER_ID",referencedColumnName="ID")   	
+	@JoinColumn(name = "ORDER_ID",referencedColumnName="ID")
+	@Cascade(CascadeType.SAVE_UPDATE)
+	@JsonIgnore
     private PurchaseOrder order;
    
     @ManyToOne 

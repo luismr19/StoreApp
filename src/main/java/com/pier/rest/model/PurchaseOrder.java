@@ -68,22 +68,12 @@ public class PurchaseOrder implements ObjectModel<Long>{
 	@JoinColumn(name="OWNER" ,referencedColumnName="ID")
 	private User owner;
 	
+	@Column(name="CONCLUDED")
+	private Boolean concluded;
+	
 	public PurchaseOrder(){
 		
-	}
-
-	public PurchaseOrder(BigDecimal total, Date purchaseDate, Address deliveryAddress, String trackingNumber,
-			List<OrderDetail> ordersDetails, User owner) {
-		super();
-		this.total = total;
-		this.purchaseDate = purchaseDate;
-		this.deliveryAddress = deliveryAddress;
-		this.trackingNumber = trackingNumber;
-		this.orderDetails = ordersDetails;
-		this.owner = owner;
-		
-		linkDetails();
-	}
+	}	
 
 	@Override
 	public Long getId() {
@@ -155,6 +145,14 @@ public class PurchaseOrder implements ObjectModel<Long>{
 		for(OrderDetail detail: orderDetails){
 			detail.setOrder(this);
 		}
+	}
+	
+	public Boolean getConcluded() {
+		return concluded;
+	}
+
+	public void setConcluded(Boolean concluded) {
+		this.concluded = concluded;
 	}
 
 	@Override

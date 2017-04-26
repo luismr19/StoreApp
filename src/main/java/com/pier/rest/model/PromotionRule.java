@@ -2,6 +2,7 @@ package com.pier.rest.model;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,26 +35,35 @@ public class PromotionRule implements ObjectModel<Long> {
 	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(name="PROMO_PRODUCT", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
 	inverseJoinColumns=@JoinColumn(name="PRODUCT_ID" ,referencedColumnName="PRODUCT_ID"))
-	List<Product> products;
+	Set<Product> products;
 	
 	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(name="PROMO_TYPES", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
 	inverseJoinColumns={@JoinColumn(name="PRODUCT_TYPE_ID" ,referencedColumnName="ID")})
-	List<ProductType> productTypes;
+	Set<ProductType> productTypes;
 	
 	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(name="PROMO_CATEGORIES", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
 	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID" ,referencedColumnName="ID")})
-	List<Category> categories;
+	Set<Category> categories;
 	
 	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(name="PROMO_CATEGORIES", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
 	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID" ,referencedColumnName="ID")})
-	List<Brand> brands;
+	Set<Brand> brands;
 	
 	@Column(name="MINPURCHASE",nullable= false, precision=12, scale=2)
 	@Digits(integer=12, fraction=2)  
 	BigDecimal minPurchase;
+	
+	@Column(name="MIN_AMOUNT")
+	Integer minAmount;
+	
+	
+	@ManyToMany(fetch=FetchType.LAZY)
+	@JoinTable(name="RULE_PRODUCT", joinColumns=@JoinColumn(name="RULE_ID" ,referencedColumnName="ID"),
+	inverseJoinColumns={@JoinColumn(name="PRODUCT_ID", referencedColumnName="PRODUCT_ID")})
+	private List<Product> giveAway;
 	
 	@Column(name="POINTS")
 	Long points;
@@ -78,35 +88,35 @@ public class PromotionRule implements ObjectModel<Long> {
 		this.behavior = behavior;
 	}
 
-	public List<Product> getProducts() {
+	public Set<Product> getProducts() {
 		return products;
 	}
 
-	public void setProducts(List<Product> products) {
+	public void setProducts(Set<Product> products) {
 		this.products = products;
 	}
 
-	public List<ProductType> getProductTypes() {
+	public Set<ProductType> getProductTypes() {
 		return productTypes;
 	}
 
-	public void setProductTypes(List<ProductType> productTypes) {
+	public void setProductTypes(Set<ProductType> productTypes) {
 		this.productTypes = productTypes;
 	}
 
-	public List<Category> getCategories() {
+	public Set<Category> getCategories() {
 		return categories;
 	}
 
-	public void setCategories(List<Category> categories) {
+	public void setCategories(Set<Category> categories) {
 		this.categories = categories;
 	}
 
-	public List<Brand> getBrands() {
+	public Set<Brand> getBrands() {
 		return brands;
 	}
 
-	public void setBrands(List<Brand> brands) {
+	public void setBrands(Set<Brand> brands) {
 		this.brands = brands;
 	}
 
@@ -133,6 +143,44 @@ public class PromotionRule implements ObjectModel<Long> {
 	public void setPercentage(int percentage) {
 		this.percentage = percentage;
 	}
+
+	public List<Product> getGiveAway() {
+		return giveAway;
+	}
+
+	public void setGiveAway(List<Product> giveAway) {
+		this.giveAway = giveAway;
+	}
+	
+	
+
+	public Integer getMinAmount() {
+		return minAmount;
+	}
+
+	public void setMinAmount(Integer minAmount) {
+		this.minAmount = minAmount;
+	}
+
+	public PromotionRule(PromotionBehavior behavior, Set<Product> products, Set<ProductType> productTypes,
+			Set<Category> categories, Set<Brand> brands, BigDecimal minPurchase, Integer minAmount,
+			List<Product> giveAway, Long points, int percentage) {
+		super();
+		this.behavior = behavior;
+		this.products = products;
+		this.productTypes = productTypes;
+		this.categories = categories;
+		this.brands = brands;
+		this.minPurchase = minPurchase;
+		this.minAmount = minAmount;
+		this.giveAway = giveAway;
+		this.points = points;
+		this.percentage = percentage;
+	}
+
+	
+	
+	
 	
 
 }

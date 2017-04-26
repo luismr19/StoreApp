@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,7 @@ public class ManageProductsRestController {
 		return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(method=RequestMethod.POST)
 	public ResponseEntity<?> createProduct(@RequestBody Product product, UriComponentsBuilder ucBuilder){
 		if(checker.checkIfDuplicate(product) || !checker.checkIfValid(product)){
@@ -55,6 +57,7 @@ public class ManageProductsRestController {
 		return new ResponseEntity<Product>(product,headers,HttpStatus.CREATED);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="{id}",method=RequestMethod.PUT)
 	public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody Product product){
 		Product currentProduct=dao.find(id);

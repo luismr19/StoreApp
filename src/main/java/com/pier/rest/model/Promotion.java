@@ -3,15 +3,22 @@ package com.pier.rest.model;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+@Entity
+@Table(name="PROMOTION")
 public class Promotion implements ObjectModel<Long>{
 	
 	@Id
@@ -34,7 +41,8 @@ public class Promotion implements ObjectModel<Long>{
 	@NotNull
 	private String description;
 	
-	@OneToOne(mappedBy="promotion")
+	@OneToOne
+	@Cascade(CascadeType.SAVE_UPDATE)
 	private PromotionRule promotionrule;
 	
 	@Column(name="ALLOW_MULTIPLE")

@@ -92,8 +92,6 @@ public class Brand implements ObjectModel<Long>{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((fullName == null) ? 0 : fullName.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((products == null) ? 0 : products.hashCode());
 		result = prime * result + ((shortName == null) ? 0 : shortName.hashCode());
 		return result;
 	}
@@ -114,16 +112,6 @@ public class Brand implements ObjectModel<Long>{
 				return false;
 		} else if (!fullName.equals(other.fullName))
 			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (products == null) {
-			if (other.products != null)
-				return false;
-		} else if (!products.equals(other.products))
-			return false;
 		if (shortName == null) {
 			if (other.shortName != null)
 				return false;
@@ -131,6 +119,8 @@ public class Brand implements ObjectModel<Long>{
 			return false;
 		return true;
 	}
+
+	
 	
 
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +42,7 @@ public class ManageArticleRestController {
 		return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(method=RequestMethod.POST)
 	public ResponseEntity<?> createArticle(@RequestBody Article article,UriComponentsBuilder ucBuilder){
 		
@@ -55,6 +57,7 @@ public class ManageArticleRestController {
 		return new ResponseEntity<List<String>>(checker.getErrors(),HttpStatus.CONFLICT);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(method=RequestMethod.PUT,value="{id}")
 	public ResponseEntity<?> updateArticle(@PathVariable Long id,@RequestBody Article article){
 		
@@ -73,6 +76,7 @@ public class ManageArticleRestController {
 		return new ResponseEntity<Article>(article,HttpStatus.NOT_FOUND);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="{id}",method=RequestMethod.DELETE)
 	public ResponseEntity<Article> deleteArticle(@PathVariable Long id){
 		

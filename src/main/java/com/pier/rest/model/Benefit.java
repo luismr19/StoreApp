@@ -33,9 +33,9 @@ public class Benefit implements ObjectModel<Long>{
 	@Digits(integer=7, fraction=2) 
 	private BigDecimal discount;
 	
-	@Column(name="POINTS", nullable= false, precision=7, scale=2)    
+	@Column(name="POINTS")    
 	@Digits(integer=7, fraction=2) 
-	private BigDecimal points;
+	private Long points;
 	
 	@JoinColumn(name="PURCHASE_ORDER")
 	@OneToOne
@@ -54,11 +54,11 @@ public class Benefit implements ObjectModel<Long>{
 		this.products = products;
 	}
 
-	public BigDecimal getPoints() {
+	public Long getPoints() {
 		return points;
 	}
 
-	public void setPoints(BigDecimal points) {
+	public void setPoints(Long points) {
 		this.points = points;
 	}
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +31,7 @@ public class ManageUserRestController {
 	@Autowired
 	UserIntegrityChecker userCheker;
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/users",method=RequestMethod.GET)
 	public List<User> list(){
 		
@@ -37,6 +39,7 @@ public class ManageUserRestController {
 		
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/users/{id}",method=RequestMethod.GET)
 	public ResponseEntity<User> showUser(@PathVariable("id") long id){
 		
@@ -44,6 +47,7 @@ public class ManageUserRestController {
 		
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/users/",method=RequestMethod.POST)
 	public ResponseEntity<?> createUser(@RequestBody User user,UriComponentsBuilder ucBuilder){
 		
@@ -60,6 +64,7 @@ public class ManageUserRestController {
 		
 	}
 	
+	 @PreAuthorize("hasRole('ADMIN')")
 	 @RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
 	    public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) {
 	        System.out.println("Updating User " + id);
@@ -86,6 +91,7 @@ public class ManageUserRestController {
 	        }  
 	    }
 	 
+	 @PreAuthorize("hasRole('ADMIN')")
 	 @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
 	    public ResponseEntity<User> deleteUser(@PathVariable("id") long id) {
 		 User user = userDao.find(id);
