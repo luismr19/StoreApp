@@ -3,8 +3,10 @@ package com.pier.business.util;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.pier.rest.model.OrderDetail;
 import com.pier.rest.model.Product;
@@ -13,29 +15,33 @@ import com.pier.rest.model.PurchaseOrder;
 public class OrderDetailUtil {
 
 	public static boolean mapToOrder(Product product, PurchaseOrder order) {
-		
-		if(!product.getEnabled() || product.getExistence()<1){
+
+		try {
+			if (!product.getEnabled() || product.getExistence() < 1) {
+				return false;
+			}
+			Set<OrderDetail> purchaseItems = order.getPurchaseItems();
+
+			if (purchaseItems != null) {
+				Optional<OrderDetail> detail = order.getPurchaseItems().stream()
+						.filter(dt -> dt.getProduct().equals(product)).findFirst();
+				if (detail.isPresent()) {
+					detail.get().setQuantity(detail.get().getQuantity() + 1);
+				} else {
+					order.getPurchaseItems().add(new OrderDetail(1, product, order));
+				}
+
+			} else {
+				order.setPurchaseItems(new HashSet(Arrays.asList(new OrderDetail(1, product, order))));
+			}
+			BigDecimal total = BigDecimal.ZERO;
+			for (OrderDetail detail : order.getPurchaseItems()) {
+				total = total.add(detail.getProduct().getPrice()).multiply(new BigDecimal(detail.getQuantity()));
+			}
+			order.setTotal(total);
+		} catch (Exception e) {
 			return false;
 		}
-		List<OrderDetail> purchaseItems = order.getPurchaseItems();
-		
-		if (purchaseItems != null) {
-			Optional<OrderDetail> detail = order.getPurchaseItems().stream()
-					.filter(dt -> dt.getProduct().equals(product)).findFirst();
-			if (detail.isPresent()) {
-				detail.get().setQuantity(detail.get().getQuantity() + 1);
-			}
-			order.getPurchaseItems().add(new OrderDetail(1, product, order));
-
-		} else {
-			order.setPurchaseItems(Arrays.asList(new OrderDetail(1, product, order)));
-		}
-		BigDecimal total=BigDecimal.ZERO;
-		for(OrderDetail detail:order.getPurchaseItems()){
-			total=total.add(detail.getProduct().getPrice()).multiply(new BigDecimal(detail.getQuantity()));
-		}
-		order.setTotal(total);
-		
 		return true;
 	}
 
@@ -63,15 +69,27 @@ public class OrderDetailUtil {
 	public static PurchaseOrder getPurchaseOrder(List<OrderDetail> orderDetails) {
 		return orderDetails.get(0).getOrder();
 	}
-	
-	public static List<Product> getAsProductList(List<OrderDetail> orderDetails){
-		List<Product> products=new ArrayList<Product>();
-		for(OrderDetail detail:orderDetails){
-			for(int i=0;i<detail.getQuantity();i++)
+
+	public static List<Product> getAsProductList(Set<OrderDetail> orderDetails) {
+		List<Product> products = new ArrayList<Product>();
+		for (OrderDetail detail : orderDetails) {
+			for (int i = 0; i < detail.getQuantity(); i++)
 				products.add(detail.getProduct());
 		}
-		
+
 		return products;
+	}
+
+	public static void removeProductFromDetails(Set<OrderDetail> orderDetails, Product product) {
+		Optional<OrderDetail> detail = orderDetails.stream().filter(dt -> dt.getProduct().equals(product)).findFirst();
+		if (detail.isPresent()) {
+			//if it's the last item then remove the whole reference
+			if (detail.get().getQuantity() > 1) {
+				detail.get().setQuantity(detail.get().getQuantity() - 1);
+			} else {
+				orderDetails.remove(detail.get());
+			}
+		}
 	}
 
 }

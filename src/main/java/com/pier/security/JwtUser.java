@@ -1,5 +1,6 @@
 package com.pier.security;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 
@@ -23,11 +24,11 @@ public class JwtUser implements UserDetails{
 	private final String email;
 	private final Collection<? extends GrantedAuthority> authorities;
 	private final boolean enabled;
-	private final Date lastPasswordResetDate;
+	private final LocalDateTime lastPasswordResetDate;
 		
 
 	public JwtUser(Long id, String username, String firstname, String lastname, String password, String email,
-			Collection<? extends GrantedAuthority> authorities, boolean enabled, Date lastPasswordResetDate) {
+			Collection<? extends GrantedAuthority> authorities, boolean enabled, LocalDateTime lastPasswordResetDate) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -61,7 +62,7 @@ public class JwtUser implements UserDetails{
 	}
 
 	@JsonIgnore
-	public Date getLastPasswordResetDate() {
+	public LocalDateTime getLastPasswordResetDate() {
 		return lastPasswordResetDate;
 	}
 

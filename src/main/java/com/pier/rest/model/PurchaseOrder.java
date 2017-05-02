@@ -1,11 +1,14 @@
 package com.pier.rest.model;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,8 +17,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -24,9 +25,11 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Type;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pier.model.security.User;
-import com.pier.service.GenericDao;
 
 @Entity
 @Table(name = "PURCHASE_ORDER")
@@ -46,9 +49,9 @@ public class PurchaseOrder implements ObjectModel<Long>{
 	@Fetch(FetchMode.SELECT)
 	private Benefit gift;		
 	
-	@Column(name = "PURCHASE_TIME", columnDefinition="DATETIME")
-	@Temporal(TemporalType.TIMESTAMP)	
-	private Date purchaseDate;
+	@Column(name = "PURCHASE_TIME", columnDefinition="DATETIME")	
+	@Type(type="org.hibernate.type.ZonedDateTimeType")
+	private ZonedDateTime purchaseDate;
 	
 	@JoinColumn(name="ADDRESS",updatable=true)	
 	@OneToOne
@@ -60,9 +63,9 @@ public class PurchaseOrder implements ObjectModel<Long>{
 	@Size(min = 4, max = 50)
 	private String trackingNumber;
 	
-	@OneToMany(mappedBy="id.order") //since id is the composite Key have to do notation like this
+	@OneToMany(mappedBy="id.order",fetch=FetchType.EAGER,orphanRemoval=true) //since id is the composite Key have to do notation like this
 	@Cascade(CascadeType.ALL)
-	private List<OrderDetail> orderDetails;	
+	private Set<OrderDetail> orderDetails;	
 	
 	@ManyToOne
 	@JoinColumn(name="OWNER" ,referencedColumnName="ID")
@@ -80,6 +83,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
 		return id;
 	}
 
+	@JsonIgnore
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -88,6 +92,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
 		return total;
 	}
 
+	@JsonIgnore
 	public void setTotal(BigDecimal total) {
 		this.total = total;
 	}
@@ -96,22 +101,23 @@ public class PurchaseOrder implements ObjectModel<Long>{
 		return gift;
 	}
 
+	@JsonIgnore
 	public void setGift(Benefit gift) {
 		this.gift = gift;
 	}
 
-	public Date getPurchaseDate() {
+	public ZonedDateTime getPurchaseDate() {
 		return purchaseDate;
 	}
-
-	public void setPurchaseDate(Date purchaseDate) {
+	@JsonIgnore
+	public void setPurchaseDate(ZonedDateTime purchaseDate) {
 		this.purchaseDate = purchaseDate;
 	}
 
 	public Address getDeliveryAddress() {
 		return deliveryAddress;
 	}
-
+	@JsonIgnore
 	public void setDeliveryAddress(Address deliveryAddress) {
 		this.deliveryAddress = deliveryAddress;
 	}
@@ -120,15 +126,17 @@ public class PurchaseOrder implements ObjectModel<Long>{
 		return trackingNumber;
 	}
 
+	@JsonIgnore
 	public void setTrackingNumber(String trackingNumber) {
 		this.trackingNumber = trackingNumber;
 	}
 
-	public List<OrderDetail> getPurchaseItems() {
+	public Set<OrderDetail> getPurchaseItems() {
 		return orderDetails;
 	}
 
-	public void setPurchaseItems(List<OrderDetail> purchaseItems) {
+	@JsonIgnore
+	public void setPurchaseItems(Set<OrderDetail> purchaseItems) {
 		this.orderDetails = purchaseItems;
 		linkDetails();
 	}
@@ -137,6 +145,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
 		return owner;
 	}
 
+	@JsonIgnore
 	public void setOwner(User owner) {
 		this.owner = owner;
 	}
@@ -151,6 +160,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
 		return concluded;
 	}
 
+	@JsonIgnore
 	public void setConcluded(Boolean concluded) {
 		this.concluded = concluded;
 	}
@@ -159,10 +169,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((deliveryAddress == null) ? 0 : deliveryAddress.hashCode());
-		result = prime * result + ((gift == null) ? 0 : gift.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((orderDetails == null) ? 0 : orderDetails.hashCode());
+		result = prime * result + ((deliveryAddress == null) ? 0 : deliveryAddress.hashCode());				
 		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
 		result = prime * result + ((purchaseDate == null) ? 0 : purchaseDate.hashCode());
 		result = prime * result + ((total == null) ? 0 : total.hashCode());
@@ -192,8 +199,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
 		if (id == null) {
 			if (other.id != null)
 				return false;
-		} else if (!id.equals(other.id))
-			return false;
+		}
 		if (orderDetails == null) {
 			if (other.orderDetails != null)
 				return false;

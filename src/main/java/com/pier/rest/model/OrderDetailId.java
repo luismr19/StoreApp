@@ -55,7 +55,7 @@ public class OrderDetailId implements Serializable{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((order == null) ? 0 : order.hashCode());
+		result = prime * result + ((order == null) ? 0 : order.getOwner().hashCode());
 		result = prime * result + ((product == null) ? 0 : product.hashCode());
 		return result;
 	}

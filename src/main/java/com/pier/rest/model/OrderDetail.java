@@ -93,8 +93,7 @@ public class OrderDetail implements ObjectModel<OrderDetailId> {
 		if (id == null) {
 			if (other.id != null)
 				return false;
-		} else if (!id.equals(other.id))
-			return false;
+		}
 		if (quantity == null) {
 			if (other.quantity != null)
 				return false;

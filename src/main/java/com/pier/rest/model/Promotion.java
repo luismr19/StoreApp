@@ -1,6 +1,6 @@
 package com.pier.rest.model;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,13 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name="PROMOTION")
@@ -29,13 +28,14 @@ public class Promotion implements ObjectModel<Long>{
 	@Size(min=5,max=30)	
 	private String displayName;
 	
-	@Column(name = "START_DATE", columnDefinition="DATETIME")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date startDate;
+	@Column(name = "START_DATE")	
+	@Type(type="org.hibernate.type.ZonedDateTimeType")
+	private ZonedDateTime startDate;
 	
-	@Column(name = "END_DATE", columnDefinition="DATETIME")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date endDate;
+	
+	@Column(name = "END_DATE")
+	@Type(type="org.hibernate.type.ZonedDateTimeType")
+	private ZonedDateTime endDate;
 	
 	@Column(name="DESCRIPTION", columnDefinition = "TEXT")
 	@NotNull
@@ -50,6 +50,9 @@ public class Promotion implements ObjectModel<Long>{
 	
 	@Column(name="ENABLED")
 	private Boolean enabled;
+	
+	@Column(name="INCLUSIVE", columnDefinition="tinyint(1) default 1")
+	private Boolean inclusive;
 
 	@Override
 	public Long getId() {
@@ -68,19 +71,19 @@ public class Promotion implements ObjectModel<Long>{
 		this.displayName = displayName;
 	}
 
-	public Date getStartDate() {
+	public ZonedDateTime getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(ZonedDateTime startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public ZonedDateTime getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(ZonedDateTime endDate) {
 		this.endDate = endDate;
 	}
 
@@ -92,7 +95,7 @@ public class Promotion implements ObjectModel<Long>{
 		this.description = description;
 	}
 
-	public PromotionRule getPromotionrule() {
+	public PromotionRule getPromotionRule() {
 		return promotionrule;
 	}
 
@@ -114,7 +117,16 @@ public class Promotion implements ObjectModel<Long>{
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
-	}	
+	}
+
+	public Boolean getInclusive() {
+		return inclusive;
+	}
+
+	public void setInclusive(Boolean inclusive) {
+		this.inclusive = inclusive;
+	}
+	
 	
 
 }

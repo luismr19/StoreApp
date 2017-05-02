@@ -4,12 +4,18 @@ import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pier.DomainAwareBase;
+import com.pier.model.security.User;
 import com.pier.rest.model.Address;
 import com.pier.rest.model.OrderDetail;
 import com.pier.rest.model.OrderDetailId;
@@ -47,9 +53,8 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 		PurchaseOrder order = new PurchaseOrder();
 		order.setDeliveryAddress(new Address("USA", "Michigan", "theStreet", "porai", 4487, 14));
 		order.setOwner(userDao.find(1L));
-		Date date = new Date();
-		Timestamp timestamp = new Timestamp(date.getTime());
-		order.setPurchaseDate(timestamp);		
+		Date date = new Date();		
+		order.setPurchaseDate(ZonedDateTime.now());		
 		order.setTrackingNumber("RT784512W");
 		order.setTotal(new BigDecimal("100.00"));
 		orderDao.add(order);
@@ -85,15 +90,16 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 	@Test
 	public void testUpdate() {
 		
+		        User user=userDao.find(1L);
 		        OrderDetail orderDetail = new OrderDetail();
 		        
 		       // prepare order
 				PurchaseOrder order = new PurchaseOrder();
-				order.setDeliveryAddress(new Address("USA", "Michigan", "theStreet", "porai", 4487, 14));
-				order.setOwner(userDao.find(1L));
+				order.setDeliveryAddress(new Address("USA", "Michigan", "theStreet", "porai", 4487, 14));				
+				order.setOwner(user);				
 				Date date = new Date();
 				Timestamp timestamp = new Timestamp(date.getTime());
-				order.setPurchaseDate(timestamp);		
+				order.setPurchaseDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Mexico_City")));
 				order.setTrackingNumber("RT784512W");
 				order.setTotal(new BigDecimal("100.00"));
 				orderDao.add(order);
@@ -106,7 +112,7 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 				product1.setEnabled(true);
 				product1.setName("nitrotech");
 				product1.setDescription("whey protein isolate");
-				product1.setPrice(new BigDecimal("100.00"));
+				product1.setPrice(new BigDecimal("152.00"));
 				productDao.add(product1);
 
 				
@@ -116,7 +122,7 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 				orderDetail.setProduct(product1);
 				orderDetail.setQuantity(2);
 				
-				//update total
+				//update total, it is just a sample
 				order.setTotal(orderDetail.getProduct().getPrice().multiply(new BigDecimal(orderDetail.getQuantity())));
 				orderDao.update(order);
 				

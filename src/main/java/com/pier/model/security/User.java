@@ -1,5 +1,6 @@
 package com.pier.model.security;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,9 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -77,11 +81,11 @@ public class User implements ObjectModel<Long>{
 	 @NotNull
 	 private Boolean enabled;
 	 
-	 @Column(name="LASTPASSWORDRESETSTATE")
-	 @Temporal(TemporalType.TIMESTAMP)
-	 @NotNull
+	 @Column(name="LASTPASSWORDRESETSTATE", nullable=false)	 
+	 @NotNull	 
 	 @JsonFormat(pattern="yyyy-MM-dd HH:mm")
-	 private Date lastPasswordResetDate;
+	 @Type(type="org.hibernate.type.LocalDateTimeType")
+	 private LocalDateTime lastPasswordResetDate;
 	 
 	 @JoinColumn(name="ADDRESS",updatable=true)	
 	 @OneToOne
@@ -98,6 +102,7 @@ public class User implements ObjectModel<Long>{
 	 private List<Authority> authorities;
 	 
 	 @OneToMany(mappedBy="owner",fetch=FetchType.EAGER)
+	 @Fetch(FetchMode.SELECT) //since it is eagerly loaded using "join" expects an existing id
 	 Set<PurchaseOrder> orders;
 	 
 	 @Column(name="POINTS")
@@ -176,11 +181,11 @@ public class User implements ObjectModel<Long>{
 	        this.authorities = authorities;
 	    }
 
-	    public Date getLastPasswordResetDate() {
+	    public LocalDateTime getLastPasswordResetDate() {
 	        return lastPasswordResetDate;
 	    }
 
-	    public void setLastPasswordResetDate(Date lastPasswordResetDate) {
+	    public void setLastPasswordResetDate(LocalDateTime lastPasswordResetDate) {
 	        this.lastPasswordResetDate = lastPasswordResetDate;
 	    }
 

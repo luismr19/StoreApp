@@ -129,8 +129,7 @@ public class Address implements ObjectModel<Long>{
 		int result = 1;
 		result = prime * result + ((ZipCode == null) ? 0 : ZipCode.hashCode());
 		result = prime * result + ((country == null) ? 0 : country.hashCode());
-		result = prime * result + ((district == null) ? 0 : district.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((district == null) ? 0 : district.hashCode());		
 		result = prime * result + ((interior == null) ? 0 : interior.hashCode());
 		result = prime * result + ((number == null) ? 0 : number.hashCode());
 		result = prime * result + ((state == null) ? 0 : state.hashCode());
@@ -161,12 +160,7 @@ public class Address implements ObjectModel<Long>{
 			if (other.district != null)
 				return false;
 		} else if (!district.equals(other.district))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
+			return false;		
 		if (interior == null) {
 			if (other.interior != null)
 				return false;

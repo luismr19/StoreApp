@@ -1,6 +1,8 @@
 package com.pier.security.util;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,11 +57,12 @@ public class JwtTokenUtil implements Serializable{
         return username;
     }
 
-    public Date getCreatedDateFromToken(String token) {
-        Date created;
+    public LocalDateTime getCreatedDateFromToken(String token) {
+    	LocalDateTime created;
         try {
             final Claims claims = getClaimsFromToken(token);
-            created = new Date((Long) claims.get(CLAIM_KEY_CREATED));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            created = LocalDateTime.parse((String)claims.get(CLAIM_KEY_CREATED));
         } catch (Exception e) {
             created = null;
         }
@@ -111,8 +114,8 @@ public class JwtTokenUtil implements Serializable{
         return expiration.before(new Date());
     }
 
-    private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
-        return (lastPasswordReset != null && created.before(lastPasswordReset));
+    private Boolean isCreatedBeforeLastPasswordReset(LocalDateTime created, LocalDateTime lastPasswordReset) {
+        return (lastPasswordReset != null && created.isBefore(lastPasswordReset));
     }
 
     private String generateAudience(Device device) {
@@ -136,7 +139,8 @@ public class JwtTokenUtil implements Serializable{
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_AUDIENCE, generateAudience(device));
-        claims.put(CLAIM_KEY_CREATED, new Date());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        claims.put(CLAIM_KEY_CREATED, LocalDateTime.now().format(formatter));
         return generateToken(claims);
     }
 
@@ -148,8 +152,8 @@ public class JwtTokenUtil implements Serializable{
                 .compact();
     }
 
-    public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
-        final Date created = getCreatedDateFromToken(token);
+    public Boolean canTokenBeRefreshed(String token, LocalDateTime lastPasswordReset) {
+        final LocalDateTime created = getCreatedDateFromToken(token);
         return !isCreatedBeforeLastPasswordReset(created, lastPasswordReset)
                 && (!isTokenExpired(token) || ignoreTokenExpiration(token));
     }
@@ -169,7 +173,7 @@ public class JwtTokenUtil implements Serializable{
     public Boolean validateToken(String token, UserDetails userDetails) {
         JwtUser user =  (JwtUser) userDetails;
         final String username = getUsernameFromToken(token);
-        final Date created = getCreatedDateFromToken(token);
+        final LocalDateTime created = getCreatedDateFromToken(token);
         //final Date expiration = getExpirationDateFromToken(token);
         return (
                 username.equals(user.getUsername())
