@@ -13,15 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.pier.business.PromotionsAppliance;
-import com.pier.business.util.OrderDetailUtil;
 import com.pier.model.security.User;
-import com.pier.rest.model.Product;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.security.util.JwtTokenUtil;
 import com.pier.service.ProductDao;
@@ -35,10 +32,7 @@ public class PurchaseRestController {
 	
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
-	
-	@Autowired
-	private UserDetailsService userDetailsService;
-	
+		
 	@Autowired
 	UserDao userDao;
 	
@@ -68,7 +62,7 @@ public class PurchaseRestController {
 		cart.setGift(promotionsAppliance.calculateBenefits(cart));
 		orderDao.update(cart);
 		}catch(Exception e){
-			return new ResponseEntity<String>("error perdorming operation",HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("error performing operation",HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
