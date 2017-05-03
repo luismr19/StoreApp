@@ -80,7 +80,7 @@ public class PurchaseRestController {
 		try{
 		orderDao.update(cart);
 		}catch(Exception e){
-			return new ResponseEntity<String>("error perdorming operation",HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("error performing operation",HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}

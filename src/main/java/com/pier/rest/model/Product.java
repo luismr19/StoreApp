@@ -44,7 +44,7 @@ public class Product implements ObjectModel<Long>{
 	@Digits(integer=7, fraction=2)  
 	private BigDecimal price;
 	
-	@Column(name="NAME", length=50, unique=true)
+	@Column(name="NAME", length=50)
 	@NotNull
 	@Size(min=4, max=40)
 	private String name;

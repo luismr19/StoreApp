@@ -18,7 +18,10 @@
   <!-- indicates where's the custom config file perstnce-beans.xml (parent context) -->
 <context-param>
 <param-name>contextConfigLocation</param-name>
-<param-value>classpath:persistence-beans.xml</param-value>
+<param-value>
+classpath:persistence-beans.xml
+classpath:controllers.xml
+</param-value>
 </context-param>
   
  

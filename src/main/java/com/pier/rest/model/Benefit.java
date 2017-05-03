@@ -16,6 +16,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 @Entity
 @Table(name="BENEFIT")
 public class Benefit implements ObjectModel<Long>{
@@ -29,7 +32,7 @@ public class Benefit implements ObjectModel<Long>{
 	inverseJoinColumns={@JoinColumn(name="PRODUCT_ID", referencedColumnName="PRODUCT_ID")})
 	private List<Product> products;
 	
-	@Column(name="DISCOUNT", nullable= false, precision=7, scale=2)    
+	@Column(name="DISCOUNT", precision=7, scale=2)    
 	@Digits(integer=7, fraction=2) 
 	private BigDecimal discount;
 	
@@ -39,6 +42,7 @@ public class Benefit implements ObjectModel<Long>{
 	
 	@JoinColumn(name="PURCHASE_ORDER")
 	@OneToOne
+	@NotFound(action=NotFoundAction.IGNORE)
 	PurchaseOrder order;
 	
 	@Override

@@ -25,6 +25,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Type;
 
 
@@ -47,6 +49,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
 	@OneToOne(mappedBy="order")
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
+	@NotFound(action=NotFoundAction.IGNORE)
 	private Benefit gift;		
 	
 	@Column(name = "PURCHASE_TIME", columnDefinition="DATETIME")	

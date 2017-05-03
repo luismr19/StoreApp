@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.pier.business.PromotionsAppliance;
 import com.pier.business.util.OrderDetailUtil;
@@ -28,6 +29,7 @@ import com.pier.service.PurchaseOrderDao;
 import com.pier.service.UserDao;
 
 @RestController
+@EnableWebMvc
 public class CartRestController {
 	
 	@Value("${jwt.header}")
@@ -66,7 +68,7 @@ public class CartRestController {
 			userDao.update(user);
 			orderDao.update(cart);			
 		}else{
-		return new ResponseEntity<String>("Error adding product",HttpStatus.OK);
+		return new ResponseEntity<String>("out of stock",HttpStatus.OK);
 		}
 		}catch(Exception e){
 			return new ResponseEntity<String>("Error adding product",HttpStatus.CONFLICT);	
@@ -112,6 +114,7 @@ public class CartRestController {
 			}
 			cart.setOwner(user);
 			//ApplyPromotions if any
+			if(promotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart)))
 			cart.setGift(promotionsAppliance.calculateBenefits(cart));
 			
 			return cart;
