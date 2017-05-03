@@ -1,7 +1,4 @@
 /target/
-/.project
-/.gitignore
-/.classpath
 /create authority Table.sql
 /create user Table.sql
 /create user_authority Table.sql
