@@ -18,6 +18,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import com.pier.business.PromotionBehavior;
 
 @Entity
@@ -32,22 +35,22 @@ public class PromotionRule implements ObjectModel<Long> {
 	@Enumerated(EnumType.STRING)
 	PromotionBehavior behavior;
 	
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="PROMO_PRODUCT", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
-	inverseJoinColumns=@JoinColumn(name="PRODUCT_ID" ,referencedColumnName="PRODUCT_ID"))
+	inverseJoinColumns=@JoinColumn(name="PRODUCT_ID" ,referencedColumnName="PRODUCT_ID"))	
 	Set<Product> products;
 	
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="PROMO_TYPES", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
 	inverseJoinColumns={@JoinColumn(name="PRODUCT_TYPE_ID" ,referencedColumnName="ID")})
 	Set<ProductType> productTypes;
 	
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="PROMO_CATEGORIES", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
 	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID" ,referencedColumnName="ID")})
 	Set<Category> categories;
 	
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="PROMO_CATEGORIES", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
 	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID" ,referencedColumnName="ID")})
 	Set<Brand> brands;
@@ -60,9 +63,10 @@ public class PromotionRule implements ObjectModel<Long> {
 	Integer minAmount;
 	
 	
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="RULE_PRODUCT", joinColumns=@JoinColumn(name="RULE_ID" ,referencedColumnName="ID"),
 	inverseJoinColumns={@JoinColumn(name="PRODUCT_ID", referencedColumnName="PRODUCT_ID")})
+	@Fetch(FetchMode.SELECT)
 	private List<Product> giveAway;
 	
 	@Column(name="POINTS")
@@ -178,7 +182,81 @@ public class PromotionRule implements ObjectModel<Long> {
 		this.percentage = percentage;
 	}
 
-	
+	public PromotionRule() {		
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((behavior == null) ? 0 : behavior.hashCode());
+		result = prime * result + ((brands == null) ? 0 : brands.hashCode());
+		result = prime * result + ((categories == null) ? 0 : categories.hashCode());
+		result = prime * result + ((giveAway == null) ? 0 : giveAway.hashCode());
+		result = prime * result + ((minAmount == null) ? 0 : minAmount.hashCode());
+		result = prime * result + ((minPurchase == null) ? 0 : minPurchase.hashCode());
+		result = prime * result + percentage;
+		result = prime * result + ((points == null) ? 0 : points.hashCode());
+		result = prime * result + ((productTypes == null) ? 0 : productTypes.hashCode());
+		result = prime * result + ((products == null) ? 0 : products.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PromotionRule other = (PromotionRule) obj;
+		if (behavior != other.behavior)
+			return false;
+		if (brands == null) {
+			if (other.brands != null)
+				return false;
+		} else if (!brands.equals(other.brands))
+			return false;
+		if (categories == null) {
+			if (other.categories != null)
+				return false;
+		} else if (!categories.equals(other.categories))
+			return false;
+		if (giveAway == null) {
+			if (other.giveAway != null)
+				return false;
+		} else if (!giveAway.equals(other.giveAway))
+			return false;
+		if (minAmount == null) {
+			if (other.minAmount != null)
+				return false;
+		} else if (!minAmount.equals(other.minAmount))
+			return false;
+		if (minPurchase == null) {
+			if (other.minPurchase != null)
+				return false;
+		} else if (!minPurchase.equals(other.minPurchase))
+			return false;
+		if (percentage != other.percentage)
+			return false;
+		if (points == null) {
+			if (other.points != null)
+				return false;
+		} else if (!points.equals(other.points))
+			return false;
+		if (productTypes == null) {
+			if (other.productTypes != null)
+				return false;
+		} else if (!productTypes.equals(other.productTypes))
+			return false;
+		if (products == null) {
+			if (other.products != null)
+				return false;
+		} else if (!products.equals(other.products))
+			return false;
+		return true;
+	}
 	
 	
 	

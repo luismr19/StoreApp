@@ -17,14 +17,14 @@ public enum PromotionBehavior {
 	
 	public Benefit getGift(PurchaseOrder order, PromotionRule rule){
 				
-		if(this.identifier==1){
+		if(this.identifier==1){			
 		calculator=new TotalBenefitGiveAway(rule,order);
 		}else if(this.identifier==2){
 		calculator=new InProductGiveAway(rule,order);	
 		}else if(this.identifier==3){
-		calculator=new InSameProductGiveAway(rule,order,true);		
-		}else if(this.identifier==3){
 		calculator=new InSameProductGiveAway(rule,order,false);		
+		}else if(this.identifier==3){
+		calculator=new InSameProductGiveAway(rule,order,true);		
 		}
 		
 		return calculator.calculateBenefit();

@@ -46,10 +46,8 @@ public class PurchaseOrder implements ObjectModel<Long>{
 	private BigDecimal total;
 	
 	@JoinColumn(name="GIFT")
-	@OneToOne(mappedBy="order")
-	@Cascade(CascadeType.ALL)
-	@Fetch(FetchMode.SELECT)
-	@NotFound(action=NotFoundAction.IGNORE)
+	@OneToOne(fetch=FetchType.EAGER)
+	@Cascade(CascadeType.ALL)	
 	private Benefit gift;		
 	
 	@Column(name = "PURCHASE_TIME", columnDefinition="DATETIME")	
@@ -57,7 +55,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
 	private ZonedDateTime purchaseDate;
 	
 	@JoinColumn(name="ADDRESS",updatable=true)	
-	@OneToOne
+	@OneToOne(fetch=FetchType.EAGER)
 	@Cascade({CascadeType.MERGE,CascadeType.SAVE_UPDATE})
 	private Address deliveryAddress;
 	
@@ -68,6 +66,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
 	
 	@OneToMany(mappedBy="id.order",fetch=FetchType.EAGER,orphanRemoval=true) //since id is the composite Key have to do notation like this
 	@Cascade(CascadeType.ALL)
+	@Fetch(FetchMode.SUBSELECT)//to remove join duplicates
 	private Set<OrderDetail> orderDetails;	
 	
 	@ManyToOne

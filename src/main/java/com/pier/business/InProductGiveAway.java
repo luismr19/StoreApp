@@ -12,6 +12,11 @@ import com.pier.rest.model.Product;
 import com.pier.rest.model.PromotionRule;
 import com.pier.rest.model.PurchaseOrder;
 
+
+/*
+ * this type of promotion applies discount on the cheapest product
+ * 
+ * and/or gives specified points or product if at least one product is eligible*/
 public class InProductGiveAway implements BenefitGiveAway{
 	
 	PromotionRule rule; 
@@ -29,6 +34,7 @@ public class InProductGiveAway implements BenefitGiveAway{
 	public Benefit calculateBenefit() {
 		
 		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getPurchaseItems());
+		BigDecimal discount=BigDecimal.ZERO;
 		
 				if(order.getTotal().compareTo(rule.getMinPurchase())>=0 && productsInOrder.size()>=rule.getMinAmount()){
 					Predicate<Product> isProductPresent=rule.getProducts()::contains;
@@ -43,16 +49,20 @@ public class InProductGiveAway implements BenefitGiveAway{
 					
 					total=affectedProducts.stream().map(product->product.getPrice()).min(new BigDecimalComparator()).get();
 										
-				}else{
-					total=BigDecimal.ZERO;
 				}
 				
-				BigDecimal discount=total.multiply(new BigDecimal(1/rule.getPercentage()));
-						
+							
+				if(rule.getPercentage()!=0)
+				discount=total.multiply(new BigDecimal(1/rule.getPercentage()));
+				
+				
 				Benefit result=new Benefit();
 				result.setDiscount(discount);
+				if(affectedProducts.size()>0){
 				result.setProducts(rule.getGiveAway());
 				result.setPoints(rule.getPoints());
+				}
+				
 				return result;
 	}
 

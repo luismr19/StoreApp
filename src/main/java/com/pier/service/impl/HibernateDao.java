@@ -76,7 +76,7 @@ public class HibernateDao<E, K extends Serializable> implements GenericDao<E, K>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<E> find(String property, String value) {
+	public List<E> find(String property, Object value) {
 		Criteria criteria = currentSession().createCriteria(getEntityClass());
 		List<E> results=(List<E>)criteria.add(Restrictions.eq(property, value)).list();
 		return results;

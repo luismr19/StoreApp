@@ -5,7 +5,13 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,11 +37,19 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pier.business.PromotionBehavior;
+import com.pier.rest.model.Address;
 import com.pier.rest.model.Brand;
 import com.pier.rest.model.Category;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductType;
+import com.pier.rest.model.Promotion;
+import com.pier.rest.model.PromotionRule;
+import com.pier.rest.model.PurchaseOrder;
 import com.pier.service.ProductDao;
+import com.pier.service.ProductTypeDao;
+import com.pier.service.PromotionDao;
+import com.pier.service.PurchaseOrderDao;
 
 
 @RunWith(SpringRunner.class)
@@ -55,7 +69,16 @@ public class BuyingTest {
 	private JdbcTemplate jdbcTemplate;
 	
 	@Autowired
-	ProductDao dao;
+	ProductDao productDao;
+	
+	@Autowired
+	PromotionDao promoDao;
+	
+	@Autowired
+	ProductTypeDao  productTypeDao;
+	
+	@Autowired
+	PurchaseOrderDao orderDao;
 	
 	@Autowired
     private WebApplicationContext webApplicationContext;
@@ -109,10 +132,11 @@ public class BuyingTest {
 				+ ", gluten Free, Low Sugar, & Low Net Carb Multi-Layered Baked Bar",
 				Arrays.asList(food),snack,50L,true);
 		
-		dao.update(goldStandard);
-		dao.update(bestBcaa);
-		dao.update(mPglutamine);
-		dao.update(combatCrunchBars);		
+		productDao.update(goldStandard);
+		productDao.update(bestBcaa);
+		productDao.update(mPglutamine);
+		productDao.update(combatCrunchBars);		
+		
 		
 		
 	}
@@ -129,6 +153,45 @@ public class BuyingTest {
 				.contentType(contentType)
 				.header("Authorization",sampleToken)
 				.content(json(mPglutamine)));
+	}
+	
+	@Test
+	public void testPurchaseWithPromotions() throws IOException, Exception{
+		
+		Promotion laborDay=new Promotion();
+		laborDay.setInclusive(false);
+		laborDay.setDescription("get a free snack bar in the purchase of a protein");
+		laborDay.setDisplayName("labor day giveaway!");
+		laborDay.setEnabled(true);
+		ZonedDateTime startDate=ZonedDateTime.of(LocalDateTime.of(2017, Month.APRIL,28,0,00),ZoneId.of("America/Mexico_City"));
+		ZonedDateTime endDate=ZonedDateTime.of(LocalDateTime.of(2017, Month.MAY,10,0,00),ZoneId.of("America/Mexico_City"));
+		laborDay.setStartDate(startDate);
+		laborDay.setEndDate(endDate);
+		
+		PromotionRule laborDayRule=new PromotionRule();		
+		ProductType protein=productTypeDao.find("name", "protein").get(0);
+		
+		laborDayRule.setProductTypes(new HashSet<ProductType>(Arrays.asList(protein)));
+		laborDayRule.setGiveAway(productDao.find("name", "Combat Crunch Bars"));
+		laborDayRule.setMinAmount(0);
+		laborDayRule.setMinPurchase(BigDecimal.ZERO);		
+		laborDayRule.setBehavior(PromotionBehavior.TOTALDISCOUNT);
+		laborDay.setPromotionrule(laborDayRule);
+		
+		promoDao.add(laborDay);
+		
+		mockMvc.perform(post("/addToCart")
+				.contentType(contentType)
+				.header("Authorization",sampleToken)
+				.content(json(goldStandard))).andExpect(status().isOk());
+		
+		mockMvc.perform(put("/completePurchase")
+				.contentType(contentType)
+				.header("Authorization",sampleToken)).andExpect(status().isOk());
+		
+		List<PurchaseOrder> orders=orderDao.list();
+		
+		
 	}
 	
 	@SuppressWarnings("unchecked")

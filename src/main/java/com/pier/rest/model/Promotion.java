@@ -44,10 +44,7 @@ public class Promotion implements ObjectModel<Long>{
 	@OneToOne
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private PromotionRule promotionrule;
-	
-	@Column(name="ALLOW_MULTIPLE")
-	private Boolean allowMultiple;
-	
+		
 	@Column(name="ENABLED")
 	private Boolean enabled;
 	
@@ -101,15 +98,7 @@ public class Promotion implements ObjectModel<Long>{
 
 	public void setPromotionrule(PromotionRule promotionrule) {
 		this.promotionrule = promotionrule;
-	}
-
-	public Boolean getAllowMultiple() {
-		return allowMultiple;
-	}
-
-	public void setAllowMultiple(Boolean allowMultiple) {
-		this.allowMultiple = allowMultiple;
-	}
+	}	
 
 	public Boolean getEnabled() {
 		return enabled;
@@ -125,6 +114,67 @@ public class Promotion implements ObjectModel<Long>{
 
 	public void setInclusive(Boolean inclusive) {
 		this.inclusive = inclusive;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
+		result = prime * result + ((enabled == null) ? 0 : enabled.hashCode());
+		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
+		result = prime * result + ((inclusive == null) ? 0 : inclusive.hashCode());
+		result = prime * result + ((promotionrule == null) ? 0 : promotionrule.hashCode());
+		result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Promotion other = (Promotion) obj;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (displayName == null) {
+			if (other.displayName != null)
+				return false;
+		} else if (!displayName.equals(other.displayName))
+			return false;
+		if (enabled == null) {
+			if (other.enabled != null)
+				return false;
+		} else if (!enabled.equals(other.enabled))
+			return false;
+		if (endDate == null) {
+			if (other.endDate != null)
+				return false;
+		} else if (!endDate.equals(other.endDate))
+			return false;
+		if (inclusive == null) {
+			if (other.inclusive != null)
+				return false;
+		} else if (!inclusive.equals(other.inclusive))
+			return false;
+		if (promotionrule == null) {
+			if (other.promotionrule != null)
+				return false;
+		} else if (!promotionrule.equals(other.promotionrule))
+			return false;
+		if (startDate == null) {
+			if (other.startDate != null)
+				return false;
+		} else if (!startDate.equals(other.startDate))
+			return false;
+		return true;
 	}
 	
 	

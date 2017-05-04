@@ -53,7 +53,7 @@ public class AddressDaoImplTest extends DomainAwareBase{
 		
 	}	
 
-	@Test
+	/*@Test
 	public void testList() {
 		List<Address> addressList=Arrays.asList(
 				new Address("USA","Michigan","theStreet","porai",4487,14),
@@ -63,7 +63,7 @@ public class AddressDaoImplTest extends DomainAwareBase{
 			addressDao.add(a);
 		List<Address> list2=addressDao.list();		
 		assertTrue(list2.get(list2.size()-1).getCountry().equals(addressList.get(1).getCountry()));
-	}
+	}*/
 
 	@Test
 	public void testFind() {		

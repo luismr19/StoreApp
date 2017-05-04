@@ -1,9 +1,15 @@
 SET SQL_SAFE_UPDATES = 0;
 
+delete from promo_categories;
+delete from promo_product;
+delete from promo_types;
+delete from promotion;
+delete from rule_product;
+delete from promotion_rule;
 delete from benefit_product;
-delete from benefit;
 delete from order_detail;
 delete from purchase_order;
+delete from benefit;
 delete from product_category;
 delete from product;
 delete from type;

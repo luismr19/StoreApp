@@ -10,7 +10,11 @@ import com.pier.rest.model.Benefit;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.PromotionRule;
 import com.pier.rest.model.PurchaseOrder;
-
+/*
+ *This is a 'buy N get 1 free'  or 'discount in Nth product' promotion type, depending on willDuplicate value
+ * N is specified by minAmount,
+ * it can give you a free product equal to the one(s) you bought or apply a percentage discount on the Nth product
+ * if conditions are met;*/
 public class InSameProductGiveAway implements BenefitGiveAway {
 	
 	PromotionRule rule; 
@@ -30,6 +34,7 @@ public class InSameProductGiveAway implements BenefitGiveAway {
 	public Benefit calculateBenefit() {
 		
 		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getPurchaseItems());
+		BigDecimal discount=BigDecimal.ZERO;
 		
 		//check if total purchase surpasses minimum required
 		if(order.getTotal().compareTo(rule.getMinPurchase())>=0){
@@ -40,18 +45,19 @@ public class InSameProductGiveAway implements BenefitGiveAway {
 			
 			Predicate<Product> isEligibleForPromotion=isProductPresent.or(isInCategories).or(isInTypes).or(isInBrands);
 			
-			//this emulates a 2 x * promotion in which if the quantity is more than the specified the product is eligible
+			//this emulates a buy N get 1 promotion in which if the quantity is more or equal to the specified the product is eligible
 			affectedProducts=order.getPurchaseItems().stream()
 					.filter(item->item.getQuantity()>=rule.getMinAmount())
 					.map(item->item.getProduct())
 					.filter(isEligibleForPromotion).collect(Collectors.toList());
+			total=affectedProducts.stream().map(product->product.getPrice()).reduce(BigDecimal.ZERO, BigDecimal::add);
 			
-		}else{
-			total=BigDecimal.ZERO;
 		}
 		
-		BigDecimal discount=total.multiply(new BigDecimal(1/rule.getPercentage()));
-				
+		
+		if(rule.getPercentage()!=0){
+		discount=total.multiply(new BigDecimal(1/rule.getPercentage()));
+		}		
 		Benefit result=new Benefit();
 		result.setDiscount(discount);
         if(willDuplicate){

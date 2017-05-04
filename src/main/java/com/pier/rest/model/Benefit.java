@@ -16,6 +16,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -27,9 +29,10 @@ public class Benefit implements ObjectModel<Long>{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="BENEFIT_PRODUCT", joinColumns=@JoinColumn(name="BENEFIT_ID" ,referencedColumnName="ID"),
 	inverseJoinColumns={@JoinColumn(name="PRODUCT_ID", referencedColumnName="PRODUCT_ID")})
+	@Fetch(FetchMode.SELECT)
 	private List<Product> products;
 	
 	@Column(name="DISCOUNT", precision=7, scale=2)    
@@ -41,7 +44,7 @@ public class Benefit implements ObjectModel<Long>{
 	private Long points;
 	
 	@JoinColumn(name="PURCHASE_ORDER")
-	@OneToOne
+	@OneToOne(mappedBy="gift")
 	@NotFound(action=NotFoundAction.IGNORE)
 	PurchaseOrder order;
 	
@@ -72,6 +75,15 @@ public class Benefit implements ObjectModel<Long>{
 
 	public void setDiscount(BigDecimal discount) {
 		this.discount = discount;
+	}
+		
+
+	public PurchaseOrder getOrder() {
+		return order;
+	}
+
+	public void setOrder(PurchaseOrder order) {
+		this.order = order;
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public interface GenericDao<E,K> {
 	
 	E find(K key);
 	
-	List<E> find(String property, String value);
+	List<E> find(String property, Object value);
 	
 	List<E> list();
 

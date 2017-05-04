@@ -1,6 +1,7 @@
 package com.pier.business;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,10 @@ public class PromotionsAppliance {
 	}
 	
 	private List<Promotion> fetchActivePromotions(){
-		List<Promotion> activePromotions=dao.list().stream().filter(p->p.getEnabled()).collect(Collectors.toList());
+		List<Promotion> promotions=dao.list();
+		List<Promotion> activePromotions=promotions.stream().filter(p->p.getEnabled())
+				.filter(p->p.getStartDate().isBefore(ZonedDateTime.now())).filter(p->p.getEndDate().isAfter(ZonedDateTime.now()))
+				.collect(Collectors.toList());
 		
 		return activePromotions;
 	}

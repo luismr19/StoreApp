@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.pier.business.PromotionsAppliance;
 import com.pier.model.security.User;
@@ -25,6 +27,8 @@ import com.pier.service.ProductDao;
 import com.pier.service.PurchaseOrderDao;
 import com.pier.service.UserDao;
 
+@RestController
+@EnableWebMvc
 public class PurchaseRestController {
 	
 	@Value("${jwt.header}")
@@ -102,7 +106,11 @@ public class PurchaseRestController {
 			}
 			cart.setOwner(user);
 			//ApplyPromotions if any
+			if(cart.getPurchaseItems()!=null && cart.getPurchaseItems().size()>0){
+			if(promotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart)))
 			cart.setGift(promotionsAppliance.calculateBenefits(cart));
+			cart.getGift().setOrder(cart);
+			}
 			
 			return cart;
 		}

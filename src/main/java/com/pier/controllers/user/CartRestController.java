@@ -56,8 +56,7 @@ public class CartRestController {
 	
 	@RequestMapping(value="addToCart",method=RequestMethod.POST)
 	public ResponseEntity<String> addToCart(@RequestBody Product product,HttpServletRequest request){
-		
-		
+			
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
 		User user=userDao.find("username",username).get(0);
@@ -66,7 +65,7 @@ public class CartRestController {
 		try{
 		if(OrderDetailUtil.mapToOrder(product, cart)){
 			userDao.update(user);
-			orderDao.update(cart);			
+			orderDao.update(cart);					
 		}else{
 		return new ResponseEntity<String>("out of stock",HttpStatus.OK);
 		}
@@ -114,8 +113,10 @@ public class CartRestController {
 			}
 			cart.setOwner(user);
 			//ApplyPromotions if any
+			if(cart.getPurchaseItems()!=null && cart.getPurchaseItems().size()>0){
 			if(promotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart)))
 			cart.setGift(promotionsAppliance.calculateBenefits(cart));
+			}
 			
 			return cart;
 		}

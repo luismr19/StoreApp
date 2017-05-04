@@ -51,7 +51,7 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 
 		// prepare order
 		PurchaseOrder order = new PurchaseOrder();
-		order.setDeliveryAddress(new Address("USA", "Michigan", "theStreet", "porai", 4487, 14));
+		order.setDeliveryAddress(new Address("USA", "Michigoi", "theStreet", "porai", 4400, 14));
 		order.setOwner(userDao.find(1L));
 		Date date = new Date();		
 		order.setPurchaseDate(ZonedDateTime.now());		
@@ -95,7 +95,7 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 		        
 		       // prepare order
 				PurchaseOrder order = new PurchaseOrder();
-				order.setDeliveryAddress(new Address("USA", "Michigan", "theStreet", "porai", 4487, 14));				
+				order.setDeliveryAddress(new Address("USA", "Texas", "sesame", "porai", 4487, 14));				
 				order.setOwner(user);				
 				Date date = new Date();
 				Timestamp timestamp = new Timestamp(date.getTime());
