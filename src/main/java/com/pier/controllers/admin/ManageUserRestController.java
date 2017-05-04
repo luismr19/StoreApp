@@ -31,7 +31,7 @@ public class ManageUserRestController {
 	@Autowired
 	UserIntegrityChecker userCheker;
 	
-	@PreAuthorize("hasRole('ADMIN')")
+	//@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/users",method=RequestMethod.GET)
 	public List<User> list(){
 		

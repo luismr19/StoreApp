@@ -16,6 +16,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Type;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="PROMOTION")
 public class Promotion implements ObjectModel<Long>{
@@ -29,12 +31,12 @@ public class Promotion implements ObjectModel<Long>{
 	private String displayName;
 	
 	@Column(name = "START_DATE")	
-	@Type(type="org.hibernate.type.ZonedDateTimeType")
+	@Type(type="org.hibernate.type.ZonedDateTimeType")	
 	private ZonedDateTime startDate;
 	
 	
 	@Column(name = "END_DATE")
-	@Type(type="org.hibernate.type.ZonedDateTimeType")
+	@Type(type="org.hibernate.type.ZonedDateTimeType")	
 	private ZonedDateTime endDate;
 	
 	@Column(name="DESCRIPTION", columnDefinition = "TEXT")

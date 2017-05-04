@@ -172,7 +172,8 @@ public class BuyingTest {
 		ProductType protein=productTypeDao.find("name", "protein").get(0);
 		
 		laborDayRule.setProductTypes(new HashSet<ProductType>(Arrays.asList(protein)));
-		laborDayRule.setGiveAway(productDao.find("name", "Combat Crunch Bars"));
+		List products=productDao.find("name", "Combat Crunch Bars");
+		laborDayRule.setGiveAway(products);
 		laborDayRule.setMinAmount(0);
 		laborDayRule.setMinPurchase(BigDecimal.ZERO);		
 		laborDayRule.setBehavior(PromotionBehavior.TOTALDISCOUNT);
