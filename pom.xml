@@ -11,7 +11,7 @@
 	<!-- PROPERTIES -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<springsecurity.version>4.0.1.RELEASE</springsecurity.version>		
+		<springsecurity.version>4.0.1.RELEASE</springsecurity.version>
 		<plugin.war.warName>${project.build.finalName}</plugin.war.warName>
 		<maven.test.skip>true</maven.test.skip>
 	</properties>
@@ -95,7 +95,7 @@
 			<groupId>org.springframework.mobile</groupId>
 			<artifactId>spring-mobile-device</artifactId>
 			<!-- <version>1.1.5.RELEASE</version> -->
-		</dependency>
+		</dependency>				
 		<!-- mysql -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -116,10 +116,10 @@
 			<!-- <version>${jackson.version}</version> -->
 		</dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>			
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.fasterxml.jackson.datatype</groupId> -->
+<!-- 			<artifactId>jackson-datatype-jsr310</artifactId> -->
+<!-- 		</dependency> -->
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
