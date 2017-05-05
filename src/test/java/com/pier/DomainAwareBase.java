@@ -7,9 +7,14 @@ import org.springframework.core.io.support.EncodedResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
-@ContextConfiguration(locations={"/persistence-beans.xml"})
+import com.pier.config.SpringConfiguration;
+import com.pier.config.WebConfiguration;
+
+@WebAppConfiguration
+@ContextConfiguration(classes={WebConfiguration.class,SpringConfiguration.class})
 public class DomainAwareBase extends AbstractJUnit4SpringContextTests {
 	
 	 private final String deleteScript = "src/main/resources/sql/cleanup.sql";

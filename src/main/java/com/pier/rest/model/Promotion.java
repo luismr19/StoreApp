@@ -15,8 +15,12 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Type;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name="PROMOTION")
@@ -31,7 +35,7 @@ public class Promotion implements ObjectModel<Long>{
 	private String displayName;
 	
 	@Column(name = "START_DATE")	
-	@Type(type="org.hibernate.type.ZonedDateTimeType")	
+	@Type(type="org.hibernate.type.ZonedDateTimeType")		
 	private ZonedDateTime startDate;
 	
 	
@@ -65,11 +69,11 @@ public class Promotion implements ObjectModel<Long>{
 	public String getDisplayName() {
 		return displayName;
 	}
-
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	public ZonedDateTime getStartDate() {
 		return startDate;
 	}

@@ -11,7 +11,7 @@ import com.pier.DomainAwareBase;
 import com.pier.rest.model.Address;
 import com.pier.service.AddressDao;
 
-@ContextConfiguration(locations="/persistence-beans.xml")
+
 public class AddressDaoImplTest extends DomainAwareBase{
 	
 	@Autowired

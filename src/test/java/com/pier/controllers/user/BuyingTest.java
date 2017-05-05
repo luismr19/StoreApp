@@ -38,6 +38,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pier.business.PromotionBehavior;
+import com.pier.config.SpringConfiguration;
+import com.pier.config.WebConfiguration;
 import com.pier.rest.model.Address;
 import com.pier.rest.model.Brand;
 import com.pier.rest.model.Category;
@@ -53,7 +55,7 @@ import com.pier.service.PurchaseOrderDao;
 
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(value={"classpath:persistence-beans.xml","classpath:controllers.xml"})
+@ContextConfiguration(classes={WebConfiguration.class,SpringConfiguration.class})
 @WebAppConfiguration
 public class BuyingTest {
 
