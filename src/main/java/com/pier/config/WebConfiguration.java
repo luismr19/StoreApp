@@ -44,7 +44,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
     }
 	
-	@Autowired
+	/*@Autowired
 	SpecObjectMapper domainMapper;
 	
 	@Override
@@ -54,5 +54,5 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
       converter.setObjectMapper(domainMapper);
       converters.add(converter);
       super.configureMessageConverters(converters);
-    }
+    }*/
 }

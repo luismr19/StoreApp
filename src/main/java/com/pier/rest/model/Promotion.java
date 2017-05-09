@@ -69,11 +69,11 @@ public class Promotion implements ObjectModel<Long>{
 	public String getDisplayName() {
 		return displayName;
 	}
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
 	public ZonedDateTime getStartDate() {
 		return startDate;
 	}
@@ -82,10 +82,12 @@ public class Promotion implements ObjectModel<Long>{
 		this.startDate = startDate;
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
 	public ZonedDateTime getEndDate() {
 		return endDate;
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
 	public void setEndDate(ZonedDateTime endDate) {
 		this.endDate = endDate;
 	}

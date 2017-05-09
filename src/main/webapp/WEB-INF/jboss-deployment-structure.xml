@@ -1,0 +1,16 @@
+<jboss-deployment-structure>
+<deployment>
+<!-- need to do this because jboss has an outdated version -->
+   <exclusions>
+   <module name="com.fasterxml.jackson.core.jackson-core" />
+   <module name="com.fasterxml.jackson.core.jackson-databind" />
+   <module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider" />
+   <module name="org.jboss.resteasy.resteasy-jackson2-provider" />
+   </exclusions>
+</deployment>
+<!-- <sub-deployment name="FStore.war">   -->
+<!--     <exclusions>   -->
+<!--       <module name="com.fasterxml.jackson.core.jackson-databind" />   -->
+<!--     </exclusions>       -->
+<!--   </sub-deployment>   -->
+</jboss-deployment-structure>
