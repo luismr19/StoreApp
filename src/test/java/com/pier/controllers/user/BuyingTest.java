@@ -157,6 +157,7 @@ public class BuyingTest {
 				.content(json(mPglutamine)));
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testPurchaseWithPromotions() throws IOException, Exception{
 		
@@ -174,6 +175,7 @@ public class BuyingTest {
 		ProductType protein=productTypeDao.find("name", "protein").get(0);
 		
 		laborDayRule.setProductTypes(new HashSet<ProductType>(Arrays.asList(protein)));
+		@SuppressWarnings("rawtypes")
 		List products=productDao.find("name", "Combat Crunch Bars");
 		laborDayRule.setGiveAway(products);
 		laborDayRule.setMinAmount(0);
@@ -181,12 +183,27 @@ public class BuyingTest {
 		laborDayRule.setBehavior(PromotionBehavior.TOTALDISCOUNT);
 		laborDay.setPromotionrule(laborDayRule);
 		
+		PurchaseOrder newOrder=new PurchaseOrder();
+		Address addr=new Address();
+		addr.setCountry("Mexico");
+		addr.setDistrict("Guadalajara");
+		addr.setNumber(24);
+		addr.setState("Jalisco");
+		addr.setStreet("nomeacuerdo");
+		addr.setZipCode(4578);		
+		newOrder.setDeliveryAddress(addr);
+		
 		promoDao.add(laborDay);
 		
 		mockMvc.perform(post("/addToCart")
 				.contentType(contentType)
 				.header("Authorization",sampleToken)
 				.content(json(goldStandard))).andExpect(status().isOk());
+		
+		mockMvc.perform(put("/checkout")
+				.content(json(newOrder))
+				.contentType(contentType)
+				.header("Authorization",sampleToken)).andExpect(status().isOk());
 		
 		mockMvc.perform(put("/completePurchase")
 				.contentType(contentType)

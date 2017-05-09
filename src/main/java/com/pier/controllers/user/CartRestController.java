@@ -61,11 +61,11 @@ public class CartRestController {
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
 		User user=userDao.find("username",username).get(0);
 				
-		PurchaseOrder cart=getUserCart(user);
+		PurchaseOrder cart=getUserCart(user);		
 		try{
 		if(OrderDetailUtil.mapToOrder(product, cart)){
 			userDao.update(user);
-			orderDao.update(cart);					
+			orderDao.update(cart);			
 		}else{
 		return new ResponseEntity<String>("out of stock",HttpStatus.OK);
 		}
@@ -86,7 +86,7 @@ public class CartRestController {
 		PurchaseOrder cart=getUserCart(user);
 		try{
 		OrderDetailUtil.removeProductFromDetails(cart.getPurchaseItems(), productDao.find(id));
-		orderDao.update(cart);
+		orderDao.update(cart);		
 		}catch(Exception e){
 			return new ResponseEntity<String>("unable to remove product",HttpStatus.CONFLICT);
 		}
@@ -114,8 +114,9 @@ public class CartRestController {
 			cart.setOwner(user);
 			//ApplyPromotions if any
 			if(cart.getPurchaseItems()!=null && cart.getPurchaseItems().size()>0){
-			if(promotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart)))
+			if(PromotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart)))
 			cart.setGift(promotionsAppliance.calculateBenefits(cart));
+			cart.getGift().setOrder(cart);
 			}
 			
 			return cart;

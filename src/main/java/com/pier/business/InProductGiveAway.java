@@ -1,6 +1,7 @@
 package com.pier.business;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -59,7 +60,9 @@ public class InProductGiveAway implements BenefitGiveAway{
 				Benefit result=new Benefit();
 				result.setDiscount(discount);
 				if(affectedProducts.size()>0){
-				result.setProducts(rule.getGiveAway());
+				//this needs to be done since setting Benefit's products by directly passing PromotionRule's products is disallowed, hence ends up in removal of rule_products table
+				ArrayList productstoGive=new ArrayList(rule.getGiveAway());
+				result.setProducts(productstoGive);
 				result.setPoints(rule.getPoints());
 				}
 				

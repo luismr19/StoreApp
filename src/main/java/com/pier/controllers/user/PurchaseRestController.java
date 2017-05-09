@@ -57,13 +57,10 @@ public class PurchaseRestController {
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
 		User user=userDao.find("username",username).get(0);
 				
-		PurchaseOrder cart=getUserCart(user);
-		cart.setConcluded(true);
+		PurchaseOrder cart=getUserCart(user);		
 		try{
 		cart.setDeliveryAddress(newOrder.getDeliveryAddress());		
-		cart.setPurchaseDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Mexico_City")));
-		//get benefit again
-		cart.setGift(promotionsAppliance.calculateBenefits(cart));
+		cart.setPurchaseDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Mexico_City")));		
 		orderDao.update(cart);
 		}catch(Exception e){
 			return new ResponseEntity<String>("error performing operation",HttpStatus.INTERNAL_SERVER_ERROR);

@@ -11,8 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class SpecObjectMapper extends ObjectMapper{
 	
 	public SpecObjectMapper(){
-		System.out.println("####################!!");
-		System.out.println(com.fasterxml.jackson.databind.ser.std.StdSerializer.class.getClassLoader().toString());
+		
 		registerModule(new JavaTimeModule() );
 		configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,true)
         .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
