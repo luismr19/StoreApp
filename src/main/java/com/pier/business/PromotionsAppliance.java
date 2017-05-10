@@ -63,9 +63,11 @@ public class PromotionsAppliance {
 	}
 	
 	public static boolean isPromotionApplied(Benefit gift){
+		if(gift!=null){
 		if((gift.getDiscount()!=null && gift.getDiscount().compareTo(BigDecimal.ZERO)>0)
 				||(gift.getPoints()!=null && gift.getPoints()>0L) || (gift.getProducts()!=null && gift.getProducts().size()>0)){
 			return true;
+		}
 		}
 		return false;
 	}

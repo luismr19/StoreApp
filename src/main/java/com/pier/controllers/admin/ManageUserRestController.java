@@ -2,6 +2,12 @@ package com.pier.controllers.admin;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -31,11 +38,31 @@ public class ManageUserRestController {
 	@Autowired
 	UserIntegrityChecker userCheker;
 	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	private Session currentSession(){
+		return sessionFactory.getCurrentSession();
+	}
+	
 	//@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/users",method=RequestMethod.GET)
-	public List<User> list(){
+	public List<User> list(@RequestParam("index") int index){
+		Criteria criteria = currentSession().createCriteria(User.class);
+		criteria.addOrder(Order.asc("id"));
+		criteria.setFirstResult(index).setMaxResults(50);
+		return criteria.list();
 		
-		return userDao.list();
+	}
+	@RequestMapping(value="/users",params = {"word","index"},method=RequestMethod.GET)
+	public List<User> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
+		Criteria criteria = currentSession().createCriteria(User.class);
+		Disjunction or=Restrictions.disjunction();
+		or.add(Restrictions.like("username", word));
+		or.add(Restrictions.like("firstname", word));
+		criteria.addOrder(Order.asc("username"));
+		criteria.setFirstResult(index).setMaxResults(50);
+		return criteria.list();
 		
 	}
 	

@@ -2,6 +2,12 @@ package com.pier.controllers.admin;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -28,9 +35,28 @@ public class ManageProductTypeRestController {
 	@Autowired
 	ProductTypeIntegrityChecker checker;
 	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	private Session currentSession(){
+		return sessionFactory.getCurrentSession();
+	}
+	
 	@RequestMapping(method=RequestMethod.GET)
-	public List<ProductType> list(){
-		return dao.list();
+	public List<ProductType> list(@RequestParam("index") int index){
+		Criteria criteria = currentSession().createCriteria(ProductType.class);
+		criteria.addOrder(Order.asc("id"));
+		criteria.setFirstResult(index).setMaxResults(50);
+		return criteria.list();
+	}
+	
+	@RequestMapping(params = {"index","word"},method=RequestMethod.GET)
+	public List<ProductType> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
+		Criteria criteria = currentSession().createCriteria(ProductType.class);		
+		criteria.add(Restrictions.like("name", word));		
+		criteria.addOrder(Order.asc("name"));
+		criteria.setFirstResult(index).setMaxResults(50);
+		return criteria.list();		
 	}
 	
 	@RequestMapping(value="{id}",method=RequestMethod.GET)

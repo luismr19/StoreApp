@@ -13,6 +13,10 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -30,6 +34,8 @@ public class Category implements ObjectModel<Long> {
 	
 	@JsonIgnore
 	@ManyToMany(mappedBy="categories", fetch=FetchType.LAZY)
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size=5) //I want to load 5 sets of products for 5 brands in one query
 	private List<Product> products;
 	
 	public Category(){

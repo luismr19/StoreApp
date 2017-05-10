@@ -18,8 +18,11 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -56,6 +59,8 @@ public class Product implements ObjectModel<Long>{
 	@JoinTable(name="PRODUCT_CATEGORY", joinColumns={@JoinColumn(name="PRODUCT_ID" ,referencedColumnName="PRODUCT_ID")},
 	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID", referencedColumnName="ID")})
 	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size=50)//I want to load 50 sets of categories for 50 products in one query
 	private List<Category> categories;	
 	
 	

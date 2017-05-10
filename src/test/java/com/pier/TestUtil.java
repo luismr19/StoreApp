@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestUtil {
 	
-	public static final String sampleToken="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1ZGllbmNlIjoid2ViIiwiY3JlYXRlZCI6IjIwMTctMDUtMDMgMTM6MDAiLCJleHAiOjE0OTQ0MzkyMTZ9.zTCnARViIb8SDMDd-k-3-9uWFNpmqJXhyygXkyPpUsLSrZLm37VlhTUXzwE7E0ZZmpRQeMZuLqSebAQ8hqGtjQ";
+	public static final String sampleToken="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1ZGllbmNlIjoid2ViIiwiY3JlYXRlZCI6IjIwMTctMDUtMTAgMTM6NTUiLCJleHAiOjE0OTUwNDczMzZ9.o1l2h2cf3u4fPkTs5JxI9DWEREq22zK2hq-hFDIZohueNHC6Tvuk0wkAenEudhXS7cD8H20Pga0nLZxVh_2UOg";
 	 
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
  

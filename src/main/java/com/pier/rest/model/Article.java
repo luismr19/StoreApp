@@ -31,6 +31,10 @@ public class Article implements ObjectModel<Long>{
 	@Size(max=300)
 	private String link;
 	
+	@Column(name="TITLE", length=40)
+	@Size(max=40)
+	private String title;
+	
 	@ManyToMany
 	@JoinTable(name="ARTICLE_TAGS",joinColumns=@JoinColumn(name="ARTICLE_ID", referencedColumnName="ID"),
 	inverseJoinColumns=@JoinColumn(name="TAG_ID", referencedColumnName="ID"))
@@ -60,6 +64,16 @@ public class Article implements ObjectModel<Long>{
 
 	public void setTags(Set<ArticleTag> tag) {
 		this.tags = tag;
+	}
+	
+	
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	@Override

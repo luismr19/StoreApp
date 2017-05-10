@@ -1,12 +1,5 @@
 package com.pier.controllers.user;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.pier.business.PromotionsAppliance;
+import com.pier.business.PurchaseOperationsDelegate;
+import com.pier.business.exception.OutOfStockException;
 import com.pier.model.security.User;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.security.util.JwtTokenUtil;
@@ -49,67 +44,46 @@ public class PurchaseRestController {
 	@Autowired
 	PromotionsAppliance promotionsAppliance;
 	
+	@Autowired
+	PurchaseOperationsDelegate purchaseOps;
+	
 	@RequestMapping(value="checkout",method=RequestMethod.PUT)
 	public ResponseEntity<String> checkout(@RequestBody PurchaseOrder newOrder, HttpServletRequest request){
 		
 		
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
-		User user=userDao.find("username",username).get(0);
-				
-		PurchaseOrder cart=getUserCart(user);		
-		try{
-		cart.setDeliveryAddress(newOrder.getDeliveryAddress());		
-		cart.setPurchaseDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Mexico_City")));		
-		orderDao.update(cart);
-		}catch(Exception e){
+		User user=userDao.find("username",username).get(0);					
+		
+		try{		
+			purchaseOps.checkout(user,newOrder);
+		}catch(OutOfStockException os){
+			return new ResponseEntity<String>(os.getMessage(),HttpStatus.CONFLICT);
+		}
+		catch(Exception e){
 			return new ResponseEntity<String>("error performing operation",HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>("success",HttpStatus.OK);
+		
+		
 	}
 	
+	//after the card api returns any flag we should call this method
 	@RequestMapping(value="completePurchase",method=RequestMethod.PUT)
 	public ResponseEntity<String> completeOrder(HttpServletRequest request){
 		
-		
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
-		User user=userDao.find("username",username).get(0);
-				
-		PurchaseOrder cart=getUserCart(user);
-		cart.setConcluded(true);
+		User user=userDao.find("username",username).get(0);	
+		
 		try{
-		orderDao.update(cart);
+		purchaseOps.completeOrder(user);
 		}catch(Exception e){
 			return new ResponseEntity<String>("error performing operation",HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 	
-	private PurchaseOrder getUserCart(User user){
-	       PurchaseOrder cart=new PurchaseOrder();	
-	       cart.setTrackingNumber("PENDING");
-	       cart.setConcluded(false);
-			if(user.getOrders()==null){			
-				user.setOrders(new HashSet(Arrays.asList(cart)));
-			}else{
-			Optional<PurchaseOrder> pendingOrder=user.getOrders().stream()
-					.filter(order->order.getConcluded()==false).findFirst();		
-			if(pendingOrder.isPresent()){
-				cart=pendingOrder.get();
-			}else{
-				user.getOrders().add(cart);
-			}
-			}
-			cart.setOwner(user);
-			//ApplyPromotions if any
-			if(cart.getPurchaseItems()!=null && cart.getPurchaseItems().size()>0){
-			if(promotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart)))
-			cart.setGift(promotionsAppliance.calculateBenefits(cart));
-			cart.getGift().setOrder(cart);
-			}
-			
-			return cart;
-		}
+	
 
 }
