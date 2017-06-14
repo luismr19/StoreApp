@@ -11,6 +11,7 @@ delete from order_detail;
 delete from purchase_order;
 delete from benefit;
 delete from product_category;
+delete from product_flavor;
 delete from product;
 delete from type;
 delete from brand;

@@ -34,7 +34,8 @@ public class InSameProductGiveAway implements BenefitGiveAway {
 	@Override
 	public Benefit calculateBenefit() {
 		
-		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getPurchaseItems());
+		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getPurchaseItems())
+				.stream().map(prodFlav->prodFlav.getProduct()).collect(Collectors.toList());
 		BigDecimal discount=BigDecimal.ZERO;
 		
 		//check if total purchase surpasses minimum required
@@ -49,7 +50,7 @@ public class InSameProductGiveAway implements BenefitGiveAway {
 			//this emulates a buy N get 1 promotion in which if the quantity is more or equal to the specified the product is eligible
 			affectedProducts=order.getPurchaseItems().stream()
 					.filter(item->item.getQuantity()>=rule.getMinAmount())
-					.map(item->item.getProduct())
+					.map(item->item.getProduct().getProduct())
 					.filter(isEligibleForPromotion).collect(Collectors.toList());
 			total=affectedProducts.stream().map(product->product.getPrice()).reduce(BigDecimal.ZERO, BigDecimal::add);
 			

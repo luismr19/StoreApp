@@ -26,7 +26,7 @@ public class OrderDetail implements ObjectModel<OrderDetailId> {
 	 * insertable=false, updatable=false) private Order order;
 	 */	
 
-	public OrderDetail(Integer quantity, Product product, PurchaseOrder order) {
+	public OrderDetail(Integer quantity, ProductFlavor product, PurchaseOrder order) {
 		super();
 		id=new OrderDetailId();
 		this.quantity = quantity;
@@ -56,11 +56,11 @@ public class OrderDetail implements ObjectModel<OrderDetailId> {
 		this.quantity = quantity;
 	}
 
-	public Product getProduct() {
+	public ProductFlavor getProduct() {
 		return this.id.getProduct();
 	}
 
-	public void setProduct(Product product) {
+	public void setProduct(ProductFlavor product) {
 		this.id.setProduct(product);
 	}
 

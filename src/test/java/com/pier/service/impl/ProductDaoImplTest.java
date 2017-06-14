@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.pier.DomainAwareBase;
 import com.pier.rest.model.Brand;
 import com.pier.rest.model.Category;
+import com.pier.rest.model.Flavor;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductType;
 import com.pier.service.BrandDao;
 import com.pier.service.CategoryDao;
+import com.pier.service.FlavorDao;
 import com.pier.service.ProductDao;
 import com.pier.service.ProductTypeDao;
 
@@ -33,6 +35,9 @@ public class ProductDaoImplTest extends DomainAwareBase {
 	@Autowired
 	BrandDao brandDao;
 	
+	@Autowired
+	FlavorDao flavorDao;
+	
 	
 	@Test
 	public void testAdd() {
@@ -41,13 +46,17 @@ public class ProductDaoImplTest extends DomainAwareBase {
 		Product product=new Product(new Brand("MP","Muscle Pharm"), new BigDecimal("70.50"), "someProduct", 
 				"this will make you fly", categories,
 				new ProductType("protein"), 2L, true);
+		Flavor flavor=new Flavor("strawberry",5L);	
+		flavorDao.add(flavor);
+		product.setFlavors(Arrays.asList(flavor));
 		
 		dao.add(product);
 		Category theCategory=catDao.find(categories.get(0).getId());
 		ProductType theType=typeDao.find(product.getProductType().getId());
 		Brand theBrand=brandDao.find(product.getBrand().getId());
 		//assert that the brand and everything was persisted along with the product
-		assertTrue(dao.find(product.getId())!=null && theCategory!=null && theType!=null && theBrand!=null);
+		Product persistedProduct=dao.find(product.getId());
+		assertTrue(persistedProduct!=null && theCategory!=null && theType!=null && theBrand!=null);
 	}
 
 	@Test

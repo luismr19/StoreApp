@@ -34,7 +34,10 @@ public class InProductGiveAway implements BenefitGiveAway{
 	@Override
 	public Benefit calculateBenefit() {
 		
-		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getPurchaseItems());
+		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getPurchaseItems())
+				.stream().map(prodFlav->prodFlav.getProduct()).collect(Collectors.toList());
+				
+		
 		BigDecimal discount=BigDecimal.ZERO;
 		
 				if(order.getTotal().compareTo(rule.getMinPurchase())>=0 && productsInOrder.size()>=rule.getMinAmount()){

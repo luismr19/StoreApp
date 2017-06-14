@@ -1,7 +1,10 @@
 package com.pier.rest.model;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +16,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -25,6 +30,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -69,16 +75,23 @@ public class Product implements ObjectModel<Long>{
 	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
 	private ProductType productType;
 	
-	@Column(name="EXISTENCE", length=50, unique=false, nullable=false)
+	/*@Column(name="EXISTENCE", length=50, unique=false, nullable=false)
 	@NotNull
-	private Long existence;
+	private Long existence;*/
+	
+	@JsonIgnore
+	@OneToMany(mappedBy="id.product")
+	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
+	Set<ProductFlavor> productFlavors;
+	
+	@Transient
+	private List<Flavor> flavors;
 	
 	@Column(name="ENABLED" , columnDefinition="boolean default true")
 	@NotNull
 	private Boolean enabled;
 	
-	/*@OneToMany(mappedBy="id.product")
-	private List<OrderDetail> purchaseItems;*/
+	
 	
 	@Override
 	public Long getId() {
@@ -94,7 +107,7 @@ public class Product implements ObjectModel<Long>{
 		this.description = description;
 		this.categories = categories;
 		this.productType = productType;
-		this.existence = existence;
+		//this.existence = existence;
 		this.enabled = enabled;
 	}
 	
@@ -153,13 +166,13 @@ public class Product implements ObjectModel<Long>{
 		this.productType = productType;
 	}
 
-	public Long getExistence() {
+	/*public Long getExistence() {
 		return existence;
-	}
+	}*/
 
-	public void setExistence(Long existence) {
+	/*public void setExistence(Long existence) {
 		this.existence = existence;
-	}
+	}*/
 
 	public Boolean getEnabled() {
 		return enabled;
@@ -167,6 +180,27 @@ public class Product implements ObjectModel<Long>{
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+	}
+	
+	
+
+	public Set<ProductFlavor> getProductFlavors() {
+		return productFlavors;
+	}
+
+	private void setProductFlavors(Set<ProductFlavor> productFlavors) {
+		this.productFlavors = productFlavors;
+	}
+	
+	
+
+	public List<Flavor> getFlavors() {
+		return productFlavors.stream().map(pflav->pflav.getFlavor()).collect(Collectors.toList());
+	}
+
+	public void setFlavors(List<Flavor> flavors) {
+		this.flavors = flavors;
+		setProductFlavors(new HashSet(flavors.stream().map(flavor->new ProductFlavor(this,flavor,flavor.getExistence())).collect(Collectors.toList())));
 	}
 
 	@Override

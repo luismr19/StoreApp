@@ -13,6 +13,7 @@ import com.pier.business.exception.OutOfStockException;
 import com.pier.business.util.OrderDetailUtil;
 import com.pier.model.security.User;
 import com.pier.rest.model.Product;
+import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.service.ProductDao;
 import com.pier.service.PurchaseOrderDao;
@@ -33,7 +34,7 @@ public class CartOperationsDelegate {
 	@Autowired
 	PromotionsAppliance promotionsAppliance;
 	
-	public void addToCart(User user,Product product) throws OutOfStockException{
+	public void addToCart(User user,ProductFlavor product) throws OutOfStockException{
 		PurchaseOrder cart=getUserCart(user);	
 		
 			if(OrderDetailUtil.mapToOrder(product, cart)){

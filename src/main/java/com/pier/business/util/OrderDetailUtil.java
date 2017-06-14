@@ -10,14 +10,15 @@ import java.util.Set;
 
 import com.pier.rest.model.OrderDetail;
 import com.pier.rest.model.Product;
+import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
 
 public class OrderDetailUtil {
 
-	public static boolean mapToOrder(Product product, PurchaseOrder order) {
+	public static boolean mapToOrder(ProductFlavor product, PurchaseOrder order) {
 
 		try {
-			if (!product.getEnabled() || product.getExistence() < 1) {
+			if (!product.getProduct().getEnabled() || product.getExistence() < 1) {
 				return false;
 			}
 			Set<OrderDetail> purchaseItems = order.getPurchaseItems();
@@ -36,7 +37,7 @@ public class OrderDetailUtil {
 			}
 			BigDecimal total = BigDecimal.ZERO;
 			for (OrderDetail detail : order.getPurchaseItems()) {
-				total = total.add(detail.getProduct().getPrice()).multiply(new BigDecimal(detail.getQuantity()));
+				total = total.add(detail.getProduct().getProduct().getPrice()).multiply(new BigDecimal(detail.getQuantity()));
 			}
 			order.setTotal(total);
 		} catch (Exception e) {
@@ -45,13 +46,13 @@ public class OrderDetailUtil {
 		return true;
 	}
 
-	public static List<OrderDetail> generate(List<Product> products) {
+	public static List<OrderDetail> generate(List<ProductFlavor> products) {
 
 		List<OrderDetail> orderDetails = new ArrayList<OrderDetail>();
 
 		PurchaseOrder order = new PurchaseOrder();
 
-		for (Product product : products) {
+		for (ProductFlavor product : products) {
 			Optional<OrderDetail> detail = orderDetails.stream().filter(dt -> dt.getProduct().equals(product))
 					.findFirst();
 			if (detail.isPresent()) {
@@ -70,8 +71,8 @@ public class OrderDetailUtil {
 		return orderDetails.get(0).getOrder();
 	}
 
-	public static List<Product> getAsProductList(Set<OrderDetail> orderDetails) {
-		List<Product> products = new ArrayList<Product>();
+	public static List<ProductFlavor> getAsProductList(Set<OrderDetail> orderDetails) {
+		List<ProductFlavor> products = new ArrayList<ProductFlavor>();
 		for (OrderDetail detail : orderDetails) {
 			for (int i = 0; i < detail.getQuantity(); i++)
 				products.add(detail.getProduct());

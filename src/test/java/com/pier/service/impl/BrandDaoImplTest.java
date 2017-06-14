@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.pier.DomainAwareBase;
 import com.pier.rest.model.Brand;
+import com.pier.rest.model.Flavor;
 import com.pier.rest.model.Product;
 import com.pier.service.BrandDao;
 import com.pier.service.ProductDao;
@@ -44,13 +45,13 @@ public class BrandDaoImplTest extends DomainAwareBase {
 		Product product1=new Product();
 		Product product2=new Product();
 		
-		product1.setExistence(4L);
+		product1.setFlavors(Arrays.asList(new Flavor("Banana with poop",5L)));
 		product1.setEnabled(true);
 		product1.setName("nitrotech");
 		product1.setDescription("whey protein isolate");
 		product1.setPrice(new BigDecimal("100.00"));
 		
-		product2.setExistence(7L);
+		product2.setFlavors(Arrays.asList(new Flavor("strawberry",5L)));
 		product2.setEnabled(true);
 		product2.setName("mass-tech");
 		product2.setDescription("muscleTech - mass gainer");

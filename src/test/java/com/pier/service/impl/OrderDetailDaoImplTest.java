@@ -7,9 +7,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.pier.DomainAwareBase;
 import com.pier.model.security.User;
 import com.pier.rest.model.Address;
+import com.pier.rest.model.Flavor;
 import com.pier.rest.model.OrderDetail;
-import com.pier.rest.model.OrderDetailId;
 import com.pier.rest.model.Product;
+import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.service.OrderDetailDao;
 import com.pier.service.ProductDao;
@@ -63,7 +64,7 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 
 		Product product1 = new Product();
 
-		product1.setExistence(4L);
+		product1.setFlavors(Arrays.asList(new Flavor("strawberry",5L)));
 		product1.setEnabled(true);
 		product1.setName("nitrotech");
 		product1.setDescription("whey protein isolate");
@@ -74,11 +75,12 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 		//prepare order detail
 		
 		orderDetail.setOrder(order);
-		orderDetail.setProduct(product1);
+		Set<ProductFlavor> prodFlavs=product1.getProductFlavors();
+		orderDetail.setProduct(prodFlavs.toArray(new ProductFlavor[prodFlavs.size()])[0]);
 		orderDetail.setQuantity(2);
 		
 		//update total
-		order.setTotal(orderDetail.getProduct().getPrice().multiply(new BigDecimal(orderDetail.getQuantity())));
+		order.setTotal(orderDetail.getProduct().getProduct().getPrice().multiply(new BigDecimal(orderDetail.getQuantity())));
 		orderDao.update(order);
 		
 		orderDetailDao.add(orderDetail);
@@ -108,7 +110,7 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 
 				Product product1 = new Product();
 
-				product1.setExistence(4L);
+				product1.setFlavors(Arrays.asList(new Flavor("Chocolate",5L)));
 				product1.setEnabled(true);
 				product1.setName("nitrotech");
 				product1.setDescription("whey protein isolate");
@@ -117,13 +119,14 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 
 				
 				//prepare order detail
-				
+								
 				orderDetail.setOrder(order);
-				orderDetail.setProduct(product1);
+				Set<ProductFlavor> prodFlavs=product1.getProductFlavors();
+				orderDetail.setProduct(prodFlavs.toArray(new ProductFlavor[prodFlavs.size()])[0]);
 				orderDetail.setQuantity(2);
 				
 				//update total, it is just a sample
-				order.setTotal(orderDetail.getProduct().getPrice().multiply(new BigDecimal(orderDetail.getQuantity())));
+				order.setTotal(orderDetail.getProduct().getProduct().getPrice().multiply(new BigDecimal(orderDetail.getQuantity())));
 				orderDao.update(order);
 				
 				orderDetailDao.add(orderDetail);

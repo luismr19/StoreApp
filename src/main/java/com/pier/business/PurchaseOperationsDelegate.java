@@ -6,19 +6,19 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 import com.pier.business.exception.OutOfStockException;
 import com.pier.business.util.OrderDetailUtil;
 import com.pier.model.security.User;
 import com.pier.rest.model.OrderDetail;
-import com.pier.rest.model.Product;
+import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
-import com.pier.service.ProductDao;
+import com.pier.service.ProductFlavorDao;
 import com.pier.service.PurchaseOrderDao;
 import com.pier.service.UserDao;
 
+@Component
 public class PurchaseOperationsDelegate {
 
 	@Autowired
@@ -28,7 +28,7 @@ public class PurchaseOperationsDelegate {
 	PurchaseOrderDao orderDao;
 
 	@Autowired
-	ProductDao productDao;
+	ProductFlavorDao productFlavorDao;
 
 	@Autowired
 	CartOperationsDelegate cartOps;
@@ -39,8 +39,8 @@ public class PurchaseOperationsDelegate {
 
 		// check existence before buying
 		for (OrderDetail detail : cart.getPurchaseItems()) {
-			if (detail.getQuantity() > productDao.find(detail.getProduct().getId()).getExistence()) {
-				throw new OutOfStockException(detail.getProduct().getName() + " is out of stock");
+			if (detail.getQuantity() > productFlavorDao.find(detail.getProduct().getId()).getExistence()) {
+				throw new OutOfStockException(detail.getProduct().getProduct().getName() + " is out of stock for that flavor");
 			}
 		}
 
@@ -53,11 +53,11 @@ public class PurchaseOperationsDelegate {
 	public void completeOrder(User user) {
 		PurchaseOrder cart = cartOps.getUserCart(user);
 		cart.setConcluded(true);
-		List<Product> purchasedProducts = OrderDetailUtil.getAsProductList(cart.getPurchaseItems());
+		List<ProductFlavor> purchasedProducts = OrderDetailUtil.getAsProductList(cart.getPurchaseItems());
 
-		for (Product product : purchasedProducts) {
+		for (ProductFlavor product : purchasedProducts) {
 			product.setExistence(product.getExistence() - 1);
-			productDao.update(product);
+			productFlavorDao.update(product);
 		}
 		orderDao.update(cart);
 

@@ -17,6 +17,7 @@ import com.pier.business.CartOperationsDelegate;
 import com.pier.business.exception.OutOfStockException;
 import com.pier.model.security.User;
 import com.pier.rest.model.Product;
+import com.pier.rest.model.ProductFlavor;
 import com.pier.security.util.JwtTokenUtil;
 import com.pier.service.UserDao;
 
@@ -38,7 +39,7 @@ public class CartRestController {
 	
 	
 	@RequestMapping(value="addToCart",method=RequestMethod.POST)
-	public ResponseEntity<String> addToCart(@RequestBody Product product,HttpServletRequest request){
+	public ResponseEntity<String> addToCart(@RequestBody ProductFlavor product,HttpServletRequest request){
 			
 		
 		String token=request.getHeader(tokenHeader);

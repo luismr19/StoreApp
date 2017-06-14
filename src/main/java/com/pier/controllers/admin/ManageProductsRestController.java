@@ -111,8 +111,8 @@ public class ManageProductsRestController {
 			currentProduct.setName(product.getName());
 			currentProduct.setDescription(product.getDescription());
 			currentProduct.setEnabled(true);
-			currentProduct.setPrice(product.getPrice());
-			currentProduct.setExistence(product.getExistence());
+			currentProduct.setPrice(product.getPrice());			
+			currentProduct.setFlavors(product.getFlavors());
 			dao.update(product);
 			
 			return new ResponseEntity<Product>(product,HttpStatus.OK);			
