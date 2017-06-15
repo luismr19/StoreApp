@@ -43,6 +43,7 @@ import com.pier.config.WebConfiguration;
 import com.pier.rest.model.Address;
 import com.pier.rest.model.Brand;
 import com.pier.rest.model.Category;
+import com.pier.rest.model.Flavor;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductType;
 import com.pier.rest.model.Promotion;
@@ -52,6 +53,7 @@ import com.pier.service.ProductDao;
 import com.pier.service.ProductTypeDao;
 import com.pier.service.PromotionDao;
 import com.pier.service.PurchaseOrderDao;
+import com.pier.service.impl.FlavorService;
 
 
 @RunWith(SpringRunner.class)
@@ -84,6 +86,9 @@ public class BuyingTest {
 	
 	@Autowired
     private WebApplicationContext webApplicationContext;
+	
+	@Autowired
+	FlavorService flavorService;
 	
 		
 	Product goldStandard;
@@ -119,20 +124,34 @@ public class BuyingTest {
 		ProductType snack=new ProductType("snack");
 		ProductType glutamine=new ProductType("glutamine");
 		
+		Flavor chocolate=flavorService.generateFlavor("chocolate",3L);
+		Flavor vanilla=flavorService.generateFlavor("vanilla",3L);
+		Flavor none=flavorService.generateFlavor("none",3L);
+		
+		flavorService.persistFlavors(chocolate,vanilla,none);
+		
 		
 		goldStandard=new Product(optimum,new BigDecimal("903.50"),"Gold Standard",
 				"24g of Whey Protein with Amino Acids for Muscle Recovery and Growth",
 				Arrays.asList(muscleGrowth),protein,15L,true);
+		goldStandard.setFlavors(Arrays.asList(
+				chocolate,vanilla));
+		
 		bestBcaa=new Product(bpiSports,new BigDecimal("555.19"),"BEST BCAA","Amino Acid Powder for Workout Recovery",
 				Arrays.asList(performance,recovery,strength),bcaas,5L,true);
+		bestBcaa.setFlavors(Arrays.asList(none));
+		
 		mPglutamine=new Product(musclePharm,new BigDecimal("290.11"),"GLUTAMINE",
 				"Pharmaceutical Quality Post-Workout Recovery Powder"
 				+ ", Supports Rebuilding and Recovery from the Toughest Workouts",
 				Arrays.asList(recovery),glutamine,10L,true);
+		mPglutamine.setFlavors(Arrays.asList(none));
+		
 		combatCrunchBars=new Product(musclePharm,new BigDecimal("53.65"),"Combat Crunch Bars",
 				"Delicious Protein Bar with Only 210 Calories"
 				+ ", gluten Free, Low Sugar, & Low Net Carb Multi-Layered Baked Bar",
 				Arrays.asList(food),snack,50L,true);
+		combatCrunchBars.setFlavors(Arrays.asList(vanilla));
 		
 		productDao.update(goldStandard);
 		productDao.update(bestBcaa);
@@ -150,14 +169,14 @@ public class BuyingTest {
 		mockMvc.perform(post("/addToCart")
 				.contentType(contentType)
 				.header("Authorization",sampleToken)
-				.content(json(goldStandard))).andExpect(status().isOk());
+				.content(json(goldStandard.getProductFlavors().iterator().next()))).andExpect(status().isOk());
 		mockMvc.perform(post("/addToCart")
 				.contentType(contentType)
 				.header("Authorization",sampleToken)
-				.content(json(mPglutamine)));
+				.content(json(mPglutamine.getProductFlavors().iterator().next())));
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	@Test
 	public void testPurchaseWithPromotions() throws IOException, Exception{
 		
@@ -198,7 +217,7 @@ public class BuyingTest {
 		mockMvc.perform(post("/addToCart")
 				.contentType(contentType)
 				.header("Authorization",sampleToken)
-				.content(json(goldStandard))).andExpect(status().isOk());
+				.content(json(goldStandard.getProductFlavors().iterator().next()))).andExpect(status().isOk());
 		
 		mockMvc.perform(put("/checkout")
 				.content(json(newOrder))

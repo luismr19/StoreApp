@@ -81,7 +81,7 @@ public class Product implements ObjectModel<Long>{
 	
 	@JsonIgnore
 	@OneToMany(mappedBy="id.product")
-	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
+	@Cascade(CascadeType.ALL)
 	Set<ProductFlavor> productFlavors;
 	
 	@Transient

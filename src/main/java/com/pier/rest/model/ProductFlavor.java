@@ -16,6 +16,10 @@ public class ProductFlavor {
 	@NotNull
 	private Long existence;
 
+	public ProductFlavor(){
+		super();
+	}
+	
 	public ProductFlavorId getId() {
 		return id;
 	}

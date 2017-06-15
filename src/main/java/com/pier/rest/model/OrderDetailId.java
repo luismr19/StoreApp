@@ -28,7 +28,8 @@ public class OrderDetailId implements Serializable{
     private PurchaseOrder order;
    
     @ManyToOne 
-    @JoinColumns({@JoinColumn(name = "PROD_ID"),@JoinColumn(name="FLAV_ID")})
+    @JoinColumns({@JoinColumn(name = "PROD_ID",referencedColumnName="PROD_ID"),
+    	@JoinColumn(name="FLAV_ID",referencedColumnName="FLAV_ID")})
     private ProductFlavor product;
 
 	public PurchaseOrder getOrder() {

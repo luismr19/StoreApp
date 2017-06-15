@@ -36,7 +36,7 @@ public class ProductDaoImplTest extends DomainAwareBase {
 	BrandDao brandDao;
 	
 	@Autowired
-	FlavorDao flavorDao;
+	FlavorService flavorService;
 	
 	
 	@Test
@@ -47,7 +47,7 @@ public class ProductDaoImplTest extends DomainAwareBase {
 				"this will make you fly", categories,
 				new ProductType("protein"), 2L, true);
 		Flavor flavor=new Flavor("strawberry",5L);	
-		flavorDao.add(flavor);
+		flavorService.generateFlavor(flavor.getFlavorName(), flavor.getExistence());
 		product.setFlavors(Arrays.asList(flavor));
 		
 		dao.add(product);
