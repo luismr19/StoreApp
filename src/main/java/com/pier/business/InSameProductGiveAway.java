@@ -62,13 +62,15 @@ public class InSameProductGiveAway implements BenefitGiveAway {
 		}		
 		Benefit result=new Benefit();
 		result.setDiscount(discount);
+		List productstoGive;
         if(willDuplicate){
-        	result.setProducts(affectedProducts);		
+          productstoGive=affectedProducts;		
+		}else{
+		  productstoGive=new ArrayList(rule.getGiveAway());
 		}
         //this needs to be done since setting Benefit's products by directly passing PromotionRule's products is disallowed, hence ends up in removal of rule_products table
-      	ArrayList productstoGive=new ArrayList(rule.getGiveAway());
-      	result.setProducts(productstoGive);
-      	
+      
+      	result.setProducts(productstoGive);      	
         result.getProducts().addAll(productstoGive);
 		result.setPoints(rule.getPoints());
 		return result;

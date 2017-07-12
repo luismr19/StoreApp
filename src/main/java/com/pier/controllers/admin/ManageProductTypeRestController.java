@@ -48,16 +48,8 @@ public class ManageProductTypeRestController {
 		criteria.addOrder(Order.asc("id"));
 		criteria.setFirstResult(index).setMaxResults(50);
 		return criteria.list();
-	}
+	}	
 	
-	@RequestMapping(params = {"index","word"},method=RequestMethod.GET)
-	public List<ProductType> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
-		Criteria criteria = currentSession().createCriteria(ProductType.class);		
-		criteria.add(Restrictions.like("name", word));		
-		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(index).setMaxResults(50);
-		return criteria.list();		
-	}
 	
 	@RequestMapping(value="{id}",method=RequestMethod.GET)
 	public ResponseEntity<?> getProductType(@PathVariable Long id){

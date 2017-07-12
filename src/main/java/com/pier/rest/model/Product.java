@@ -183,7 +183,7 @@ public class Product implements ObjectModel<Long>{
 	}
 	
 	
-
+    @JsonIgnore
 	public Set<ProductFlavor> getProductFlavors() {
 		return productFlavors;
 	}
@@ -193,7 +193,7 @@ public class Product implements ObjectModel<Long>{
 	}
 	
 	
-
+	@JsonIgnore
 	public List<Flavor> getFlavors() {
 		return productFlavors.stream().map(pflav->pflav.getFlavor()).collect(Collectors.toList());
 	}

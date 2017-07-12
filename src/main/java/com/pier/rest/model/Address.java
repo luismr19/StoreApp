@@ -22,6 +22,11 @@ public class Address implements ObjectModel<Long>{
 	@Size(min=3, max=15)
 	private String country;
 	
+	@Column(name="CITY",length=17)	
+	@NotNull
+	@Size(min=3, max=15)
+	private String city;
+	
 	@Column(name="STATE",length=15)	
 	@NotNull
 	@Size(min=3, max=15)
@@ -48,9 +53,10 @@ public class Address implements ObjectModel<Long>{
 		
 	}
 	
-	public Address(String country, String state, String street, String district, Integer zipCode, Integer number) {
+	public Address(String country, String city, String state, String street, String district, Integer zipCode, Integer number) {
 		super();
 		this.country = country;
+		this.city=city;
 		this.state = state;
 		this.street = street;
 		this.district = district;
@@ -69,6 +75,14 @@ public class Address implements ObjectModel<Long>{
 
 	public String getCountry() {
 		return country;
+	}
+	
+	public void setCity(String city){
+		this.city=city;
+	}
+	
+	public String getCity(){
+		return city;
 	}
 
 	public void setCountry(String country) {

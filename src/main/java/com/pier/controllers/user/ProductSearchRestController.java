@@ -77,7 +77,8 @@ public class ProductSearchRestController {
 	}
 	
 	@RequestMapping(value="advanced",method=RequestMethod.POST)
-	public ResponseEntity<List<Product>> advancedSearch(@RequestBody AdvancedSearchRequest search){
+	public ResponseEntity<List<Product>> advancedSearch(@RequestBody AdvancedSearchRequest search, @RequestParam("index") int index){
+		int pageSize=50;
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		criteria.createAlias("brand", "br");
@@ -90,6 +91,8 @@ public class ProductSearchRestController {
 		or.add(Restrictions.in("cats.id", search.getCategoryIds()));
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
+		criteria.setFirstResult(index);
+		criteria.setMaxResults(pageSize);
 		
 		List<Product> results=criteria.list();
 		
