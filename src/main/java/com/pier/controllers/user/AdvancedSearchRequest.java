@@ -4,28 +4,30 @@ import java.util.List;
 
 public class AdvancedSearchRequest {
 	
-	private Long BrandId;
+	private List<Long> BrandIds;
 	
-	private Long ProductTypeId;
+	private List<Long> ProductTypeIds;
 	
 	private List<Long> CategoryIds;
 	
 	private String name;
 
-	public Long getBrandId() {
-		return BrandId;
+	
+
+	public List<Long> getBrandIds() {
+		return BrandIds;
 	}
 
-	public void setBrandId(Long brandId) {
-		BrandId = brandId;
+	public void setBrandIds(List<Long> brandId) {
+		BrandIds = brandId;
 	}
 
-	public Long getProductTypeId() {
-		return ProductTypeId;
+	public List<Long> getProductTypeIds() {
+		return ProductTypeIds;
 	}
 
-	public void setProductTypeId(Long productTypeId) {
-		ProductTypeId = productTypeId;
+	public void setProductTypeIds(List<Long> productTypeId) {
+		ProductTypeIds = productTypeId;
 	}
 
 	public List<Long> getCategoryIds() {

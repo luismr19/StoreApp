@@ -86,8 +86,8 @@ public class ProductSearchRestController {
 		criteria.createAlias("categories", "cats");
 		Disjunction or=Restrictions.disjunction();		
 		
-		or.add(Restrictions.eq("br.id", search.getBrandId()));
-		or.add(Restrictions.eq("type.id", search.getProductTypeId()));
+		or.add(Restrictions.in("br.id", search.getBrandIds()));
+		or.add(Restrictions.in("type.id", search.getProductTypeIds()));
 		or.add(Restrictions.in("cats.id", search.getCategoryIds()));
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
