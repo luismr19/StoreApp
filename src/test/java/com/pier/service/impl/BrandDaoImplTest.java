@@ -74,10 +74,10 @@ public class BrandDaoImplTest extends DomainAwareBase {
 		
 		Brand muscleTech2=new Brand("M T","muscleTech2");
 		brandDao.add(muscleTech2);
-		muscleTech2.setFullName("1Muscletech");		
+		muscleTech2.setName("1Muscletech");		
 		brandDao.update(muscleTech2);
 		
-		assertTrue(brandDao.find(muscleTech2.getId()).getFullName().equals("1Muscletech"));
+		assertTrue(brandDao.find(muscleTech2.getId()).getName().equals("1Muscletech"));
 	}
 
 	@Test

@@ -32,10 +32,10 @@ public class Brand implements ObjectModel<Long>{
 	@Size(min=2, max=15)
 	private String shortName;
 	
-	@Column(name="FULLNAME", length=30, unique=true)
+	@Column(name="NAME", length=30, unique=true)
 	@NotNull
 	@Size(min=3, max=30)
-	private String fullName;
+	private String name;
 	
 	
 	@OneToMany(mappedBy="brand", fetch=FetchType.LAZY)
@@ -51,10 +51,10 @@ public class Brand implements ObjectModel<Long>{
 	
 	
 
-	public Brand(String shortName, String fullName) {
+	public Brand(String shortName, String name) {
 		super();
 		this.shortName = shortName;
-		this.fullName = fullName;		
+		this.name = name;		
 	}
 
 
@@ -75,12 +75,12 @@ public class Brand implements ObjectModel<Long>{
 		this.shortName = shortName;
 	}
 
-	public String getFullName() {
-		return fullName;
+	public String getName() {
+		return name;
 	}
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@JsonIgnore
@@ -98,7 +98,7 @@ public class Brand implements ObjectModel<Long>{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((fullName == null) ? 0 : fullName.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((shortName == null) ? 0 : shortName.hashCode());
 		return result;
 	}
@@ -114,10 +114,10 @@ public class Brand implements ObjectModel<Long>{
 		if (getClass() != obj.getClass())
 			return false;
 		Brand other = (Brand) obj;
-		if (fullName == null) {
-			if (other.fullName != null)
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!fullName.equals(other.fullName))
+		} else if (!name.equals(other.name))
 			return false;
 		if (shortName == null) {
 			if (other.shortName != null)

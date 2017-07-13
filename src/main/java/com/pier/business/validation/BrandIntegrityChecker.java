@@ -15,7 +15,7 @@ public class BrandIntegrityChecker extends IntegrityCheckerImpl<Brand, BrandDao>
 		errors.clear();
 		boolean result;
 		result=dao.find("shortName", model.getShortName()).size()>0;
-		result=result || dao.find("fullName", model.getFullName()).size()>0;
+		result=result || dao.find("name", model.getName()).size()>0;
 		if(!result){
 			errors.add("Brand name already exists");
 		}

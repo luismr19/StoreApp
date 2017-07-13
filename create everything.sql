@@ -123,10 +123,10 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `spsec`.`brand` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `FULLNAME` VARCHAR(30) NOT NULL,
+  `NAME` VARCHAR(30) NOT NULL,
   `SHORTNAME` VARCHAR(15) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `UK_4soxyeki7itboi9ao2geeenrj` (`FULLNAME` ASC),
+  UNIQUE INDEX `UK_4soxyeki7itboi9ao2geeenrj` (`NAME` ASC),
   UNIQUE INDEX `UK_fgeyn2b7u7wnrfmba2gk3lfc8` (`SHORTNAME` ASC))
 ENGINE = InnoDB
 AUTO_INCREMENT = 12

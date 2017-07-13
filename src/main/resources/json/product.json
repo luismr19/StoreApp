@@ -2,7 +2,7 @@
   "name": "someOtherProduct", 
   "brand": {
     "shortName": "new Brand",    
-    "fullName": "New things co."
+    "name": "New things co."
   },
   "price": 70.5,
   "description": "this will make you fly",

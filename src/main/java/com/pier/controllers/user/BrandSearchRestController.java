@@ -37,10 +37,10 @@ public class BrandSearchRestController {
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();
 		or.add(Restrictions.like("shortName", word));
-		or.add(Restrictions.like("fullName", word));
+		or.add(Restrictions.like("name", word));
 		
 		criteria.add(or);
-		criteria.addOrder(Order.asc("fullName"));
+		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(0);
 		criteria.setMaxResults(pageSize);
 		List<Brand> results=criteria.list();
@@ -60,10 +60,10 @@ public class BrandSearchRestController {
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();
 		or.add(Restrictions.like("shortName", word));
-		or.add(Restrictions.like("fullName", word));
+		or.add(Restrictions.like("name", word));
 		
 		criteria.add(or);
-		criteria.addOrder(Order.asc("fullName"));
+		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index);
 		criteria.setMaxResults(pageSize);
 		List<Brand> results=criteria.list();

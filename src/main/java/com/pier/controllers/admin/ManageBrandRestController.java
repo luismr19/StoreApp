@@ -55,8 +55,8 @@ public class ManageBrandRestController {
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();
 		or.add(Restrictions.like("shortName", word));
-		or.add(Restrictions.like("fullName", word));
-		criteria.addOrder(Order.asc("fullName"));
+		or.add(Restrictions.like("name", word));
+		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index).setMaxResults(50);
 		return criteria.list();		
 	}
@@ -95,7 +95,7 @@ public class ManageBrandRestController {
 		Brand currentBrand=brandDao.find(id);
 		// check if exists
 		if(currentBrand!=null){
-			currentBrand.setFullName(brand.getFullName());
+			currentBrand.setName(brand.getName());
 			currentBrand.setShortName(brand.getShortName());
 			
 			brandDao.update(currentBrand);
