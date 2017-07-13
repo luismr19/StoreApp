@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -84,12 +85,17 @@ public class ProductSearchRestController {
 		criteria.createAlias("brand", "br");
 		criteria.createAlias("productType", "type");
 		criteria.createAlias("categories", "cats");
-		Disjunction or=Restrictions.disjunction();		
+		Disjunction isPresentIn=Restrictions.disjunction();		
 		
-		or.add(Restrictions.in("br.id", search.getBrandIds()));
-		or.add(Restrictions.in("type.id", search.getProductTypeIds()));
-		or.add(Restrictions.in("cats.id", search.getCategoryIds()));
-		criteria.add(or);
+		isPresentIn.add(Restrictions.in("br.id", search.getBrandIds()));
+		isPresentIn.add(Restrictions.in("type.id", search.getProductTypeIds()));
+		isPresentIn.add(Restrictions.in("cats.id", search.getCategoryIds()));
+		if(StringUtils.isEmpty(search.getName())){
+		criteria.add(Restrictions.like("name",search.getName()));
+		criteria.add(Restrictions.and(isPresentIn));
+		}else{
+			criteria.add(isPresentIn);	
+		}
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index);
 		criteria.setMaxResults(pageSize);
