@@ -33,7 +33,7 @@ public class CategorySearchRestControler {
 
 		Criteria criteria = currentSession().createCriteria(Category.class);
 
-		criteria.add(Restrictions.like("name", word));
+		criteria.add(Restrictions.like("name", "%"+word+"%"));
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(0);
 		criteria.setMaxResults(pageSize);
@@ -53,7 +53,7 @@ public class CategorySearchRestControler {
 
 		Criteria criteria = currentSession().createCriteria(Category.class);
 
-		criteria.add(Restrictions.like("name", word));
+		criteria.add(Restrictions.like("name", "%"+word+"%"));
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(0);
 		criteria.setMaxResults(pageSize);

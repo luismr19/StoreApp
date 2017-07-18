@@ -1,5 +1,6 @@
 package com.pier.controllers.admin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,15 +24,21 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.business.validation.ProductIntegrityChecker;
+import com.pier.rest.model.Flavor;
 import com.pier.rest.model.Product;
 import com.pier.service.ProductDao;
+import com.pier.service.impl.FlavorService;
 
 @RestController
 @RequestMapping(value="products")
+@Transactional
 public class ManageProductsRestController {
 	
 	@Autowired
 	ProductDao dao;
+	
+	@Autowired
+	FlavorService flavorSvc;
 	
 	@Autowired
 	ProductIntegrityChecker checker;
@@ -54,8 +62,8 @@ public class ManageProductsRestController {
 	public List<Product> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("name", word));
-		or.add(Restrictions.like("description", word));
+		or.add(Restrictions.like("name", "%"+word+"%"));
+		or.add(Restrictions.like("description", "%"+word+"%"));
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index).setMaxResults(50);
 		return criteria.list();		
@@ -78,7 +86,17 @@ public class ManageProductsRestController {
 		if(checker.checkIfDuplicate(product) || !checker.checkIfValid(product)){
 			return new ResponseEntity<List<String>>(checker.getErrors(),HttpStatus.CONFLICT);
 		}
+		List<Flavor> flavors=new ArrayList<Flavor>();
+		
+		product.getFlavors().forEach(flav->flavors.add(flavorSvc.generateFlavor(flav.getFlavorName(), flav.getExistence())));
+		
+		if(flavors.isEmpty()){
+			flavors.add(flavorSvc.generateFlavor("default",1L));
+		}
+		
+		product.setFlavors(flavors);
 		dao.add(product);
+		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(ucBuilder.path("/products/{id}").buildAndExpand(product.getId()).toUri());
         

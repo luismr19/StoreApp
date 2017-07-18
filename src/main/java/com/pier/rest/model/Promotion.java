@@ -56,6 +56,9 @@ public class Promotion implements ObjectModel<Long>{
 	
 	@Column(name="INCLUSIVE", columnDefinition="tinyint(1) default 1")
 	private Boolean inclusive;
+	
+	@Column(name="FEATURED", columnDefinition="tinyint(1) default 0")
+	private Boolean featured;
 
 	@Override
 	public Long getId() {
@@ -122,6 +125,14 @@ public class Promotion implements ObjectModel<Long>{
 
 	public void setInclusive(Boolean inclusive) {
 		this.inclusive = inclusive;
+	}	
+
+	public Boolean getFeatured() {
+		return featured;
+	}
+
+	public void setFeatured(Boolean featured) {
+		this.featured = featured;
 	}
 
 	@Override

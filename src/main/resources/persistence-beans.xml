@@ -39,6 +39,7 @@
 				<value>com.pier.model.security</value>
 				<value>com.pier.security.service</value>
 				<value>com.pier.rest.model</value>
+				<value>com.pier.controllers</value>
 			</list>
 		</property>
 

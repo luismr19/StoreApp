@@ -11,6 +11,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -26,6 +29,7 @@ public class Flavor implements ObjectModel<Long> {
 	private String flavorName;	
 	
 	@OneToMany(mappedBy="id.flavor")
+	@Cascade(CascadeType.SAVE_UPDATE)
 	Set<ProductFlavor> productFlavors;
 	
 	@Transient

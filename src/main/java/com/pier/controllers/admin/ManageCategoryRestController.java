@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ import com.pier.service.CategoryDao;
 
 @RestController
 @RequestMapping(value="categories")
+@Transactional
 public class ManageCategoryRestController {
 	
 	@Autowired
@@ -53,7 +55,7 @@ public class ManageCategoryRestController {
 	@RequestMapping(params = "word",method=RequestMethod.GET)
 	public List<Category> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		Criteria criteria = currentSession().createCriteria(Category.class);		
-		criteria.add(Restrictions.like("name", word));		
+		criteria.add(Restrictions.like("name", "%"+word+"%"));		
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index).setMaxResults(50);
 		return criteria.list();		

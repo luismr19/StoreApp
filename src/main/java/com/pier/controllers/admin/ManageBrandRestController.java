@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ import com.pier.service.BrandDao;
 
 @RestController
 @RequestMapping(value="brands")
+@Transactional
 public class ManageBrandRestController {
 	
 	@Autowired
@@ -54,8 +56,8 @@ public class ManageBrandRestController {
 	public List<Brand> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("shortName", word));
-		or.add(Restrictions.like("name", word));
+		or.add(Restrictions.like("shortName", "%"+word+"%"));
+		or.add(Restrictions.like("name", "%"+word+"%"));
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index).setMaxResults(50);
 		return criteria.list();		

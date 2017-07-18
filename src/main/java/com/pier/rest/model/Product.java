@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "PRODUCT")
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="name")
+//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="name")
 public class Product implements ObjectModel<Long>{
 	
 	@Id

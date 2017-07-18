@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="PRODUCT_FLAVOR")
 public class ProductFlavor {
@@ -20,6 +22,7 @@ public class ProductFlavor {
 		super();
 	}
 	
+	@JsonIgnore
 	public ProductFlavorId getId() {
 		return id;
 	}
@@ -32,6 +35,7 @@ public class ProductFlavor {
 		this.setExistence(existence);
 	}
 
+	@JsonIgnore
 	public void setId(ProductFlavorId id) {
 		this.id = id;
 	}

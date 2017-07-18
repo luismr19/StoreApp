@@ -1,6 +1,7 @@
 package com.pier.controllers.admin;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -24,6 +25,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.pier.business.validation.PromotionIntegrityChecker;
 import com.pier.rest.model.Promotion;
 import com.pier.service.PromotionDao;
+
 
 @RestController
 @RequestMapping(value = "promotions")
@@ -50,11 +52,16 @@ public class ManagePromotionsRestController {
 		return criteria.list();
 	}
 	@RequestMapping(params = {"word","index"},method=RequestMethod.GET)
-	public List<Promotion> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
+	public List<Promotion> filter(@RequestParam("index") int index,@RequestParam("filter") String word,
+			@RequestParam(value = "featured", defaultValue="n",required=false)String featured){
 		Criteria criteria = currentSession().createCriteria(Promotion.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("displayName", word));
-		or.add(Restrictions.like("description", word));
+		or.add(Restrictions.like("displayName", "%"+word+"%"));
+		or.add(Restrictions.like("description", "%"+word+"%"));		
+		criteria.add(or);
+        if(featured=="y"){
+        	criteria.add(Restrictions.and(Restrictions.eq("featured", true)));
+		}
 		criteria.addOrder(Order.asc("displayName"));
 		criteria.setFirstResult(index).setMaxResults(50);
 		return criteria.list();		

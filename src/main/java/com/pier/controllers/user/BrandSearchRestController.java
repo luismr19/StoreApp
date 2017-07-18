@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.transaction.annotation.Transactional;
 import com.pier.rest.model.Brand;
 
 
 @RestController
 @RequestMapping("searchBrand")
+@Transactional
 public class BrandSearchRestController {
 	
 	@Autowired
@@ -36,8 +37,8 @@ public class BrandSearchRestController {
 		
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("shortName", word));
-		or.add(Restrictions.like("name", word));
+		or.add(Restrictions.like("shortName", "%"+word+"%"));
+		or.add(Restrictions.like("name", "%"+word+"%"));
 		
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
@@ -59,8 +60,8 @@ public class BrandSearchRestController {
 		
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("shortName", word));
-		or.add(Restrictions.like("name", word));
+		or.add(Restrictions.like("shortName", "%"+word+"%"));
+		or.add(Restrictions.like("name", "%"+word+"%"));
 		
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));

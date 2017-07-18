@@ -47,9 +47,10 @@ public class ProductDaoImplTest extends DomainAwareBase {
 				"this will make you fly", categories,
 				new ProductType("protein"), 2L, true);
 		Flavor flavor=new Flavor("strawberry",5L);	
-		flavorService.generateFlavor(flavor.getFlavorName(), flavor.getExistence());
-		product.setFlavors(Arrays.asList(flavor));
+		flavor=flavorService.generateFlavor(flavor.getFlavorName(), flavor.getExistence());
+		List<Flavor> flavors=flavorService.persistFlavors(flavor);
 		
+		product.setFlavors(flavors);		
 		dao.add(product);
 		Category theCategory=catDao.find(categories.get(0).getId());
 		ProductType theType=typeDao.find(product.getProductType().getId());

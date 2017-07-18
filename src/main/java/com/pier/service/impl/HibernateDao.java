@@ -39,7 +39,7 @@ public class HibernateDao<E, K extends Serializable> implements GenericDao<E, K>
 		this.sessionFactory=sessionFactory;
 	}
 	
-	protected Session currentSession(){
+	public Session currentSession(){
 		return sessionFactory.getCurrentSession();
 	}
 

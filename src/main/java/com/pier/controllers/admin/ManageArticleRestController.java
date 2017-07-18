@@ -55,7 +55,7 @@ public class ManageArticleRestController {
 	public List<Article> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		Criteria criteria = currentSession().createCriteria(Article.class);
 		
-		criteria.add(Restrictions.like("title", word));		
+		criteria.add(Restrictions.like("title", "%"+word+"%"));		
 		criteria.addOrder(Order.asc("title"));
 		criteria.setFirstResult(index).setMaxResults(50);
 		return criteria.list();		

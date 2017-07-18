@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ import com.pier.rest.model.Product;
 
 @RestController
 @RequestMapping("search")
+@Transactional
 public class ProductSearchRestController {
 	
 	@Autowired
@@ -38,8 +40,8 @@ public class ProductSearchRestController {
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("description", word));
-		or.add(Restrictions.like("name", word));
+		or.add(Restrictions.like("description", "%"+word+"%"));
+		or.add(Restrictions.like("name", "%"+word+"%"));
 		
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
@@ -60,8 +62,8 @@ public class ProductSearchRestController {
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("description", word));
-		or.add(Restrictions.like("name", word));
+		or.add(Restrictions.like("description", "%"+word+"%"));
+		or.add(Restrictions.like("name", "%"+word+"%"));
 		
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
@@ -91,7 +93,7 @@ public class ProductSearchRestController {
 		isPresentIn.add(Restrictions.in("type.id", search.getProductTypeIds()));
 		isPresentIn.add(Restrictions.in("cats.id", search.getCategoryIds()));
 		if(StringUtils.isEmpty(search.getName())){
-		criteria.add(Restrictions.like("name",search.getName()));
+		criteria.add(Restrictions.like("name", "%"+search.getName()+"%"));
 		criteria.add(Restrictions.and(isPresentIn));
 		}else{
 			criteria.add(isPresentIn);	

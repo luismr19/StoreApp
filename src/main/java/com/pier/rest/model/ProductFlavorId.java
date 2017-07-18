@@ -8,6 +8,8 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Embeddable
 public class ProductFlavorId implements Serializable{
 	
@@ -21,9 +23,11 @@ public class ProductFlavorId implements Serializable{
 	private Product product;
 	
 	@ManyToOne	
-	@JoinColumn(name="FLAV_ID",referencedColumnName="FLAVOR_ID")	
+	@JoinColumn(name="FLAV_ID",referencedColumnName="FLAVOR_ID")
+	@Cascade(CascadeType.ALL)
 	private Flavor flavor;
 
+	@JsonIgnore
 	public Product getProduct() {
 		return product;
 	}
@@ -32,6 +36,7 @@ public class ProductFlavorId implements Serializable{
 		this.product = product;
 	}
 
+	@JsonIgnore
 	public Flavor getFlavor() {
 		return flavor;
 	}

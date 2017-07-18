@@ -58,8 +58,8 @@ public class ManageUserRestController {
 	public List<User> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		Criteria criteria = currentSession().createCriteria(User.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("username", word));
-		or.add(Restrictions.like("firstname", word));
+		or.add(Restrictions.like("username", "%"+word+"%"));
+		or.add(Restrictions.like("firstname", "%"+word+"%"));
 		criteria.addOrder(Order.asc("username"));
 		criteria.setFirstResult(index).setMaxResults(50);
 		return criteria.list();
