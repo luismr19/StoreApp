@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pier.business.CartOperationsDelegate;
 import com.pier.business.exception.OutOfStockException;
 import com.pier.model.security.User;
@@ -38,9 +41,8 @@ public class CartRestController {
 	@Autowired
 	UserDao userDao;
 	
-	
 	@RequestMapping(value="addToCart",method=RequestMethod.POST)
-	public ResponseEntity<String> addToCart(@RequestBody ProductFlavor product,HttpServletRequest request){
+	public ResponseEntity<String> addToCart(@RequestBody ProductFlavor product, HttpServletRequest request){
 			
 		
 		String token=request.getHeader(tokenHeader);
@@ -50,6 +52,39 @@ public class CartRestController {
 			
 		try{
 			cartOps.addToCart(user,product);
+		}catch(OutOfStockException ex){
+		return new ResponseEntity<String>("out of stock",HttpStatus.OK);
+		}
+		catch(Exception e){
+			return new ResponseEntity<String>("Error adding product",HttpStatus.CONFLICT);	
+		}
+		return new ResponseEntity<String>("successfully added to Cart",HttpStatus.OK);
+		
+	}
+	
+	
+	@RequestMapping(value="addToCart",method=RequestMethod.POST)
+	public ResponseEntity<String> addToCart(@RequestBody ObjectNode json, HttpServletRequest request){
+			
+		ObjectMapper mapper=new ObjectMapper();
+		
+		ProductFlavor product;
+		
+		try {
+			product = mapper.treeToValue(json.get("flavor"),ProductFlavor.class);
+		} catch (JsonProcessingException e1) {
+			return new ResponseEntity<String>("Error adding product",HttpStatus.BAD_REQUEST);
+		}
+		
+		int howmany=json.get("amount").asInt();
+		
+		String token=request.getHeader(tokenHeader);
+		String username=jwtTokenUtil.getUsernameFromToken(token);			
+		User user=userDao.find("username",username).get(0);		
+				
+			
+		try{
+			cartOps.addToCart(user,product,howmany);
 		}catch(OutOfStockException ex){
 		return new ResponseEntity<String>("out of stock",HttpStatus.OK);
 		}
