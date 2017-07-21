@@ -15,7 +15,7 @@ import com.pier.rest.model.PurchaseOrder;
 
 public class OrderDetailUtil {
 
-	public static boolean mapToOrder(ProductFlavor product, PurchaseOrder order) {
+	public static boolean mapToOrder(ProductFlavor product, PurchaseOrder order, int quantity) {
 
 		try {
 			if (!product.getProduct().getEnabled() || product.getExistence() < 1) {
@@ -27,7 +27,7 @@ public class OrderDetailUtil {
 				Optional<OrderDetail> detail = order.getPurchaseItems().stream()
 						.filter(dt -> dt.getProduct().equals(product)).findFirst();
 				if (detail.isPresent()) {
-					detail.get().setQuantity(detail.get().getQuantity() + 1);
+					detail.get().setQuantity(detail.get().getQuantity() + quantity);
 				} else {
 					order.getPurchaseItems().add(new OrderDetail(1, product, order));
 				}

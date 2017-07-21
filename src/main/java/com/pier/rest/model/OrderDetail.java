@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "ORDER_DETAIL")
 public class OrderDetail implements ObjectModel<OrderDetailId> {
@@ -40,6 +42,7 @@ public class OrderDetail implements ObjectModel<OrderDetailId> {
 	}
 	
 	@Override
+	@JsonIgnore
 	public OrderDetailId getId() {
 		return id;
 	}
@@ -64,6 +67,7 @@ public class OrderDetail implements ObjectModel<OrderDetailId> {
 		this.id.setProduct(product);
 	}
 
+	@JsonIgnore
 	public PurchaseOrder getOrder() {
 		return this.id.getOrder();
 	}

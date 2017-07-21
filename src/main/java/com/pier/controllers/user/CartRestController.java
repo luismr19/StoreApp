@@ -18,6 +18,7 @@ import com.pier.business.exception.OutOfStockException;
 import com.pier.model.security.User;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductFlavor;
+import com.pier.rest.model.PurchaseOrder;
 import com.pier.security.util.JwtTokenUtil;
 import com.pier.service.UserDao;
 
@@ -75,7 +76,22 @@ public class CartRestController {
 		
 		return new ResponseEntity<String>("successfully removed",HttpStatus.GONE);		
 		
-	}	
+	}
+	
+	public ResponseEntity<?> getUserCart(HttpServletRequest request){
+		String token=request.getHeader(tokenHeader);
+		String username=jwtTokenUtil.getUsernameFromToken(token);
+		User user=userDao.find("username",username).get(0);
+		PurchaseOrder cart;
+		try{
+			cart=cartOps.getUserCart(user);
+		}catch(Exception e){
+			return new ResponseEntity<String>("error retrieving cart",HttpStatus.CONFLICT);
+		}
+		
+		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);	
+		
+	}
 	
 
 }

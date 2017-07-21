@@ -21,6 +21,8 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="BENEFIT")
 public class Benefit implements ObjectModel<Long>{
@@ -77,7 +79,7 @@ public class Benefit implements ObjectModel<Long>{
 		this.discount = discount;
 	}
 		
-
+    @JsonIgnore
 	public PurchaseOrder getOrder() {
 		return order;
 	}

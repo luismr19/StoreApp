@@ -47,6 +47,7 @@ public class PurchaseOperationsDelegate {
 		cart.setDeliveryAddress(newOrder.getDeliveryAddress());
 		cart.setPurchaseDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Mexico_City")));
 		orderDao.update(cart);
+		//call credit card api here "maybe"
 
 	}
 

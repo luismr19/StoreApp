@@ -61,6 +61,9 @@ public class Product implements ObjectModel<Long>{
 	@Column(name="DESCRIPTION", columnDefinition = "TEXT")		
 	private String description;
 	
+	@Column(name="SECONDARY_DESC", columnDefinition = "TEXT")		
+	private String secondaryDescription;
+	
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="PRODUCT_CATEGORY", joinColumns={@JoinColumn(name="PRODUCT_ID" ,referencedColumnName="PRODUCT_ID")},
 	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID", referencedColumnName="ID")})
@@ -111,6 +114,20 @@ public class Product implements ObjectModel<Long>{
 		this.enabled = enabled;
 	}
 	
+	public Product(Brand brand, BigDecimal price, String name, String description, String secondaryDescription, List<Category> categories,
+			ProductType productType, Long existence, Boolean enabled) {
+		super();
+		this.brand = brand;
+		this.price = price;
+		this.name = name;
+		this.description = description;
+		this.categories = categories;
+		this.productType = productType;
+		this.secondaryDescription=secondaryDescription;
+		//this.existence = existence;
+		this.enabled = enabled;
+	}
+	
 	public Product(){		
 	}
 
@@ -148,6 +165,14 @@ public class Product implements ObjectModel<Long>{
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public String getSecondaryDescription() {
+		return secondaryDescription;
+	}
+
+	public void setSecondaryDescription(String secondaryDescription) {
+		this.secondaryDescription = secondaryDescription;
 	}
 
 	public List<Category> getCategories() {

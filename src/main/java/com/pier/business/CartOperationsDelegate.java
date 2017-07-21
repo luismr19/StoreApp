@@ -35,9 +35,13 @@ public class CartOperationsDelegate {
 	PromotionsAppliance promotionsAppliance;
 	
 	public void addToCart(User user,ProductFlavor product) throws OutOfStockException{
+		addToCart(user,product,1);
+	}
+	
+	public void addToCart(User user,ProductFlavor product, int quantity) throws OutOfStockException{
 		PurchaseOrder cart=getUserCart(user);	
 		
-			if(OrderDetailUtil.mapToOrder(product, cart)){
+			if(OrderDetailUtil.mapToOrder(product, cart, quantity)){
 				userDao.update(user);
 				orderDao.update(cart);			
 			}else{
@@ -54,7 +58,7 @@ public class CartOperationsDelegate {
 	}
 			
 	
-	protected PurchaseOrder getUserCart(User user){
+	public PurchaseOrder getUserCart(User user){
 	       PurchaseOrder cart=new PurchaseOrder();	
 	       cart.setTrackingNumber("PENDING");
 	       cart.setConcluded(false);
