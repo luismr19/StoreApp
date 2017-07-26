@@ -64,10 +64,12 @@ public class Category implements ObjectModel<Long> {
 		this.name = name;
 	}
 
+ @JsonIgnore
 	public List<Product> getProducts() {
 		return products;
 	}
 
+	
 	public void setProducts(List<Product> products) {
 		this.products = products;
 	}

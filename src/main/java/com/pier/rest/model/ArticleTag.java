@@ -57,7 +57,7 @@ public class ArticleTag {
 	public Set<Article> getArticles() {
 		return articles;
 	}
-
+	
 	public void setArticles(Set<Article> articles) {
 		this.articles = articles;
 	}

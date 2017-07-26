@@ -16,6 +16,7 @@ import com.pier.business.PromotionsAppliance;
 import com.pier.business.PurchaseOperationsDelegate;
 import com.pier.business.exception.OutOfStockException;
 import com.pier.model.security.User;
+import com.pier.rest.model.Address;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.security.util.JwtTokenUtil;
 import com.pier.service.ProductDao;
@@ -48,7 +49,7 @@ public class PurchaseRestController {
 	PurchaseOperationsDelegate purchaseOps;
 	
 	@RequestMapping(value="checkout",method=RequestMethod.PUT)
-	public ResponseEntity<String> checkout(@RequestBody PurchaseOrder newOrder, HttpServletRequest request){
+	public ResponseEntity<String> checkout(@RequestBody Address deliveryAddress, HttpServletRequest request){
 		
 		
 		String token=request.getHeader(tokenHeader);
@@ -56,7 +57,8 @@ public class PurchaseRestController {
 		User user=userDao.find("username",username).get(0);					
 		
 		try{		
-			purchaseOps.checkout(user,newOrder);
+			//newOrder should be changed for Address
+			purchaseOps.checkout(user,deliveryAddress);
 		}catch(OutOfStockException os){
 			return new ResponseEntity<String>(os.getMessage(),HttpStatus.CONFLICT);
 		}

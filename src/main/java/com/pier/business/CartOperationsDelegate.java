@@ -18,6 +18,7 @@ import com.pier.rest.model.PurchaseOrder;
 import com.pier.service.ProductDao;
 import com.pier.service.PurchaseOrderDao;
 import com.pier.service.UserDao;
+import com.pier.service.impl.FlavorService;
 
 @Component
 public class CartOperationsDelegate {
@@ -34,6 +35,9 @@ public class CartOperationsDelegate {
 	@Autowired
 	PromotionsAppliance promotionsAppliance;
 	
+	@Autowired
+	FlavorService flavorSvc;
+	
 	public void addToCart(User user,ProductFlavor product) throws OutOfStockException{
 		addToCart(user,product,1);
 	}
@@ -49,9 +53,8 @@ public class CartOperationsDelegate {
 			}
 	}
 	
-	public void removeFromCart(User user, Long productId) throws OutOfStockException{
-		PurchaseOrder cart=getUserCart(user);
-		Product product=productDao.find(productId);
+	public void removeFromCart(User user, ProductFlavor product) throws OutOfStockException{
+		PurchaseOrder cart=getUserCart(user);			
 		OrderDetailUtil.removeProductFromDetails(cart.getPurchaseItems(), product);
 		orderDao.update(cart);		
 			

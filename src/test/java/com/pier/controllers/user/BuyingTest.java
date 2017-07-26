@@ -165,7 +165,8 @@ public class BuyingTest {
 	@Test
 	public void testStandardPurchase() throws IOException, Exception{
 		
-				
+		goldStandard.setPrice(new BigDecimal("0.00"));	
+		goldStandard.getProductFlavors().iterator().next().getProduct().setPrice(new BigDecimal("0.00"));
 		mockMvc.perform(post("/addToCart")
 				.contentType(contentType)
 				.header("Authorization",sampleToken)
@@ -174,6 +175,9 @@ public class BuyingTest {
 				.contentType(contentType)
 				.header("Authorization",sampleToken)
 				.content(json(mPglutamine.getProductFlavors().iterator().next())));
+		mockMvc.perform(get("/cart")
+				.contentType(contentType)
+				.header("Authorization",sampleToken));
 	}
 	
 	@SuppressWarnings({ "unchecked", "unused" })
@@ -201,16 +205,14 @@ public class BuyingTest {
 		laborDayRule.setMinPurchase(BigDecimal.ZERO);		
 		laborDayRule.setBehavior(PromotionBehavior.TOTALDISCOUNT);
 		laborDay.setPromotionrule(laborDayRule);
-		
-		PurchaseOrder newOrder=new PurchaseOrder();
+				
 		Address addr=new Address();
 		addr.setCountry("Mexico");
 		addr.setDistrict("Guadalajara");
 		addr.setNumber(24);
 		addr.setState("Jalisco");
 		addr.setStreet("nomeacuerdo");
-		addr.setZipCode(4578);		
-		newOrder.setDeliveryAddress(addr);
+		addr.setZipCode(4578);			
 		
 		promoDao.add(laborDay);
 		
@@ -220,7 +222,7 @@ public class BuyingTest {
 				.content(json(goldStandard.getProductFlavors().iterator().next()))).andExpect(status().isOk());
 		
 		mockMvc.perform(put("/checkout")
-				.content(json(newOrder))
+				.content(json(addr))
 				.contentType(contentType)
 				.header("Authorization",sampleToken)).andExpect(status().isOk());
 		

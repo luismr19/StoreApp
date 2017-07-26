@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class ProductFlavor {
 	
 	@EmbeddedId
+	@JsonIgnore
 	private ProductFlavorId id;	
 	
 	@Column(name="EXISTENCE", length=50, unique=false, nullable=false)
@@ -22,7 +23,7 @@ public class ProductFlavor {
 		super();
 	}
 	
-	@JsonIgnore
+	
 	public ProductFlavorId getId() {
 		return id;
 	}
@@ -35,7 +36,7 @@ public class ProductFlavor {
 		this.setExistence(existence);
 	}
 
-	@JsonIgnore
+	
 	public void setId(ProductFlavorId id) {
 		this.id = id;
 	}
@@ -45,6 +46,9 @@ public class ProductFlavor {
 	}
 
 	public void setProduct(Product product) {
+		if(id==null)
+		id=new ProductFlavorId();
+		
 		this.id.setProduct(product);
 	}
 
@@ -53,6 +57,8 @@ public class ProductFlavor {
 	}
 
 	public void setFlavor(Flavor flavor) {
+		if(id==null)
+		id=new ProductFlavorId();
 		this.id.setFlavor(flavor);
 	}
 

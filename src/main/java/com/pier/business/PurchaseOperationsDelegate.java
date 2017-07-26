@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.pier.business.exception.OutOfStockException;
 import com.pier.business.util.OrderDetailUtil;
 import com.pier.model.security.User;
+import com.pier.rest.model.Address;
 import com.pier.rest.model.OrderDetail;
 import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
@@ -33,7 +34,7 @@ public class PurchaseOperationsDelegate {
 	@Autowired
 	CartOperationsDelegate cartOps;
 
-	public void checkout(User user, PurchaseOrder newOrder) throws OutOfStockException {
+	public void checkout(User user, Address deliveryAddress) throws OutOfStockException {
 
 		PurchaseOrder cart = cartOps.getUserCart(user);
 
@@ -44,7 +45,7 @@ public class PurchaseOperationsDelegate {
 			}
 		}
 
-		cart.setDeliveryAddress(newOrder.getDeliveryAddress());
+		cart.setDeliveryAddress(deliveryAddress);
 		cart.setPurchaseDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Mexico_City")));
 		orderDao.update(cart);
 		//call credit card api here "maybe"

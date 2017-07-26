@@ -34,7 +34,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pier.rest.model.Address;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.rest.model.ObjectModel;
@@ -59,7 +58,7 @@ public class User implements ObjectModel<Long>{
 	
 	@Column(name="PASSWORD", length=100)
 	@NotNull
-	@Size(min=4,max=100)	
+	@Size(min=4,max=100)		
 	private String password;
 	
 	 @Column(name = "FIRSTNAME", length = 50)
@@ -127,9 +126,8 @@ public class User implements ObjectModel<Long>{
 	    @JsonIgnore
 	    public String getPassword() {
 	        return password;
-	    }
+	    }	    
 
-	    @JsonProperty("password")
 	    public void setPassword(String password) {
 	        this.password = password;
 	    }
@@ -173,6 +171,7 @@ public class User implements ObjectModel<Long>{
 	                .collect(Collectors.toList());
 	    }
 	    
+	    @JsonIgnore
 	    public List<Authority> getAuthorities() {
 	    	return authorities;
 	    }
@@ -205,6 +204,7 @@ public class User implements ObjectModel<Long>{
 			this.phoneNumber = phoneNumber;
 		}
 
+		@JsonIgnore
 		public Set<PurchaseOrder> getOrders() {
 			return orders;
 		}

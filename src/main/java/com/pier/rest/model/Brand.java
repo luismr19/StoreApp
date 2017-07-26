@@ -40,7 +40,7 @@ public class Brand implements ObjectModel<Long>{
 	
 	@OneToMany(mappedBy="brand", fetch=FetchType.LAZY)
 	@Fetch(FetchMode.SELECT)
-	@BatchSize(size=5) //I want to load 5 sets of products for 5 brands in one query
+	@BatchSize(size=5) //I want to load 5 sets of products for 5 brands in one query	
 	Set<Product> products;
 	
 	
@@ -86,7 +86,7 @@ public class Brand implements ObjectModel<Long>{
 	@JsonIgnore
 	public Set<Product> getProducts() {
 		return products;
-	}
+	}	
 	
 	public void setProducts(Set<Product> products) {
 		this.products = products;

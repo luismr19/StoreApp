@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class JwtUser implements UserDetails{
 	
@@ -16,15 +17,15 @@ public class JwtUser implements UserDetails{
 	 */
 	private static final long serialVersionUID = -5101454303782418006L;
 	
-	private final Long id;
-	private final String username;
-	private final String firstname;
-	private final String lastname;
-	private final String password;
-	private final String email;
-	private final Collection<? extends GrantedAuthority> authorities;
-	private final boolean enabled;
-	private final LocalDateTime lastPasswordResetDate;
+		private final Long id;
+		private final String username;
+		private final String firstname;
+		private final String lastname;
+		private final String password;
+		private final String email;
+		private final Collection<? extends GrantedAuthority> authorities;
+		private final boolean enabled;
+		private final LocalDateTime lastPasswordResetDate;
 		
 
 	public JwtUser(Long id, String username, String firstname, String lastname, String password, String email,

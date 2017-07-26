@@ -32,6 +32,7 @@ import org.hibernate.annotations.FetchMode;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
@@ -87,7 +88,7 @@ public class Product implements ObjectModel<Long>{
 	@Cascade(CascadeType.ALL)
 	Set<ProductFlavor> productFlavors;
 	
-	@Transient
+	@Transient	
 	private List<Flavor> flavors;
 	
 	@Column(name="ENABLED" , columnDefinition="boolean default true")

@@ -47,7 +47,7 @@ public class Benefit implements ObjectModel<Long>{
 	
 	@JoinColumn(name="PURCHASE_ORDER")
 	@OneToOne(mappedBy="gift")
-	@NotFound(action=NotFoundAction.IGNORE)
+	@NotFound(action=NotFoundAction.IGNORE)	
 	PurchaseOrder order;
 	
 	@Override
@@ -84,6 +84,7 @@ public class Benefit implements ObjectModel<Long>{
 		return order;
 	}
 
+	
 	public void setOrder(PurchaseOrder order) {
 		this.order = order;
 	}

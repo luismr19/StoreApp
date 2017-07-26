@@ -10,15 +10,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "ORDER_DETAIL")
 public class OrderDetail implements ObjectModel<OrderDetailId> {
 
-	@EmbeddedId
+	@EmbeddedId	
 	OrderDetailId id;
 
-	@Column(name = "QUANTITY")
+	@Column(name = "QUANTITY")	
 	private Integer quantity;
 
 	/*

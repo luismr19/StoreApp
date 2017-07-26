@@ -30,9 +30,11 @@ public class Flavor implements ObjectModel<Long> {
 	
 	@OneToMany(mappedBy="id.flavor")
 	@Cascade(CascadeType.SAVE_UPDATE)
+	@JsonIgnore
 	Set<ProductFlavor> productFlavors;
 	
 	@Transient
+	@JsonIgnore
 	Long existence;
 	
 	public Flavor(){
@@ -66,8 +68,8 @@ public class Flavor implements ObjectModel<Long> {
 	public Set<ProductFlavor> getProductFlavors() {
 		return productFlavors;
 	}
-
-
+	 
+  @JsonIgnore
 	public void setProductFlavors(Set<ProductFlavor> productFlavors) {
 		this.productFlavors = productFlavors;
 	}
@@ -76,12 +78,11 @@ public class Flavor implements ObjectModel<Long> {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-    @JsonIgnore
+  
 	public Long getExistence() {
 		return existence;
 	}
-	
+	  
 	public void setExistence(Long existence){
 		this.existence=existence;
 	}

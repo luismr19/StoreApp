@@ -81,14 +81,14 @@ public class OrderDetailUtil {
 		return products;
 	}
 
-	public static void removeProductFromDetails(Set<OrderDetail> orderDetails, Product product) {
-		Optional<OrderDetail> detail = orderDetails.stream().filter(dt -> dt.getProduct().equals(product)).findFirst();
+	public static void removeProductFromDetails(Set<OrderDetail> ordersDetails, ProductFlavor product) {
+		Optional<OrderDetail> detail = ordersDetails.stream().filter(dt -> dt.getProduct().equals(product)).findFirst();
 		if (detail.isPresent()) {
 			//if it's the last item then remove the whole reference
 			if (detail.get().getQuantity() > 1) {
 				detail.get().setQuantity(detail.get().getQuantity() - 1);
 			} else {
-				orderDetails.remove(detail.get());
+				ordersDetails.remove(detail.get());
 			}
 		}
 	}
