@@ -14,6 +14,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.pier.business.PromotionsAppliance;
 import com.pier.business.PurchaseOperationsDelegate;
+import com.pier.business.exception.EmptyCartException;
 import com.pier.business.exception.OutOfStockException;
 import com.pier.model.security.User;
 import com.pier.rest.model.Address;
@@ -57,10 +58,11 @@ public class PurchaseRestController {
 		User user=userDao.find("username",username).get(0);					
 		
 		try{		
-			//newOrder should be changed for Address
-			purchaseOps.checkout(user,deliveryAddress);
+		purchaseOps.checkout(user,deliveryAddress);
 		}catch(OutOfStockException os){
 			return new ResponseEntity<String>(os.getMessage(),HttpStatus.CONFLICT);
+		}catch(EmptyCartException ec){
+			return new ResponseEntity<String>(ec.getMessage(),HttpStatus.CONFLICT);
 		}
 		catch(Exception e){
 			return new ResponseEntity<String>("error performing operation",HttpStatus.INTERNAL_SERVER_ERROR);

@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pier.business.exception.EmptyCartException;
 import com.pier.business.exception.OutOfStockException;
 import com.pier.business.util.OrderDetailUtil;
 import com.pier.model.security.User;
@@ -34,16 +35,22 @@ public class PurchaseOperationsDelegate {
 	@Autowired
 	CartOperationsDelegate cartOps;
 
-	public void checkout(User user, Address deliveryAddress) throws OutOfStockException {
+	public void checkout(User user, Address deliveryAddress) throws OutOfStockException,EmptyCartException {
 
 		PurchaseOrder cart = cartOps.getUserCart(user);
-
+         
+		int index=0;
+		
 		// check existence before buying
 		for (OrderDetail detail : cart.getPurchaseItems()) {
-			if (detail.getQuantity() > productFlavorDao.find(detail.getProduct().getId()).getExistence()) {
+			index++;
+			if (detail.getQuantity() > productFlavorDao.find(detail.getProduct().getId()).getExistence()) {				
 				throw new OutOfStockException(detail.getProduct().getProduct().getName() + " is out of stock for that flavor");
 			}
 		}
+		
+		if(index==0)
+			throw new EmptyCartException("Cart is empty");
 
 		cart.setDeliveryAddress(deliveryAddress);
 		cart.setPurchaseDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Mexico_City")));
