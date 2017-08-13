@@ -46,18 +46,20 @@ public class ManageCategoryRestController {
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public List<Category> list(@RequestParam("index") int index){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Category.class);
 		criteria.addOrder(Order.asc("id"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();
 	}
 	
 	@RequestMapping(params = "word",method=RequestMethod.GET)
 	public List<Category> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Category.class);		
 		criteria.add(Restrictions.like("name", "%"+word+"%"));		
 		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();		
 	}
 	

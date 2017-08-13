@@ -36,7 +36,7 @@ public class ProductSearchRestController {
 	
 	@RequestMapping(value="like",method=RequestMethod.GET)
 	public ResponseEntity<List<Product>> searchProductLike(@RequestParam("word") String word){
-		int pageSize=50;
+		int pageSize=30;
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		Disjunction or=Restrictions.disjunction();
@@ -58,7 +58,7 @@ public class ProductSearchRestController {
 	}
 	@RequestMapping(value="more",method=RequestMethod.GET)
 	public ResponseEntity<List<Product>> getMoreResults(@RequestParam("word") String word,@RequestParam("index") int index){
-		int pageSize=50;
+		int pageSize=30;
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		Disjunction or=Restrictions.disjunction();
@@ -81,7 +81,7 @@ public class ProductSearchRestController {
 	
 	@RequestMapping(value="advanced",method=RequestMethod.POST)
 	public ResponseEntity<List<Product>> advancedSearch(@RequestBody AdvancedSearchRequest search, @RequestParam("index") int index){
-		int pageSize=50;
+		int pageSize=30;
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		criteria.createAlias("brand", "br");

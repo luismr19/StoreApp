@@ -28,7 +28,6 @@ import com.pier.rest.model.OrderDetail;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
-import com.pier.rest.model.orderTemp;
 import com.pier.security.util.JwtTokenUtil;
 import com.pier.service.UserDao;
 
@@ -130,10 +129,7 @@ public class CartRestController {
 		}catch(Exception e){
 			return new ResponseEntity<String>("error retrieving cart",HttpStatus.CONFLICT);
 		}	
-		
-		orderTemp order=new orderTemp();
-		
-		order.setConcluded(cart.getConcluded());		
+					
 		
 		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);
 		

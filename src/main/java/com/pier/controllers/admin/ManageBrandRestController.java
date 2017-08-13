@@ -46,20 +46,22 @@ public class ManageBrandRestController {
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public List<Brand>getBrands(@RequestParam("index") int index){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		criteria.addOrder(Order.asc("id"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();
 	}
 	
 	@RequestMapping(params = {"index","word"},method=RequestMethod.GET)
 	public List<Brand> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();
 		or.add(Restrictions.like("shortName", "%"+word+"%"));
 		or.add(Restrictions.like("name", "%"+word+"%"));
 		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();		
 	}
 	

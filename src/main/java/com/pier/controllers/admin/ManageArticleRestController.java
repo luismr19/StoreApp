@@ -47,7 +47,7 @@ public class ManageArticleRestController {
 		
 		Criteria criteria = currentSession().createCriteria(Article.class);
 		criteria.addOrder(Order.asc("id"));
-		criteria.setFirstResult(0).setMaxResults(2);
+		criteria.setFirstResult(0).setMaxResults(30);
 		return criteria.list();
 	}
 	
@@ -57,7 +57,7 @@ public class ManageArticleRestController {
 		
 		criteria.add(Restrictions.like("title", "%"+word+"%"));		
 		criteria.addOrder(Order.asc("title"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(30);
 		return criteria.list();		
 	}
 	

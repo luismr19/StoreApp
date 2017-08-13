@@ -33,7 +33,7 @@ public class BrandSearchRestController {
 	
 	@RequestMapping(value="like",method=RequestMethod.GET)
 	public ResponseEntity<List<Brand>> searchBrandLike(@RequestParam("word") String word){
-		int pageSize=5;
+		int pageSize=30;
 		
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();
@@ -56,7 +56,7 @@ public class BrandSearchRestController {
 	
 	@RequestMapping(value="more",method=RequestMethod.GET)
 	public ResponseEntity<List<Brand>> getMoreResults(@RequestParam("word") String word,@RequestParam("index") int index){
-		int pageSize=5;
+		int pageSize=30;
 		
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();

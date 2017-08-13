@@ -31,10 +31,11 @@ public class ProductTypeSearchRestController {
 	
 	@RequestMapping(params = {"index","word"},method=RequestMethod.GET)
 	public ResponseEntity<List<ProductType>> filter(@RequestParam("index") int index,@RequestParam("word") String word){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(ProductType.class);		
 		criteria.add(Restrictions.like("name", "%"+word+"%"));		
 		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		List<ProductType> results = criteria.list();
 		
 		if (results.isEmpty()) {

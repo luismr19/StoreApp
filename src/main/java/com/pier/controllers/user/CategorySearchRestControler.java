@@ -29,7 +29,7 @@ public class CategorySearchRestControler {
 
 	@RequestMapping(value = "like", method = RequestMethod.GET)
 	public ResponseEntity<List<Category>> searchBrandLike(@RequestParam("word") String word) {
-		int pageSize = 5;
+		int pageSize = 30;
 
 		Criteria criteria = currentSession().createCriteria(Category.class);
 
@@ -49,7 +49,7 @@ public class CategorySearchRestControler {
 	@RequestMapping(value = "more", method = RequestMethod.GET)
 	public ResponseEntity<List<Category>> getMoreResults(@RequestParam("word") String word,
 			@RequestParam("index") int index) {
-		int pageSize = 5;
+		int pageSize = 30;
 
 		Criteria criteria = currentSession().createCriteria(Category.class);
 

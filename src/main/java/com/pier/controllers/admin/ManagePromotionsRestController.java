@@ -46,14 +46,16 @@ public class ManagePromotionsRestController {
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public List<Promotion> list(@RequestParam("index") int index){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Promotion.class);
 		criteria.addOrder(Order.asc("id"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();
 	}
 	@RequestMapping(params = {"word","index"},method=RequestMethod.GET)
 	public List<Promotion> filter(@RequestParam("index") int index,@RequestParam("filter") String word,
 			@RequestParam(value = "featured", defaultValue="n",required=false)String featured){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Promotion.class);
 		Disjunction or=Restrictions.disjunction();
 		or.add(Restrictions.like("displayName", "%"+word+"%"));
@@ -63,7 +65,7 @@ public class ManagePromotionsRestController {
         	criteria.add(Restrictions.and(Restrictions.eq("featured", true)));
 		}
 		criteria.addOrder(Order.asc("displayName"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();		
 	}
 

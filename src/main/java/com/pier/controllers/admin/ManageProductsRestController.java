@@ -52,20 +52,22 @@ public class ManageProductsRestController {
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public List<Product> list(@RequestParam("index") int index){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		criteria.addOrder(Order.asc("id"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();
 	}
 	
 	@RequestMapping(params = {"word","index"},method=RequestMethod.GET)
 	public List<Product> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		Disjunction or=Restrictions.disjunction();
 		or.add(Restrictions.like("name", "%"+word+"%"));
 		or.add(Restrictions.like("description", "%"+word+"%"));
 		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();		
 	}
 	
@@ -91,7 +93,7 @@ public class ManageProductsRestController {
 		product.getFlavors().forEach(flav->flavors.add(flavorSvc.generateFlavor(flav.getFlavorName(), flav.getExistence())));
 		
 		if(flavors.isEmpty()){
-			flavors.add(flavorSvc.generateFlavor("default",1L));
+			flavors.add(flavorSvc.generateFlavor("default",product.getExistence()));
 		}
 		
 		product.setFlavors(flavors);

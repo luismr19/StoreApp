@@ -91,6 +91,10 @@ public class Product implements ObjectModel<Long>{
 	@Transient	
 	private List<Flavor> flavors;
 	
+	//not persisted- only used to keep a hold of existence for single flavor products
+	@Transient	
+	private Long existence;
+	
 	@Column(name="ENABLED" , columnDefinition="boolean default true")
 	@NotNull
 	private Boolean enabled;
@@ -228,6 +232,14 @@ public class Product implements ObjectModel<Long>{
 		this.flavors = flavors;
 		setProductFlavors(new HashSet(flavors.stream().map(flavor->new ProductFlavor(this,flavor,flavor.getExistence())).collect(Collectors.toList())));
 	}
+	//not persisted- only used to keep a hold of existence for single flavor products
+	public void setExistence(Long existence){
+		this.existence=existence;
+	}
+	
+	public Long getExistence() {
+		return this.existence;
+	}
 
 	@Override
 	public int hashCode() {
@@ -264,9 +276,7 @@ public class Product implements ObjectModel<Long>{
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
-	}
-	
-	
+	}	
 	
 	
 

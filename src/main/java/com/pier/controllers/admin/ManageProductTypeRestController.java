@@ -46,9 +46,10 @@ public class ManageProductTypeRestController {
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public List<ProductType> list(@RequestParam("index") int index){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(ProductType.class);
 		criteria.addOrder(Order.asc("id"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();
 	}	
 	

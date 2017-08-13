@@ -48,20 +48,22 @@ public class ManageUserRestController {
 	//@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/users",method=RequestMethod.GET)
 	public List<User> list(@RequestParam("index") int index){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(User.class);
 		criteria.addOrder(Order.asc("id"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();
 		
 	}
 	@RequestMapping(value="/users",params = {"word","index"},method=RequestMethod.GET)
 	public List<User> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
+		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(User.class);
 		Disjunction or=Restrictions.disjunction();
 		or.add(Restrictions.like("username", "%"+word+"%"));
 		or.add(Restrictions.like("firstname", "%"+word+"%"));
 		criteria.addOrder(Order.asc("username"));
-		criteria.setFirstResult(index).setMaxResults(50);
+		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();
 		
 	}
