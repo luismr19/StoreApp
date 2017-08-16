@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,6 +15,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +53,10 @@ public class ManageProductsRestController {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Value("${angular.images}")
+	String assetsPaths;
+	
 	
 	private Session currentSession(){
 		return sessionFactory.getCurrentSession();
@@ -151,22 +158,38 @@ public class ManageProductsRestController {
 	}
 	
 	@RequestMapping(value="/upload", method=RequestMethod.POST)
-    public String handleFileUpload( 
-    		@RequestPart("file") MultipartFile file){
-            String name = "test11";
+    public ResponseEntity<?> handleFileUpload( @RequestPart("file") MultipartFile file, HttpServletRequest request){
+            
         if (!file.isEmpty()) {
             try {
-                byte[] bytes = file.getBytes();
+                /*byte[] bytes = file.getBytes();
                 BufferedOutputStream stream = 
                         new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
                 stream.write(bytes);
-                stream.close();
-                return "You successfully uploaded " + name + " into " + name + "-uploaded !";
+                stream.close();*/
+                String uploadsDir = assetsPaths+"products/";
+                //in case we need to change                
+                if(! new File(uploadsDir).exists())
+                {
+                   // new File(realPathtoUploads).mkdir();
+                }
+                String hql= "select max(id) from Product";
+                List list = currentSession().createQuery(hql).list();
+                int maxID = ( (Integer)list.get(0) ).intValue();
+                maxID++;
+                
+                String name = "prod_"+maxID;
+                String filePath = uploadsDir + name;
+                File destination = new File(filePath);
+                file.transferTo(destination);
+                return new ResponseEntity<String>("success",HttpStatus.NO_CONTENT);
             } catch (Exception e) {
-                return "You failed to upload " + name + " => " + e.getMessage();
+                
+            	return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
-            return "You failed to upload " + name + " because the file was empty.";
+            
+        	return new ResponseEntity<String>("file not valid",HttpStatus.BAD_REQUEST);
         }
     }
 	
