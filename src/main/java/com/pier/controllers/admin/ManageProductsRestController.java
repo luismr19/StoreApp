@@ -1,5 +1,8 @@
 package com.pier.controllers.admin;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +23,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.business.validation.ProductIntegrityChecker;
@@ -127,12 +132,15 @@ public class ManageProductsRestController {
 					currentProduct.setProductType(product.getProductType());
 			}
 			
+			List<Flavor> flavors=new ArrayList<Flavor>();
+		
+		product.getFlavors().forEach(flav->flavors.add(flavorSvc.generateFlavor(flav.getFlavorName(), flav.getExistence())));
 			
 			currentProduct.setName(product.getName());
 			currentProduct.setDescription(product.getDescription());
 			currentProduct.setEnabled(true);
 			currentProduct.setPrice(product.getPrice());			
-			currentProduct.setFlavors(product.getFlavors());
+			currentProduct.setFlavors(flavors);
 			dao.update(product);
 			
 			return new ResponseEntity<Product>(product,HttpStatus.OK);			
@@ -141,6 +149,26 @@ public class ManageProductsRestController {
 		return new ResponseEntity<List<String>>(checker.getErrors(),HttpStatus.NO_CONTENT);        
 		
 	}
+	
+	@RequestMapping(value="/upload", method=RequestMethod.POST)
+    public String handleFileUpload( 
+    		@RequestPart("file") MultipartFile file){
+            String name = "test11";
+        if (!file.isEmpty()) {
+            try {
+                byte[] bytes = file.getBytes();
+                BufferedOutputStream stream = 
+                        new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
+                stream.write(bytes);
+                stream.close();
+                return "You successfully uploaded " + name + " into " + name + "-uploaded !";
+            } catch (Exception e) {
+                return "You failed to upload " + name + " => " + e.getMessage();
+            }
+        } else {
+            return "You failed to upload " + name + " because the file was empty.";
+        }
+    }
 	
 
 }

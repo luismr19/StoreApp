@@ -1,5 +1,6 @@
 package com.pier.config;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
 import org.springframework.mobile.device.DeviceWebArgumentResolver;
 import org.springframework.mobile.device.site.SitePreferenceWebArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -71,4 +73,17 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 	 * converter.setObjectMapper(domainMapper); converters.add(converter);
 	 * super.configureMessageConverters(converters); }
 	 */
+	 
+	 @Bean(name="multipartResolver") 
+	    public CommonsMultipartResolver getResolver() throws IOException{
+	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+	         
+	        //Set the maximum allowed size (in bytes) for each individual file.
+	        resolver.setMaxUploadSizePerFile(20971520);//20MB
+	         
+	        //You may also set other available properties.
+	         
+	        return resolver;
+	    }
+	 
 }
