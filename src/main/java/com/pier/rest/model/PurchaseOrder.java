@@ -63,8 +63,8 @@ public class PurchaseOrder implements ObjectModel<Long>{
   @Size(min = 4, max = 50)  
   private String trackingNumber;
   
-  @OneToMany(mappedBy="id.order",fetch=FetchType.EAGER,orphanRemoval=true) //since id is the composite Key have to do notation like this
-  @Cascade(CascadeType.ALL)
+  @OneToMany(mappedBy="id.order",fetch=FetchType.EAGER) //since id is the composite Key have to do notation like this
+  @Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
   @Fetch(FetchMode.SUBSELECT)//to remove join duplicates
   private Set<OrderDetail> orderDetails;  
   

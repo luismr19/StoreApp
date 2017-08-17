@@ -175,10 +175,10 @@ public class ManageProductsRestController {
                 }
                 String hql= "select max(id) from Product";
                 List list = currentSession().createQuery(hql).list();
-                int maxID = ( (Integer)list.get(0) ).intValue();
+                long maxID = ( (Long)list.get(0) ).longValue();
                 maxID++;
                 
-                String name = "prod_"+maxID;
+                String name = "prod_"+maxID+".jpg";
                 String filePath = uploadsDir + name;
                 File destination = new File(filePath);
                 file.transferTo(destination);

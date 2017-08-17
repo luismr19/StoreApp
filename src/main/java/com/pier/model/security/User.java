@@ -101,6 +101,7 @@ public class User implements ObjectModel<Long>{
 	 private List<Authority> authorities;
 	 
 	 @OneToMany(mappedBy="owner",fetch=FetchType.EAGER)
+	 @Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
 	 @Fetch(FetchMode.SELECT) //since it is eagerly loaded using "join" expects an existing id
 	 Set<PurchaseOrder> orders;
 	 

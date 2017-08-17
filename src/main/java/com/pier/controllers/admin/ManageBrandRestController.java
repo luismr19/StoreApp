@@ -1,6 +1,9 @@
 package com.pier.controllers.admin;
 
+import java.io.File;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -9,6 +12,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +23,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.business.validation.BrandIntegrityChecker;
@@ -39,6 +45,9 @@ public class ManageBrandRestController {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Value("${angular.images}")
+	String assetsPaths;
 	
 	private Session currentSession(){
 		return sessionFactory.getCurrentSession();
@@ -118,6 +127,42 @@ public class ManageBrandRestController {
 		brandDao.removeBrand(brand);
 		return new ResponseEntity<Brand>(HttpStatus.NO_CONTENT);
 	}
+	
+	@RequestMapping(value="/upload", method=RequestMethod.POST)
+    public ResponseEntity<?> handleFileUpload( @RequestPart("file") MultipartFile file, HttpServletRequest request){
+            
+        if (!file.isEmpty()) {
+            try {
+                /*byte[] bytes = file.getBytes();
+                BufferedOutputStream stream = 
+                        new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
+                stream.write(bytes);
+                stream.close();*/
+                String uploadsDir = assetsPaths+"brands/";
+                //in case we need to change                
+                if(! new File(uploadsDir).exists())
+                {
+                   // new File(realPathtoUploads).mkdir();
+                }
+                String hql= "select max(id) from Brand";
+                List list = currentSession().createQuery(hql).list();
+                long maxID = ( (Long)list.get(0) ).longValue();
+                maxID++;
+                
+                String name = Long.toString(maxID)+".jpg";
+                String filePath = uploadsDir + name;
+                File destination = new File(filePath);
+                file.transferTo(destination);
+                return new ResponseEntity<String>("success",HttpStatus.NO_CONTENT);
+            } catch (Exception e) {
+                
+            	return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            
+        	return new ResponseEntity<String>("file not valid",HttpStatus.BAD_REQUEST);
+        }
+    }
 	
 	}
 
