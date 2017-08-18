@@ -1,5 +1,7 @@
 package com.pier.controllers.admin;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
@@ -90,10 +92,33 @@ public class ManageOrdersRestController {
 	  }
 	  return new ResponseEntity(results,HttpStatus.OK);
  }
+ 
+ @RequestMapping(value="/date",method=RequestMethod.GET)
+ public ResponseEntity<?> getFromDate(@RequestParam(value = "from") String from, @RequestParam(value = "to") String to, int index){
+	 
+	 int pageSize = 30;
+	  Criteria criteria = currentSession().createCriteria(PurchaseOrder.class);
+	  
+	  List < PurchaseOrder > results = Collections.emptyList();
+	  criteria=this.getOrdersByDate("asc", criteria, from, to);
+	  criteria.setFirstResult(index).setMaxResults(pageSize);
+	  
+	  try{
+		  
+	  results=criteria.list();
+	  
+	  }catch(Exception e){
+		  return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+	  }
+	  return new ResponseEntity(results,HttpStatus.OK);
+ }
+ 
  //useless as to now there is no way of modifying orders manually
  @RequestMapping(value="/{id}",method = RequestMethod.PUT)
  public ResponseEntity<?> modifyOrder(@PathVariable long id,@RequestBody PurchaseOrder order){
+	 
 	 PurchaseOrder originalOrder=orderDao.find(id);
+	 
 	 if(originalOrder!=null){
 		 originalOrder.setConcluded(order.getConcluded());
 		 originalOrder.setTrackingNumber(order.getTrackingNumber());
@@ -176,6 +201,24 @@ private Criteria getOrdersByUser(String order,Criteria criteria, Long userId){
 
 	     criteria.createAlias("owner", "ownr");
 	     criteria.add(Restrictions.eq("ownr.id", userId));
+	     
+	     return criteria;
+}
+
+private Criteria getOrdersByDate(String order,Criteria criteria, String from, String to){
+	
+	   final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH");
+	   final ZonedDateTime zonedDateTimeFrom = ZonedDateTime.parse(from, formatter);
+	   final ZonedDateTime zonedDateTimeTo = ZonedDateTime.parse(to, formatter);
+	   
+	if (order.equals("desc"))
+	     //check order
+	      criteria.addOrder(Order.desc("purchaseDate"));
+	     else
+	      criteria.addOrder(Order.asc("purchaseDate"));
+
+	    
+	     criteria.add(Restrictions.between("purchaseDate", zonedDateTimeFrom, zonedDateTimeTo));
 	     
 	     return criteria;
 }

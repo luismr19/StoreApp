@@ -27,7 +27,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pier.model.security.User;
@@ -111,6 +111,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
   }
 
   @JsonProperty  
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
   public ZonedDateTime getPurchaseDate() {
     return purchaseDate;
   }
