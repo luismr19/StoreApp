@@ -94,7 +94,7 @@ public class ManageOrdersRestController {
  }
  
  @RequestMapping(value="/date",method=RequestMethod.GET)
- public ResponseEntity<?> getFromDate(@RequestParam(value = "from") String from, @RequestParam(value = "to") String to, int index){
+ public ResponseEntity<?> getFromDate(@RequestParam(value = "from") String from, @RequestParam(value = "to") String to, @RequestParam(value = "index")int index){
 	 
 	 int pageSize = 30;
 	  Criteria criteria = currentSession().createCriteria(PurchaseOrder.class);
@@ -207,7 +207,7 @@ private Criteria getOrdersByUser(String order,Criteria criteria, Long userId){
 
 private Criteria getOrdersByDate(String order,Criteria criteria, String from, String to){
 	
-	   final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH");
+	   final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
 	   final ZonedDateTime zonedDateTimeFrom = ZonedDateTime.parse(from, formatter);
 	   final ZonedDateTime zonedDateTimeTo = ZonedDateTime.parse(to, formatter);
 	   
