@@ -55,7 +55,7 @@ public class ManageUserRestController {
 		return criteria.list();
 		
 	}
-	@RequestMapping(value="/users",params = {"word","index"},method=RequestMethod.GET)
+	@RequestMapping(value="/users",params = {"filter","index"},method=RequestMethod.GET)
 	public List<User> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(User.class);

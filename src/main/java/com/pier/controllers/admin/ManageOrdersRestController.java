@@ -51,6 +51,8 @@ public class ManageOrdersRestController {
   Criteria criteria = currentSession().createCriteria(PurchaseOrder.class);
   List < PurchaseOrder > results = Collections.emptyList();
 
+  if(order==null)order=new String();
+  
   order = (order.toLowerCase().equals("asc")) ? order : "desc";
  try{
   //standard search, returns all orders
@@ -88,7 +90,7 @@ public class ManageOrdersRestController {
 	  }
 	  return new ResponseEntity(results,HttpStatus.OK);
  }
- 
+ //useless as to now there is no way of modifying orders manually
  @RequestMapping(value="/{id}",method = RequestMethod.PUT)
  public ResponseEntity<?> modifyOrder(@PathVariable long id,@RequestBody PurchaseOrder order){
 	 PurchaseOrder originalOrder=orderDao.find(id);
@@ -107,7 +109,7 @@ public class ManageOrdersRestController {
 	 
 	 return new ResponseEntity<String>("order not found",HttpStatus.NOT_FOUND);	 
  }
- 
+ //useless as to now, there is no way of adding orders manually
  @RequestMapping(method = RequestMethod.POST)
  public ResponseEntity<?> createOrder(@RequestBody PurchaseOrder order){	
 	 

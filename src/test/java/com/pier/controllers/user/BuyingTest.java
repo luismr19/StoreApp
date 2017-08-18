@@ -208,6 +208,7 @@ public class BuyingTest {
 				
 		Address addr=new Address();
 		addr.setCountry("Mexico");
+		addr.setCity("Guadalajara");
 		addr.setDistrict("Guadalajara");
 		addr.setNumber(24);
 		addr.setState("Jalisco");
