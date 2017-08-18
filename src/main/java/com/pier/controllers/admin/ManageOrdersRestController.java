@@ -75,6 +75,20 @@ public class ManageOrdersRestController {
 
  }
  
+ @RequestMapping(value="/user/{id}",method=RequestMethod.GET)
+ public ResponseEntity<?> getPurchaseOrdersByUser(@PathVariable long id){
+	 int pageSize = 30;
+	  Criteria criteria = currentSession().createCriteria(PurchaseOrder.class);
+	  List < PurchaseOrder > results = Collections.emptyList();
+	  criteria=getOrdersByUser("desc",criteria,id);
+	  try{
+	  results=criteria.list();
+	  }catch(Exception e){
+		  return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+	  }
+	  return new ResponseEntity(results,HttpStatus.OK);
+ }
+ 
  @RequestMapping(value="/{id}",method = RequestMethod.PUT)
  public ResponseEntity<?> modifyOrder(@PathVariable long id,@RequestBody PurchaseOrder order){
 	 PurchaseOrder originalOrder=orderDao.find(id);
@@ -147,6 +161,19 @@ private Criteria getShippedOrders(String order,Criteria criteria){
 	      criteria.addOrder(Order.asc("purchaseDate"));
 
 	     criteria.add(Restrictions.isNotNull("trackingNumber"));
+	     
+	     return criteria;
+}
+
+private Criteria getOrdersByUser(String order,Criteria criteria, Long userId){
+	if (order.equals("desc"))
+	     //check order
+	      criteria.addOrder(Order.desc("purchaseDate"));
+	     else
+	      criteria.addOrder(Order.asc("purchaseDate"));
+
+	     criteria.createAlias("owner", "ownr");
+	     criteria.add(Restrictions.eq("ownr.id", userId));
 	     
 	     return criteria;
 }
