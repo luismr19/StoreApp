@@ -209,7 +209,8 @@ public class User implements ObjectModel<Long>{
 		public Set<PurchaseOrder> getOrders() {
 			return orders;
 		}
-
+		
+		@JsonIgnore
 		public void setOrders(Set<PurchaseOrder> orders) {
 			this.orders = orders;
 		}
