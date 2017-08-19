@@ -1,5 +1,7 @@
 package com.pier.controllers.admin;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -82,6 +84,7 @@ public class ManageUserRestController {
 		
 		if(!userCheker.checkIfDuplicate(user) && userCheker.checkIfValid(user)){
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		user.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
 		userDao.add(user);		
 		HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());
