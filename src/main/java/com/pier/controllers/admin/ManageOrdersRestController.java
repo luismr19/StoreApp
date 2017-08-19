@@ -1,6 +1,7 @@
 package com.pier.controllers.admin;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
@@ -11,7 +12,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.model.security.User;
 import com.pier.rest.model.PurchaseOrder;
@@ -162,9 +161,9 @@ public class ManageOrdersRestController {
  
 private Criteria getAllOrders(String order, Criteria criteria){
 	if (order.equals("desc"))
-	    criteria.addOrder(Order.desc("total"));
+	    criteria.addOrder(Order.desc("purchaseDate"));
 	   else
-	    criteria.addOrder(Order.asc("total"));	   
+	    criteria.addOrder(Order.asc("purchaseDate"));	   
 	   return criteria;	 
  }
 
@@ -206,10 +205,11 @@ private Criteria getOrdersByUser(String order,Criteria criteria, Long userId){
 }
 
 private Criteria getOrdersByDate(String order,Criteria criteria, String from, String to){
-	
-	   final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
-	   final ZonedDateTime zonedDateTimeFrom = ZonedDateTime.parse(from, formatter);
-	   final ZonedDateTime zonedDateTimeTo = ZonedDateTime.parse(to, formatter);
+	//right now we just want to fecth orders without taking into account hours
+	   final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	   LocalDateTime fromDate = LocalDate.parse(from, formatter).atStartOfDay();
+	   LocalDateTime toDate = LocalDate.parse(to, formatter).atStartOfDay();
+	   
 	   
 	if (order.equals("desc"))
 	     //check order
@@ -218,7 +218,7 @@ private Criteria getOrdersByDate(String order,Criteria criteria, String from, St
 	      criteria.addOrder(Order.asc("purchaseDate"));
 
 	    
-	     criteria.add(Restrictions.between("purchaseDate", zonedDateTimeFrom, zonedDateTimeTo));
+	     criteria.add(Restrictions.between("purchaseDate", fromDate, toDate));
 	     
 	     return criteria;
 }

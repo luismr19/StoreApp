@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 
+import org.hibernate.type.LocalDateTimeType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -55,7 +56,7 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 		order.setDeliveryAddress(new Address("USA", "some city","Michigoi", "theStreet", "porai", 4400, 14));
 		order.setOwner(userDao.find(1L));
 		Date date = new Date();		
-		order.setPurchaseDate(ZonedDateTime.now());		
+		order.setPurchaseDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));		
 		order.setTrackingNumber("RT784512W");
 		order.setTotal(new BigDecimal("100.00"));
 		orderDao.add(order);
@@ -101,7 +102,7 @@ public class OrderDetailDaoImplTest extends DomainAwareBase {
 				order.setOwner(user);				
 				Date date = new Date();
 				Timestamp timestamp = new Timestamp(date.getTime());
-				order.setPurchaseDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Mexico_City")));
+				order.setPurchaseDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
 				order.setTrackingNumber("RT784512W");
 				order.setTotal(new BigDecimal("100.00"));
 				orderDao.add(order);

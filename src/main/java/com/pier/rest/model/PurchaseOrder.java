@@ -1,9 +1,7 @@
 package com.pier.rest.model;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -26,6 +24,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
+import org.hibernate.type.LocalDateTimeType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -50,8 +49,8 @@ public class PurchaseOrder implements ObjectModel<Long>{
   private Benefit gift;   
   
   @Column(name = "PURCHASE_TIME", columnDefinition="DATETIME")  
-  @Type(type="org.hibernate.type.ZonedDateTimeType")
-  private ZonedDateTime purchaseDate;
+  @Type(type="org.hibernate.type.LocalDateTimeType")
+  private LocalDateTime purchaseDate;
   
   @JoinColumn(name="ADDRESS",updatable=true)  
   @OneToOne(fetch=FetchType.EAGER)
@@ -112,11 +111,11 @@ public class PurchaseOrder implements ObjectModel<Long>{
 
   @JsonProperty  
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  public ZonedDateTime getPurchaseDate() {
+  public LocalDateTime getPurchaseDate() {
     return purchaseDate;
   }
   @JsonIgnore
-  public void setPurchaseDate(ZonedDateTime purchaseDate) {
+  public void setPurchaseDate(LocalDateTime purchaseDate) {
     this.purchaseDate = purchaseDate;
   }
 

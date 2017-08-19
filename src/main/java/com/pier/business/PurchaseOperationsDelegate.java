@@ -53,7 +53,7 @@ public class PurchaseOperationsDelegate {
 			throw new EmptyCartException("Cart is empty");
 
 		cart.setDeliveryAddress(deliveryAddress);
-		cart.setPurchaseDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Mexico_City")));
+		cart.setPurchaseDate(LocalDateTime.now());
 		orderDao.update(cart);
 		//call credit card api here "maybe"
 
