@@ -47,7 +47,8 @@ public class ManageOrdersRestController {
 
  @RequestMapping(method = RequestMethod.GET)
  public ResponseEntity < ? > getOrders(@RequestParam(value = "filter", required = false) String filter,
-  @RequestParam("index") int index, @RequestParam(value = "order", required = false) String order) {
+  @RequestParam("index") int index, @RequestParam(value = "order", required = false) String order,
+  @RequestParam(value="from", required=false) String from, @RequestParam(value="to", required = false) String to) {
   int pageSize = 30;
   Criteria criteria = currentSession().createCriteria(PurchaseOrder.class);
   List < PurchaseOrder > results = Collections.emptyList();
@@ -67,6 +68,11 @@ public class ManageOrdersRestController {
     //returns only shipped orders (you don't say!)
 	 criteria=getShippedOrders(order,criteria);    
     }    
+  }
+  if(from!=null){
+	  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	  to=(to==null)?LocalDate.now().plusDays(1).format(formatter):to;
+	  criteria=this.getOrdersByDate(order, criteria, from, to);
   }
   criteria.setFirstResult(index).setMaxResults(pageSize);
   results = criteria.list();
