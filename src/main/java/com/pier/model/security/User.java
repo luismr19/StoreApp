@@ -86,6 +86,12 @@ public class User implements ObjectModel<Long>{
 	 @Type(type="org.hibernate.type.LocalDateTimeType")
 	 private LocalDateTime lastPasswordResetDate;
 	 
+	 @Column(name="CREATION_DATE", nullable=false)	 
+	 @NotNull	 
+	 @JsonFormat(pattern="yyyy-MM-dd HH:mm")
+	 @Type(type="org.hibernate.type.LocalDateTimeType")
+	 private LocalDateTime createdDate;
+	 
 	 @JoinColumn(name="ADDRESS",updatable=true)	
 	 @OneToOne
 	 @Cascade(CascadeType.ALL)
@@ -221,6 +227,15 @@ public class User implements ObjectModel<Long>{
 
 		public void setPoints(Long points) {
 			this.points = points;
+		}		
+		
+
+		public LocalDateTime getCreatedDate() {
+			return createdDate;
+		}
+
+		public void setCreatedDate(LocalDateTime createdDate) {
+			this.createdDate = createdDate;
 		}
 
 		@Override
