@@ -58,7 +58,7 @@ public class ManageOrdersRestController {
   order = (order.toLowerCase().equals("asc")) ? order : "desc";
  try{
   //standard search, returns all orders
-  if (filter == null) {   
+  if (filter==null || filter.isEmpty()) {   
    criteria=getAllOrders(order,criteria);
   } else {
    //returns only concluded orders (you don't say!)
@@ -67,13 +67,17 @@ public class ManageOrdersRestController {
    } else if (filter.toLowerCase().equals("shipped")) { //returns orders which have a tracking number
     //returns only shipped orders (you don't say!)
 	 criteria=getShippedOrders(order,criteria);    
-    }    
+    }else if(filter.toLowerCase().equals("ready")){
+    	//returns only pending orders (you don't say!)
+    	criteria=getPendingOrders(order,criteria);
+    }
   }
-  if(from!=null){
+ //set default to show of current day
 	  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	  from=(from==null)?LocalDate.now().format(formatter):from;
 	  to=(to==null)?LocalDate.now().plusDays(1).format(formatter):to;
 	  criteria=this.getOrdersByDate(order, criteria, from, to);
-  }
+  
   criteria.setFirstResult(index).setMaxResults(pageSize);
   results = criteria.list();
  }catch(Exception e){
@@ -173,12 +177,27 @@ private Criteria getAllOrders(String order, Criteria criteria){
 	   return criteria;	 
  }
 
+private Criteria getPendingOrders(String order,Criteria criteria){
+	if (order.equals("desc"))
+	     //check order
+	      criteria.addOrder(Order.desc("purchaseDate"));
+	     else
+	      criteria.addOrder(Order.asc("purchaseDate"));
+	
+	     criteria.add(Restrictions.isNotNull("deliveryAddress"));
+
+	     criteria.add(Restrictions.eq("trackingNumber","PENDING"));
+	     
+	     return criteria;
+}
+
 private Criteria getConcludedOrders(String order, Criteria criteria){
 	if (order.equals("desc"))
 	    //check order
 	     criteria.addOrder(Order.desc("purchaseDate"));
 	    else
 	     criteria.addOrder(Order.asc("purchaseDate"));
+	    
 
 	    criteria.add(Restrictions.eq("concluded", true));	    
 	  
@@ -192,7 +211,7 @@ private Criteria getShippedOrders(String order,Criteria criteria){
 	     else
 	      criteria.addOrder(Order.asc("purchaseDate"));
 
-	     criteria.add(Restrictions.isNotNull("trackingNumber"));
+	     criteria.add(Restrictions.neOrIsNotNull("trackingNumber", "PENDING"));
 	     
 	     return criteria;
 }
