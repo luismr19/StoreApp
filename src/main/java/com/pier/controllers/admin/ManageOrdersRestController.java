@@ -44,6 +44,21 @@ public class ManageOrdersRestController {
  private Session currentSession() {
   return sessionFactory.getCurrentSession();
  }
+ 
+ @RequestMapping(value="/{id}",method=RequestMethod.GET)
+ public ResponseEntity<?> getOrder(@PathVariable long id){
+	 PurchaseOrder order=null;
+	 try{
+		 order=orderDao.find(id);
+	 }catch(Exception e){
+		 return new ResponseEntity<String>("error getting order",HttpStatus.INTERNAL_SERVER_ERROR);
+	 }
+	 
+	 if(order==null){
+		 return new ResponseEntity<String>("order not found",HttpStatus.NOT_FOUND);
+	 }
+	 return new ResponseEntity<PurchaseOrder>(order,HttpStatus.OK);
+ }
 
  @RequestMapping(method = RequestMethod.GET)
  public ResponseEntity < ? > getOrders(@RequestParam(value = "filter", required = false) String filter,
@@ -132,10 +147,10 @@ public class ManageOrdersRestController {
 		 originalOrder.setConcluded(order.getConcluded());
 		 originalOrder.setTrackingNumber(order.getTrackingNumber());
 		 originalOrder.setDeliveryAddress(order.getDeliveryAddress());
-		 originalOrder.setGift(order.getGift());		 
-		 originalOrder.setOwner(order.getOwner());		 
-		 originalOrder.setPurchaseItems(order.getPurchaseItems());
-		 originalOrder.setTotal(order.getTotal());
+		 //originalOrder.setGift(order.getGift());		 
+		 //originalOrder.setOwner(order.getOwner());		 
+		 //originalOrder.setPurchaseItems(order.getPurchaseItems());
+		 //originalOrder.setTotal(order.getTotal());
 		 
 		 orderDao.update(originalOrder);			 
 		 return new ResponseEntity<PurchaseOrder>(order,HttpStatus.OK);

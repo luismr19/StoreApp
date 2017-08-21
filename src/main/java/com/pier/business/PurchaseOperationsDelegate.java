@@ -60,8 +60,7 @@ public class PurchaseOperationsDelegate {
 	}
 
 	public void completeOrder(User user) {
-		PurchaseOrder cart = cartOps.getUserCart(user);
-		cart.setConcluded(true);
+		PurchaseOrder cart = cartOps.getUserCart(user);		
 		List<ProductFlavor> purchasedProducts = OrderDetailUtil.getAsProductList(cart.getPurchaseItems());
 
 		for (ProductFlavor product : purchasedProducts) {
