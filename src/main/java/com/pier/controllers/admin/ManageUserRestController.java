@@ -2,6 +2,8 @@ package com.pier.controllers.admin;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -25,7 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.business.validation.UserIntegrityChecker;
+import com.pier.model.security.Authority;
+import com.pier.model.security.AuthorityName;
 import com.pier.model.security.User;
+import com.pier.service.AuthorityDao;
 import com.pier.service.UserDao;
 
 @RestController
@@ -42,6 +47,9 @@ public class ManageUserRestController {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Autowired
+	private AuthorityDao authDao;
 	
 	private Session currentSession(){
 		return sessionFactory.getCurrentSession();
@@ -78,13 +86,14 @@ public class ManageUserRestController {
 		
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
+	
 	@RequestMapping(value="/users/",method=RequestMethod.POST)
 	public ResponseEntity<?> createUser(@RequestBody User user,UriComponentsBuilder ucBuilder){
 		
 		if(!userCheker.checkIfDuplicate(user) && userCheker.checkIfValid(user)){
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		user.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
+		user.setAuthorities(authDao.find("AuthorityName", AuthorityName.ROLE_USER));
 		userDao.add(user);		
 		HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());

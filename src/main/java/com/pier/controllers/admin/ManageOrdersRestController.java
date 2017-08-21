@@ -86,6 +86,10 @@ public class ManageOrdersRestController {
     	//returns only pending orders (you don't say!)
     	criteria=getPendingOrders(order,criteria);
     }
+    else if(filter.toLowerCase().equals("rejected")){
+    	//returns only pending orders (you don't say!)
+    	criteria=getRejectedOrders(order,criteria);
+    }
   }
  //set default to show of current day
 	  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -103,7 +107,20 @@ public class ManageOrdersRestController {
 
  }
  
- @RequestMapping(value="/user/{id}",method=RequestMethod.GET)
+ private Criteria getRejectedOrders(String order, Criteria criteria) {
+	 if (order.equals("desc"))
+		    //check order
+		     criteria.addOrder(Order.desc("purchaseDate"));
+		    else
+		     criteria.addOrder(Order.asc("purchaseDate"));
+		    
+
+		    criteria.add(Restrictions.eq("rejected", true));	    
+		  
+		    return criteria;
+}
+
+@RequestMapping(value="/user/{id}",method=RequestMethod.GET)
  public ResponseEntity<?> getPurchaseOrdersByUser(@PathVariable long id){
 	 int pageSize = 30;
 	  Criteria criteria = currentSession().createCriteria(PurchaseOrder.class);
@@ -147,6 +164,7 @@ public class ManageOrdersRestController {
 		 originalOrder.setConcluded(order.getConcluded());
 		 originalOrder.setTrackingNumber(order.getTrackingNumber());
 		 originalOrder.setDeliveryAddress(order.getDeliveryAddress());
+		 originalOrder.setRejected(order.getRejected());
 		 //originalOrder.setGift(order.getGift());		 
 		 //originalOrder.setOwner(order.getOwner());		 
 		 //originalOrder.setPurchaseItems(order.getPurchaseItems());

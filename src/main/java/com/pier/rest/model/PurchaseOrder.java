@@ -74,6 +74,9 @@ public class PurchaseOrder implements ObjectModel<Long>{
   @Column(name="CONCLUDED")  
   private Boolean concluded;
   
+  @Column(name="REJECTED")  
+  private Boolean rejected;
+  
   public PurchaseOrder(){
     
   } 
@@ -169,12 +172,22 @@ public class PurchaseOrder implements ObjectModel<Long>{
     return concluded;
   }
 
-  @JsonIgnore
+  
   public void setConcluded(Boolean concluded) {
     this.concluded = concluded;
   }
+    
 
-  @Override
+  public Boolean getRejected() {
+	return rejected;
+  }
+
+  
+  public void setRejected(Boolean rejected) {
+	this.rejected = rejected;
+  }
+
+@Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;

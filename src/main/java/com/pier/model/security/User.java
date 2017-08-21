@@ -34,6 +34,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pier.rest.model.Address;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.rest.model.ObjectModel;
@@ -229,7 +230,7 @@ public class User implements ObjectModel<Long>{
 			this.points = points;
 		}		
 		
-
+		@JsonProperty("joinDate")
 		public LocalDateTime getCreatedDate() {
 			return createdDate;
 		}

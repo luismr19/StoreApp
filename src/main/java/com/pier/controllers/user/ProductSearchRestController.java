@@ -81,7 +81,7 @@ public class ProductSearchRestController {
 	
 	@RequestMapping(value="advanced",method=RequestMethod.POST)
 	public ResponseEntity<List<Product>> advancedSearch(@RequestBody AdvancedSearchRequest search, @RequestParam("index") int index){
-		int pageSize=30;
+		int pageSize=9;
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		criteria.createAlias("brand", "br");
