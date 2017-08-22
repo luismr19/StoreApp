@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,10 +32,12 @@ import com.pier.business.validation.UserIntegrityChecker;
 import com.pier.model.security.Authority;
 import com.pier.model.security.AuthorityName;
 import com.pier.model.security.User;
+import com.pier.rest.model.UserOrder;
 import com.pier.service.AuthorityDao;
 import com.pier.service.UserDao;
 
 @RestController
+@Transactional
 public class ManageUserRestController {
 	
 	@Autowired
@@ -53,6 +57,24 @@ public class ManageUserRestController {
 	
 	private Session currentSession(){
 		return sessionFactory.getCurrentSession();
+	}
+	
+	@RequestMapping(value="/users/ordes")
+	public List<UserOrder> fetch(@RequestParam("index") int index, @RequestParam(value="filter",required=false)String word){
+		int pageSize=30;
+		
+		Criteria criteria = currentSession().createCriteria(User.class);
+		Disjunction or=Restrictions.disjunction();
+		if(word!=null && !word.isEmpty()){
+		or.add(Restrictions.like("username", "%"+word+"%"));
+		or.add(Restrictions.like("firstname", "%"+word+"%"));
+		or.add(Restrictions.like("lastname", "%"+word+"%"));
+		}
+		criteria.addOrder(Order.asc("firstname"));
+		criteria.setFirstResult(index).setMaxResults(pageSize);
+		List<User> users=criteria.list();
+		
+		return users.stream().map(user->new UserOrder(user,user.getOrders())).collect(Collectors.toList());
 	}
 	
 	//@PreAuthorize("hasRole('ADMIN')")
@@ -83,6 +105,17 @@ public class ManageUserRestController {
 	public ResponseEntity<User> showUser(@PathVariable("id") long id){
 		
 		return new ResponseEntity<User>(userDao.find(id),HttpStatus.FOUND);
+		
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="/users/orders/{id}",method=RequestMethod.GET)
+	public ResponseEntity<?> showUserOrder(@PathVariable("id") long id){
+		User user=userDao.find(id);
+		if(user!=null)
+		return new ResponseEntity<UserOrder>(new UserOrder(user,user.getOrders()),HttpStatus.FOUND);
+		
+		return new ResponseEntity<String>("user not found",HttpStatus.NOT_FOUND);
 		
 	}
 	
