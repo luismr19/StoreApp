@@ -63,7 +63,8 @@ public class ManageOrdersRestController {
  @RequestMapping(method = RequestMethod.GET)
  public ResponseEntity < ? > getOrders(@RequestParam(value = "filter", required = false) String filter,
   @RequestParam("index") int index, @RequestParam(value = "order", required = false) String order,
-  @RequestParam(value="from", required=false) String from, @RequestParam(value="to", required = false) String to) {
+  @RequestParam(value="from", required=false) String from, @RequestParam(value="to", required = false) String to,
+  @RequestParam(value="user", required = false) Long userId) {
   int pageSize = 30;
   Criteria criteria = currentSession().createCriteria(PurchaseOrder.class);
   List < PurchaseOrder > results = Collections.emptyList();
@@ -96,6 +97,11 @@ public class ManageOrdersRestController {
 	  from=(from==null)?LocalDate.now().format(formatter):from;
 	  to=(to==null)?LocalDate.now().plusDays(1).format(formatter):to;
 	  criteria=this.getOrdersByDate(order, criteria, from, to);
+
+	  //check  by user in case argument is present
+   if(userId!=null && userId>0){
+	criteria=getOrdersByUser(order, criteria, userId);
+   }
   
   criteria.setFirstResult(index).setMaxResults(pageSize);
   results = criteria.list();
