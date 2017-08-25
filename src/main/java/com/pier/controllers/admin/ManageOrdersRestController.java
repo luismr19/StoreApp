@@ -163,6 +163,8 @@ public class ManageOrdersRestController {
  //useless as to now there is no way of modifying orders manually
  @RequestMapping(value="/{id}",method = RequestMethod.PUT)
  public ResponseEntity<?> modifyOrder(@PathVariable long id,@RequestBody PurchaseOrder order){
+	 orderDao.currentSession().flush();
+	 orderDao.currentSession().clear();
 	 
 	 PurchaseOrder originalOrder=orderDao.find(id);
 	 
@@ -184,7 +186,10 @@ public class ManageOrdersRestController {
  }
  //useless as to now, there is no way of adding orders manually
  @RequestMapping(method = RequestMethod.POST)
- public ResponseEntity<?> createOrder(@RequestBody PurchaseOrder order){	
+ public ResponseEntity<?> createOrder(@RequestBody PurchaseOrder order){
+	 
+	orderDao.currentSession().flush();
+	orderDao.currentSession().clear();
 	 
 	User user=userDao.find(order.getOwner().getId());
 	if(user!=null){
@@ -194,7 +199,7 @@ public class ManageOrdersRestController {
 	}else{
 		return new ResponseEntity<String>("user not found",HttpStatus.NOT_FOUND);		
 	}
-	return new ResponseEntity<PurchaseOrder>(order,HttpStatus.OK);		  
+	return new ResponseEntity<PurchaseOrder>(order,HttpStatus.CREATED);		  
  }
  
  @RequestMapping(value="/{id}",method=RequestMethod.DELETE)

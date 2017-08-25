@@ -45,7 +45,8 @@ public class ManageProductTypeRestController {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public List<ProductType> list(@RequestParam("index") int index){
+	public List<ProductType> list(@RequestParam(value="index",required=false) Integer index){
+		index=(index==null)?0:index;
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(ProductType.class);
 		criteria.addOrder(Order.asc("id"));

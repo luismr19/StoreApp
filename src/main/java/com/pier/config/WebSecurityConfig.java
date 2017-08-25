@@ -52,16 +52,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new JwtAuthenticationTokenFilter();
 	}
 	
+	
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-	    //web.ignoring().antMatchers("/login/**");
-		web.ignoring().antMatchers("/**");
+	    web.ignoring().antMatchers("/login/**");
+		//web.ignoring().antMatchers("/**");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		http.csrf().disable()
+		http.cors().and().csrf().disable()
 
 				.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
 

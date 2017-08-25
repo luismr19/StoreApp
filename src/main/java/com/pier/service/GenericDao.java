@@ -2,6 +2,8 @@ package com.pier.service;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 public interface GenericDao<E,K> {
 	
 	void add(E entity);
@@ -15,5 +17,7 @@ public interface GenericDao<E,K> {
 	List<E> find(String property, Object value);
 	
 	List<E> list();
+	
+	public Session currentSession();
 
 }

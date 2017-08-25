@@ -189,8 +189,8 @@ public class BuyingTest {
 		laborDay.setDescription("get a free snack bar in the purchase of a protein");
 		laborDay.setDisplayName("labor day giveaway!");
 		laborDay.setEnabled(true);
-		ZonedDateTime startDate=ZonedDateTime.of(LocalDateTime.of(2017, Month.APRIL,28,0,00),ZoneId.of("America/Mexico_City"));
-		ZonedDateTime endDate=ZonedDateTime.of(LocalDateTime.of(2017, Month.MAY,10,0,00),ZoneId.of("America/Mexico_City"));
+		LocalDateTime startDate=LocalDateTime.of(2017, Month.APRIL,28,0,00);
+		LocalDateTime endDate=LocalDateTime.of(2017, Month.MAY,10,0,00);
 		laborDay.setStartDate(startDate);
 		laborDay.setEndDate(endDate);
 		

@@ -62,7 +62,7 @@ public class JwtTokenUtil implements Serializable{
         try {
             final Claims claims = getClaimsFromToken(token);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            created = LocalDateTime.parse((String)claims.get(CLAIM_KEY_CREATED));
+            created = LocalDateTime.parse((String)claims.get(CLAIM_KEY_CREATED),formatter);
         } catch (Exception e) {
             created = null;
         }

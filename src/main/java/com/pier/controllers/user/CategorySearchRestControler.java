@@ -27,35 +27,17 @@ public class CategorySearchRestControler {
 		return sessionFactory.getCurrentSession();
 	}
 
-	@RequestMapping(value = "like", method = RequestMethod.GET)
-	public ResponseEntity<List<Category>> searchBrandLike(@RequestParam("word") String word) {
-		int pageSize = 30;
-
-		Criteria criteria = currentSession().createCriteria(Category.class);
-
-		criteria.add(Restrictions.like("name", "%"+word+"%"));
-		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(0);
-		criteria.setMaxResults(pageSize);
-		List<Category> results = criteria.list();
-
-		if (results.isEmpty()) {
-			return new ResponseEntity<List<Category>>(HttpStatus.NO_CONTENT);
-		} else {
-			return new ResponseEntity<List<Category>>(results, HttpStatus.OK);
-		}
-	}
-
-	@RequestMapping(value = "more", method = RequestMethod.GET)
+	@RequestMapping(method=RequestMethod.GET)
 	public ResponseEntity<List<Category>> getMoreResults(@RequestParam("word") String word,
-			@RequestParam("index") int index) {
-		int pageSize = 30;
+			@RequestParam(value="index",required=false) Integer index) {
+		index=(index==null)?0:index;
+		int pageSize = 30;		
 
 		Criteria criteria = currentSession().createCriteria(Category.class);
 
 		criteria.add(Restrictions.like("name", "%"+word+"%"));
 		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(0);
+		criteria.setFirstResult(index);
 		criteria.setMaxResults(pageSize);
 		List<Category> results = criteria.list();
 

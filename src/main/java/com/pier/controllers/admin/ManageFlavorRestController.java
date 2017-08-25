@@ -30,7 +30,8 @@ public class ManageFlavorRestController {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public ResponseEntity<?> getFlavors(@RequestParam("index")int index){
+	public ResponseEntity<?> getFlavors(@RequestParam(value="index",required=false)Integer index){
+		index=(index==null)?0:index;
 		int pageSize=30;
 		Criteria crit=currentSession().createCriteria(Flavor.class);
 		crit.addOrder(Order.asc("id"));

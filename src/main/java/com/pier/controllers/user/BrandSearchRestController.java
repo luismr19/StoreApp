@@ -31,31 +31,11 @@ public class BrandSearchRestController {
 		return sessionFactory.getCurrentSession();
 	}
 	
-	@RequestMapping(value="like",method=RequestMethod.GET)
-	public ResponseEntity<List<Brand>> searchBrandLike(@RequestParam("word") String word){
-		int pageSize=30;
-		
-		Criteria criteria = currentSession().createCriteria(Brand.class);
-		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("shortName", "%"+word+"%"));
-		or.add(Restrictions.like("name", "%"+word+"%"));
-		
-		criteria.add(or);
-		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(0);
-		criteria.setMaxResults(pageSize);
-		List<Brand> results=criteria.list();
-		
-		
-		if(results.isEmpty()){
-			return new ResponseEntity<List<Brand>>(HttpStatus.NO_CONTENT);
-		}else{
-			return new ResponseEntity<List<Brand>>(results,HttpStatus.OK);
-		}
-	}
 	
-	@RequestMapping(value="more",method=RequestMethod.GET)
-	public ResponseEntity<List<Brand>> getMoreResults(@RequestParam("word") String word,@RequestParam("index") int index){
+	@RequestMapping(value="like",method=RequestMethod.GET)
+	public ResponseEntity<List<Brand>> getMoreResults(@RequestParam("name") String word,
+			@RequestParam(value="index", required=false) Integer index){
+		index=(index==null)?0:index;
 		int pageSize=30;
 		
 		Criteria criteria = currentSession().createCriteria(Brand.class);

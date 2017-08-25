@@ -33,8 +33,7 @@ public class Flavor implements ObjectModel<Long> {
 	@JsonIgnore
 	Set<ProductFlavor> productFlavors;
 	
-	@Transient
-	@JsonIgnore
+	@Transient	
 	Long existence;
 	
 	public Flavor(){

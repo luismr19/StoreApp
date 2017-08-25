@@ -210,28 +210,27 @@ public class Product implements ObjectModel<Long>{
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
-	}
-	
-	
-    @JsonIgnore
-	public Set<ProductFlavor> getProductFlavors() {
-		return productFlavors;
-	}
-
-	private void setProductFlavors(Set<ProductFlavor> productFlavors) {
-		this.productFlavors = productFlavors;
-	}
-	
-	
-	@JsonIgnore
-	public List<Flavor> getFlavors() {
-		return productFlavors.stream().map(pflav->pflav.getFlavor()).collect(Collectors.toList());
-	}
-
+	}  
+	@JsonProperty
 	public void setFlavors(List<Flavor> flavors) {
 		this.flavors = flavors;
 		setProductFlavors(new HashSet(flavors.stream().map(flavor->new ProductFlavor(this,flavor,flavor.getExistence())).collect(Collectors.toList())));
 	}
+	
+	@JsonIgnore
+	public List<Flavor> getFlavors() {
+		return productFlavors.stream().map(pflav->pflav.getFlavor()).collect(Collectors.toList());
+	}	
+	
+	 @JsonIgnore
+		public Set<ProductFlavor> getProductFlavors() {
+			return productFlavors;
+		}
+
+	    @JsonIgnore
+		private void setProductFlavors(Set<ProductFlavor> productFlavors) {
+			this.productFlavors = productFlavors;
+		}
 	//not persisted- only used to keep a hold of existence for single flavor products
 	public void setExistence(Long existence){
 		this.existence=existence;

@@ -35,13 +35,19 @@ public class ProductSearchRestController {
 	}
 	
 	@RequestMapping(value="like",method=RequestMethod.GET)
-	public ResponseEntity<List<Product>> searchProductLike(@RequestParam("word") String word){
+	public ResponseEntity<List<Product>> searchProductLike(@RequestParam(value="word",required=false) String word,
+			@RequestParam(value="name",required=false) String name){
 		int pageSize=30;
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		Disjunction or=Restrictions.disjunction();
+		
+		if(word!=null && !word.isEmpty()){
 		or.add(Restrictions.like("description", "%"+word+"%"));
 		or.add(Restrictions.like("name", "%"+word+"%"));
+		}if(name!=null && !name.isEmpty()){
+			or.add(Restrictions.like("name", "%"+name+"%"));	
+		}
 		
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
@@ -55,7 +61,9 @@ public class ProductSearchRestController {
 		}else{
 			return new ResponseEntity<List<Product>>(results,HttpStatus.OK);
 		}
-	}
+	}	
+	
+	
 	@RequestMapping(value="more",method=RequestMethod.GET)
 	public ResponseEntity<List<Product>> getMoreResults(@RequestParam("word") String word,@RequestParam("index") int index){
 		int pageSize=30;
@@ -80,7 +88,9 @@ public class ProductSearchRestController {
 	}
 	
 	@RequestMapping(value="advanced",method=RequestMethod.POST)
-	public ResponseEntity<List<Product>> advancedSearch(@RequestBody AdvancedSearchRequest search, @RequestParam("index") int index){
+	public ResponseEntity<List<Product>> advancedSearch(@RequestBody AdvancedSearchRequest search, 
+		@RequestParam(value="index",required=false) Integer index){
+		index=(index==null)?0:index;
 		int pageSize=9;
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);

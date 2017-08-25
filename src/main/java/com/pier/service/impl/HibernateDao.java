@@ -39,6 +39,7 @@ public class HibernateDao<E, K extends Serializable> implements GenericDao<E, K>
 		this.sessionFactory=sessionFactory;
 	}
 	
+	@Override
 	public Session currentSession(){
 		return sessionFactory.getCurrentSession();
 	}
@@ -51,7 +52,7 @@ public class HibernateDao<E, K extends Serializable> implements GenericDao<E, K>
 
 	@Override
 	public void update(E entity) {
-		currentSession().saveOrUpdate(entity);
+		currentSession().merge(entity);
 		
 	}
 

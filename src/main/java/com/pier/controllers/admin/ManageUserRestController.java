@@ -60,7 +60,8 @@ public class ManageUserRestController {
 	}
 	
 	@RequestMapping(value="/users/ordes")
-	public List<UserOrder> fetch(@RequestParam("index") int index, @RequestParam(value="filter",required=false)String word){
+	public List<UserOrder> fetch(@RequestParam(value="index",required=false) Integer index, @RequestParam(value="filter",required=false)String word){
+		index=(index==null)?0:index;
 		int pageSize=30;
 		
 		Criteria criteria = currentSession().createCriteria(User.class);
@@ -79,7 +80,8 @@ public class ManageUserRestController {
 	
 	//@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/users",method=RequestMethod.GET)
-	public List<User> list(@RequestParam("index") int index){
+	public List<User> list(@RequestParam(value="index",required=false) Integer index){
+		index=(index==null)?0:index;
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(User.class);
 		criteria.addOrder(Order.asc("id"));

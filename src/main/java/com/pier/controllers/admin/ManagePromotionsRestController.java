@@ -1,11 +1,14 @@
 package com.pier.controllers.admin;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -45,7 +48,8 @@ public class ManagePromotionsRestController {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public List<Promotion> list(@RequestParam("index") int index){
+	public List<Promotion> list(@RequestParam(value="index",required=false) Integer index){
+		index=(index==null)?0:index;
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Promotion.class);
 		criteria.addOrder(Order.asc("id"));
@@ -68,6 +72,27 @@ public class ManagePromotionsRestController {
 		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();		
 	}
+	
+	@RequestMapping("/active")
+	public List<Promotion> getActive(){
+		
+		List<Promotion> results=Collections.EMPTY_LIST;
+		
+		Criteria criteria = currentSession().createCriteria(Promotion.class);
+		Conjunction and=Restrictions.conjunction();
+		and.add(Restrictions.le("startDate", LocalDateTime.now()));
+		and.add(Restrictions.ge("endDate", LocalDateTime.now()));	
+		and.add(Restrictions.eq("enabled", true));	
+		criteria.add(and);
+        
+		criteria.addOrder(Order.asc("displayName"));
+		try{
+			results= criteria.list();
+		}catch(Exception e){
+			
+		}
+		return results;
+	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public ResponseEntity<?> getPromotion(@PathVariable Long id) {
@@ -82,6 +107,8 @@ public class ManagePromotionsRestController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> createPromotion(@RequestBody Promotion promo, UriComponentsBuilder ucBuilder) {
+		dao.currentSession().flush();
+		dao.currentSession().clear();
 		if (!checker.checkIfDuplicate(promo) && checker.checkIfValid(promo)) {
 			dao.add(promo);
 			HttpHeaders headers = new HttpHeaders();
@@ -94,6 +121,8 @@ public class ManagePromotionsRestController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(method = RequestMethod.PUT, value = "{id}")
 	public ResponseEntity<?> updatePromotion(@PathVariable Long id, @RequestBody Promotion promo) {
+		dao.currentSession().flush();
+		dao.currentSession().clear();
 		Promotion currentPromo = dao.find(id);
 		if (currentPromo != null) {
 			if (checker.checkIfValid(promo)) {

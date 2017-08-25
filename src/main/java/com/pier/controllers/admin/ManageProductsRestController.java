@@ -3,6 +3,7 @@ package com.pier.controllers.admin;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +64,8 @@ public class ManageProductsRestController {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public List<Product> list(@RequestParam("index") int index){
+	public List<Product> list(@RequestParam(value="index",required=false) Integer index){
+    index=(index==null)?0:index;
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		criteria.addOrder(Order.asc("id"));
@@ -97,6 +99,8 @@ public class ManageProductsRestController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(method=RequestMethod.POST)
 	public ResponseEntity<?> createProduct(@RequestBody Product product, UriComponentsBuilder ucBuilder){
+		dao.currentSession().flush();
+		dao.currentSession().clear();
 		if(checker.checkIfDuplicate(product) || !checker.checkIfValid(product)){
 			return new ResponseEntity<List<String>>(checker.getErrors(),HttpStatus.CONFLICT);
 		}
@@ -121,6 +125,8 @@ public class ManageProductsRestController {
 	@RequestMapping(value="{id}",method=RequestMethod.PUT)
 	public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody Product product){
 		Product currentProduct=dao.find(id);
+		dao.currentSession().flush();
+		dao.currentSession().clear();
 		if(currentProduct==null){
 			return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
 		}
@@ -155,6 +161,22 @@ public class ManageProductsRestController {
 		
 		return new ResponseEntity<List<String>>(checker.getErrors(),HttpStatus.NO_CONTENT);        
 		
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="setprice/{id}",method=RequestMethod.PUT)
+	public ResponseEntity<?> updatePrice(@PathVariable Long id, @RequestBody String price){
+		Product product=this.dao.find(id);
+		try{
+		
+		product.setPrice(new BigDecimal(price));
+		dao.update(product);
+		}catch(NullPointerException e){
+			return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Product>(product,HttpStatus.OK);
+		
+	
 	}
 	
 	@RequestMapping(value="/upload", method=RequestMethod.POST)

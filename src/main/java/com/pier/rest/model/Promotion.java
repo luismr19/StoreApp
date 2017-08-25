@@ -1,5 +1,6 @@
 package com.pier.rest.model;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
@@ -35,13 +36,13 @@ public class Promotion implements ObjectModel<Long>{
 	private String displayName;
 	
 	@Column(name = "START_DATE")	
-	@Type(type="org.hibernate.type.ZonedDateTimeType")		
-	private ZonedDateTime startDate;
+	@Type(type="org.hibernate.type.LocalDateTimeType")		
+	private LocalDateTime startDate;
 	
 	
 	@Column(name = "END_DATE")
-	@Type(type="org.hibernate.type.ZonedDateTimeType")	
-	private ZonedDateTime endDate;
+	@Type(type="org.hibernate.type.LocalDateTimeType")
+	private LocalDateTime endDate;
 	
 	@Column(name="DESCRIPTION", columnDefinition = "TEXT")
 	@NotNull
@@ -77,21 +78,21 @@ public class Promotion implements ObjectModel<Long>{
 		this.displayName = displayName;
 	}
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
-	public ZonedDateTime getStartDate() {
+	public LocalDateTime getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(ZonedDateTime startDate) {
+	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
-	public ZonedDateTime getEndDate() {
+	public LocalDateTime getEndDate() {
 		return endDate;
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
-	public void setEndDate(ZonedDateTime endDate) {
+	public void setEndDate(LocalDateTime endDate) {
 		this.endDate = endDate;
 	}
 

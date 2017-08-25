@@ -192,6 +192,7 @@ public class User implements ObjectModel<Long>{
 	        return lastPasswordResetDate;
 	    }
 
+	    @JsonIgnore
 	    public void setLastPasswordResetDate(LocalDateTime lastPasswordResetDate) {
 	        this.lastPasswordResetDate = lastPasswordResetDate;
 	    }
@@ -234,7 +235,8 @@ public class User implements ObjectModel<Long>{
 		public LocalDateTime getCreatedDate() {
 			return createdDate;
 		}
-
+		
+		@JsonIgnore
 		public void setCreatedDate(LocalDateTime createdDate) {
 			this.createdDate = createdDate;
 		}

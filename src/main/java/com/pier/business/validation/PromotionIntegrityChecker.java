@@ -1,5 +1,6 @@
 package com.pier.business.validation;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import org.springframework.stereotype.Component;
@@ -31,8 +32,8 @@ public class PromotionIntegrityChecker extends IntegrityCheckerImpl<Promotion, P
 
 	private boolean checkDates(Promotion promo) {
 		
-		boolean result=promo.getStartDate().isBefore(ZonedDateTime.now());
-		result=result || promo.getEndDate().isBefore(ZonedDateTime.now());
+		boolean result=promo.getStartDate().isBefore(LocalDateTime.now());
+		result=result || promo.getEndDate().isBefore(LocalDateTime.now());
 		if(result){
 			errors.add("cannot set date before today");
 		}

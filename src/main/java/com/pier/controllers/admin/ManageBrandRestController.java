@@ -54,7 +54,8 @@ public class ManageBrandRestController {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public List<Brand>getBrands(@RequestParam("index") int index){
+	public List<Brand>getBrands(@RequestParam(value="index",required=false) Integer index){
+    index=(index==null)?0:index;
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		criteria.addOrder(Order.asc("id"));
