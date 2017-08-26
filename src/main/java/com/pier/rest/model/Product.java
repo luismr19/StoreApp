@@ -71,7 +71,7 @@ public class Product implements ObjectModel<Long>{
 	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size=50)//I want to load 50 sets of categories for 50 products in one query
-	private List<Category> categories;	
+	private Set<Category> categories;	
 	
 	
 	@ManyToOne
@@ -106,7 +106,7 @@ public class Product implements ObjectModel<Long>{
 		return id;
 	}
 
-	public Product(Brand brand, BigDecimal price, String name, String description, List<Category> categories,
+	public Product(Brand brand, BigDecimal price, String name, String description, Set<Category> categories,
 			ProductType productType, Long existence, Boolean enabled) {
 		super();
 		this.brand = brand;
@@ -119,7 +119,7 @@ public class Product implements ObjectModel<Long>{
 		this.enabled = enabled;
 	}
 	
-	public Product(Brand brand, BigDecimal price, String name, String description, String secondaryDescription, List<Category> categories,
+	public Product(Brand brand, BigDecimal price, String name, String description, String secondaryDescription, Set<Category> categories,
 			ProductType productType, Long existence, Boolean enabled) {
 		super();
 		this.brand = brand;
@@ -180,11 +180,11 @@ public class Product implements ObjectModel<Long>{
 		this.secondaryDescription = secondaryDescription;
 	}
 
-	public List<Category> getCategories() {
+	public Set<Category> getCategories() {
 		return categories;
 	}
 
-	public void setCategories(List<Category> categories) {
+	public void setCategories(Set<Category> categories) {
 		this.categories = categories;
 	}
 

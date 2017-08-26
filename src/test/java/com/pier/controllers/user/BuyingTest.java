@@ -133,24 +133,24 @@ public class BuyingTest {
 		
 		goldStandard=new Product(optimum,new BigDecimal("903.50"),"Gold Standard",
 				"24g of Whey Protein with Amino Acids for Muscle Recovery and Growth",
-				Arrays.asList(muscleGrowth),protein,15L,true);
+				new HashSet<Category>(Arrays.asList(muscleGrowth)),protein,15L,true);
 		goldStandard.setFlavors(Arrays.asList(
 				chocolate,vanilla));
 		
 		bestBcaa=new Product(bpiSports,new BigDecimal("555.19"),"BEST BCAA","Amino Acid Powder for Workout Recovery",
-				Arrays.asList(performance,recovery,strength),bcaas,5L,true);
+				new HashSet<Category>(Arrays.asList(performance,recovery,strength)),bcaas,5L,true);
 		bestBcaa.setFlavors(Arrays.asList(none));
 		
 		mPglutamine=new Product(musclePharm,new BigDecimal("290.11"),"GLUTAMINE",
 				"Pharmaceutical Quality Post-Workout Recovery Powder"
 				+ ", Supports Rebuilding and Recovery from the Toughest Workouts",
-				Arrays.asList(recovery),glutamine,10L,true);
+				new HashSet<Category>(Arrays.asList(recovery)),glutamine,10L,true);
 		mPglutamine.setFlavors(Arrays.asList(none));
 		
 		combatCrunchBars=new Product(musclePharm,new BigDecimal("53.65"),"Combat Crunch Bars",
 				"Delicious Protein Bar with Only 210 Calories"
 				+ ", gluten Free, Low Sugar, & Low Net Carb Multi-Layered Baked Bar",
-				Arrays.asList(food),snack,50L,true);
+				new HashSet<Category>(Arrays.asList(food)),snack,50L,true);
 		combatCrunchBars.setFlavors(Arrays.asList(vanilla));
 		
 		productDao.update(goldStandard);

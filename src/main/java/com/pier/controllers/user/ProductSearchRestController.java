@@ -50,7 +50,7 @@ public class ProductSearchRestController {
 			or.add(Restrictions.ilike("name", "%"+name+"%"));	
 		}
 		
-		criteria.setProjection(Projections.distinct(Projections.property("id")));
+		
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(0);
@@ -78,7 +78,7 @@ public class ProductSearchRestController {
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index);
-		criteria.setMaxResults(pageSize);
+		criteria.setMaxResults(pageSize);		
 		List<Product> results=criteria.list();
 		
 		
@@ -119,6 +119,7 @@ public class ProductSearchRestController {
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index);
 		criteria.setMaxResults(pageSize);
+		
 		
 		List<Product> results=criteria.list();
 		

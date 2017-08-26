@@ -4,7 +4,9 @@ import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +43,8 @@ public class ProductDaoImplTest extends DomainAwareBase {
 	
 	@Test
 	public void testAdd() {
-		List<Category> categories=Arrays.asList(new Category("muscle swolyness"),
-				new Category("muscle repair"));
+		Set<Category> categories=new HashSet<Category>(Arrays.asList(new Category("muscle swolyness"),
+				new Category("muscle repair")));
 		Product product=new Product(new Brand("MP","Muscle Pharm"), new BigDecimal("70.50"), "someProduct", 
 				"this will make you fly", categories,
 				new ProductType("protein"), 2L, true);
@@ -52,7 +54,7 @@ public class ProductDaoImplTest extends DomainAwareBase {
 		
 		product.setFlavors(flavors);		
 		dao.add(product);
-		Category theCategory=catDao.find(categories.get(0).getId());
+		Category theCategory=catDao.find(categories.iterator().next().getId());
 		ProductType theType=typeDao.find(product.getProductType().getId());
 		Brand theBrand=brandDao.find(product.getBrand().getId());
 		//assert that the brand and everything was persisted along with the product
@@ -63,8 +65,8 @@ public class ProductDaoImplTest extends DomainAwareBase {
 	@Test
 	public void testUpdate() {
 		
-		List<Category> categories=Arrays.asList(new Category("muscle swolyness"),
-				new Category("muscle repair"));
+		Set<Category> categories=new HashSet<Category>(Arrays.asList(new Category("muscle swolyness"),
+				new Category("muscle repair")));
 		Product product=new Product(new Brand("MP","Muscle Pharm"), new BigDecimal("70.50"), "someProduct", 
 				"this will make you fly", categories,
 				new ProductType("protein"), 2L, true);
@@ -80,8 +82,8 @@ public class ProductDaoImplTest extends DomainAwareBase {
 
 	@Test
 	public void testList() {
-		List<Category> categories=Arrays.asList(new Category("muscle swolyness"),
-				new Category("muscle repair"));
+		Set<Category> categories=new HashSet<Category>(Arrays.asList(new Category("muscle swolyness"),
+				new Category("muscle repair")));
 		Product product=new Product(new Brand("MP","Muscle Pharm"), new BigDecimal("70.50"), "someProduct", 
 				"this will make you fly", categories,
 				new ProductType("protein"), 2L, true);
@@ -91,8 +93,8 @@ public class ProductDaoImplTest extends DomainAwareBase {
 
 	@Test
 	public void testFindStringString() {
-		List<Category> categories=Arrays.asList(new Category("muscle swolyness"),
-				new Category("muscle repair"));
+		Set<Category> categories=new HashSet<Category>(Arrays.asList(new Category("muscle swolyness"),
+				new Category("muscle repair")));
 		Product product=new Product(new Brand("MP","Muscle Pharm"), new BigDecimal("70.50"), "someProduct", 
 				"this will make you fly", categories,
 				new ProductType("protein"), 2L, true);
