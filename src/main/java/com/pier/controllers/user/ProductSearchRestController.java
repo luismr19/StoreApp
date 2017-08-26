@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,12 +44,13 @@ public class ProductSearchRestController {
 		Disjunction or=Restrictions.disjunction();
 		
 		if(word!=null && !word.isEmpty()){
-		or.add(Restrictions.like("description", "%"+word+"%"));
-		or.add(Restrictions.like("name", "%"+word+"%"));
+		or.add(Restrictions.ilike("description", "%"+word+"%"));
+		or.add(Restrictions.ilike("name", "%"+word+"%"));
 		}if(name!=null && !name.isEmpty()){
-			or.add(Restrictions.like("name", "%"+name+"%"));	
+			or.add(Restrictions.ilike("name", "%"+name+"%"));	
 		}
 		
+		criteria.setProjection(Projections.distinct(Projections.property("id")));
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(0);
@@ -70,8 +72,8 @@ public class ProductSearchRestController {
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("description", "%"+word+"%"));
-		or.add(Restrictions.like("name", "%"+word+"%"));
+		or.add(Restrictions.ilike("description", "%"+word+"%"));
+		or.add(Restrictions.ilike("name", "%"+word+"%"));
 		
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
@@ -99,11 +101,17 @@ public class ProductSearchRestController {
 		criteria.createAlias("categories", "cats");
 		Disjunction isPresentIn=Restrictions.disjunction();		
 		
+		if(search.getBrandIds()!=null && search.getBrandIds().size()>0)
 		isPresentIn.add(Restrictions.in("br.id", search.getBrandIds()));
+		
+		if(search.getProductTypeIds()!=null && search.getProductTypeIds().size()>0)
 		isPresentIn.add(Restrictions.in("type.id", search.getProductTypeIds()));
+		
+		if(search.getCategoryIds()!=null && search.getCategoryIds().size()>0)
 		isPresentIn.add(Restrictions.in("cats.id", search.getCategoryIds()));
-		if(StringUtils.isEmpty(search.getName())){
-		criteria.add(Restrictions.like("name", "%"+search.getName()+"%"));
+		
+		if(!StringUtils.isEmpty(search.getName())){
+		criteria.add(Restrictions.ilike("name", "%"+search.getName()+"%"));
 		criteria.add(Restrictions.and(isPresentIn));
 		}else{
 			criteria.add(isPresentIn);	

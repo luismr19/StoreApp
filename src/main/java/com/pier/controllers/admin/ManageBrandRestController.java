@@ -68,8 +68,8 @@ public class ManageBrandRestController {
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("shortName", "%"+word+"%"));
-		or.add(Restrictions.like("name", "%"+word+"%"));
+		or.add(Restrictions.ilike("shortName", "%"+word+"%"));
+		or.add(Restrictions.ilike("name", "%"+word+"%"));
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();		
@@ -80,7 +80,7 @@ public class ManageBrandRestController {
 	public ResponseEntity<?> getBrand(@PathVariable long id){
 		Brand brand=brandDao.find(id);
 		if(brand!=null){
-			return new ResponseEntity<Brand>(brand,HttpStatus.FOUND);
+			return new ResponseEntity<Brand>(brand,HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<Brand>(brand,HttpStatus.NOT_FOUND);
@@ -130,7 +130,7 @@ public class ManageBrandRestController {
 	}
 	
 	@RequestMapping(value="/upload", method=RequestMethod.POST)
-    public ResponseEntity<?> handleFileUpload( @RequestPart("file") MultipartFile file, HttpServletRequest request){
+    public ResponseEntity<?> handleFileUpload( @RequestPart("file") MultipartFile file, @RequestParam("id") Long id, HttpServletRequest request){
             
         if (!file.isEmpty()) {
             try {
@@ -143,14 +143,17 @@ public class ManageBrandRestController {
                 //in case we need to change                
                 if(! new File(uploadsDir).exists())
                 {
-                   // new File(realPathtoUploads).mkdir();
+                    new File(uploadsDir).mkdir();
                 }
                 String hql= "select max(id) from Brand";
                 List list = currentSession().createQuery(hql).list();
                 long maxID = ( (Long)list.get(0) ).longValue();
                 maxID++;
+                if(id==null){
+                	id=maxID;
+                }
                 
-                String name = Long.toString(maxID)+".jpg";
+                String name = Long.toString(id)+".jpg";
                 String filePath = uploadsDir + name;
                 File destination = new File(filePath);
                 file.transferTo(destination);

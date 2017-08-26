@@ -33,7 +33,7 @@ public class ProductTypeSearchRestController {
 	public ResponseEntity<List<ProductType>> filter(@RequestParam("index") int index,@RequestParam("word") String word){
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(ProductType.class);		
-		criteria.add(Restrictions.like("name", "%"+word+"%"));		
+		criteria.add(Restrictions.ilike("name", "%"+word+"%"));		
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index).setMaxResults(pageSize);
 		List<ProductType> results = criteria.list();

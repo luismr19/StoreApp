@@ -62,8 +62,8 @@ public class ManagePromotionsRestController {
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Promotion.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("displayName", "%"+word+"%"));
-		or.add(Restrictions.like("description", "%"+word+"%"));		
+		or.add(Restrictions.ilike("displayName", "%"+word+"%"));
+		or.add(Restrictions.ilike("description", "%"+word+"%"));		
 		criteria.add(or);
         if(featured=="y"){
         	criteria.add(Restrictions.and(Restrictions.eq("featured", true)));
@@ -135,7 +135,7 @@ public class ManagePromotionsRestController {
 				currentPromo.setPromotionrule(promo.getPromotionRule());
 
 				dao.update(currentPromo);
-				return new ResponseEntity<Promotion>(currentPromo, HttpStatus.FOUND);
+				return new ResponseEntity<Promotion>(currentPromo, HttpStatus.OK);
 			}
 			return new ResponseEntity<List<String>>(checker.getErrors(), HttpStatus.CONFLICT);
 		}

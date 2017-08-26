@@ -57,7 +57,7 @@ public class ManageCategoryRestController {
 	public List<Category> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Category.class);		
-		criteria.add(Restrictions.like("name", "%"+word+"%"));		
+		criteria.add(Restrictions.ilike("name", "%"+word+"%"));		
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();		

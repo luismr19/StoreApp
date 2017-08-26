@@ -16,6 +16,7 @@ public class SpecObjectMapper extends ObjectMapper{
 		registerModule(new JavaTimeModule() );
 		configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,true)
         .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+        .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
         .disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
         .setSerializationInclusion(Include.NON_NULL);
 		

@@ -78,8 +78,8 @@ public class ManageProductsRestController {
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("name", "%"+word+"%"));
-		or.add(Restrictions.like("description", "%"+word+"%"));
+		or.add(Restrictions.ilike("name", "%"+word+"%"));
+		or.add(Restrictions.ilike("description", "%"+word+"%"));
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();		
@@ -145,15 +145,20 @@ public class ManageProductsRestController {
 					currentProduct.setProductType(product.getProductType());
 			}
 			
-			List<Flavor> flavors=new ArrayList<Flavor>();
+		try{
+		List<Flavor> flavors=new ArrayList<Flavor>();
 		
 		product.getFlavors().forEach(flav->flavors.add(flavorSvc.generateFlavor(flav.getFlavorName(), flav.getExistence())));
+		currentProduct.setFlavors(flavors);
+		}catch(NullPointerException ex){
+			//do nothing, do not modify flavors
+		}
 			
 			currentProduct.setName(product.getName());
 			currentProduct.setDescription(product.getDescription());
 			currentProduct.setEnabled(true);
 			currentProduct.setPrice(product.getPrice());			
-			currentProduct.setFlavors(flavors);
+			
 			dao.update(product);
 			
 			return new ResponseEntity<Product>(product,HttpStatus.OK);			
@@ -180,7 +185,7 @@ public class ManageProductsRestController {
 	}
 	
 	@RequestMapping(value="/upload", method=RequestMethod.POST)
-    public ResponseEntity<?> handleFileUpload( @RequestPart("file") MultipartFile file, HttpServletRequest request){
+    public ResponseEntity<?> handleFileUpload( @RequestPart("file") MultipartFile file, @RequestParam("id") Long id, HttpServletRequest request){
             
         if (!file.isEmpty()) {
             try {
@@ -193,14 +198,17 @@ public class ManageProductsRestController {
                 //in case we need to change                
                 if(! new File(uploadsDir).exists())
                 {
-                   // new File(realPathtoUploads).mkdir();
+                    new File(uploadsDir).mkdir();
                 }
                 String hql= "select max(id) from Product";
                 List list = currentSession().createQuery(hql).list();
                 long maxID = ( (Long)list.get(0) ).longValue();
                 maxID++;
+                if(id==null){
+                	id=maxID;
+                }
                 
-                String name = "prod_"+maxID+".jpg";
+                String name = "prod_"+id+".jpg";
                 String filePath = uploadsDir + name;
                 File destination = new File(filePath);
                 file.transferTo(destination);

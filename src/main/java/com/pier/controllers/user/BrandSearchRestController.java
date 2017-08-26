@@ -40,8 +40,8 @@ public class BrandSearchRestController {
 		
 		Criteria criteria = currentSession().createCriteria(Brand.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("shortName", "%"+word+"%"));
-		or.add(Restrictions.like("name", "%"+word+"%"));
+		or.add(Restrictions.ilike("shortName", "%"+word+"%"));
+		or.add(Restrictions.ilike("name", "%"+word+"%"));
 		
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));

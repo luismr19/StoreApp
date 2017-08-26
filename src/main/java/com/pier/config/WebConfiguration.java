@@ -71,16 +71,16 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
      } 
 	
 
-	/*
-	 * @Autowired SpecObjectMapper domainMapper;
-	 * 
-	 * @Override public void
-	 * configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-	 * MappingJackson2HttpMessageConverter converter = new
-	 * MappingJackson2HttpMessageConverter();
-	 * converter.setObjectMapper(domainMapper); converters.add(converter);
-	 * super.configureMessageConverters(converters); }
-	 */
+	
+	  @Autowired SpecObjectMapper domainMapper;
+	  
+	  @Override public void
+	  configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+	  MappingJackson2HttpMessageConverter converter = new
+	  MappingJackson2HttpMessageConverter();
+	  converter.setObjectMapper(domainMapper); converters.add(converter);
+	  super.configureMessageConverters(converters); }
+	 
 	 
 	 @Bean(name="multipartResolver") 
 	    public CommonsMultipartResolver getResolver() throws IOException{

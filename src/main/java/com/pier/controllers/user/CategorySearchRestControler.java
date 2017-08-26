@@ -10,6 +10,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,7 @@ import com.pier.rest.model.Category;
 
 @RestController
 @RequestMapping("searchCat")
+@Transactional
 public class CategorySearchRestControler {
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -35,7 +37,7 @@ public class CategorySearchRestControler {
 
 		Criteria criteria = currentSession().createCriteria(Category.class);
 
-		criteria.add(Restrictions.like("name", "%"+word+"%"));
+		criteria.add(Restrictions.ilike("name", "%"+word+"%"));
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index);
 		criteria.setMaxResults(pageSize);

@@ -55,7 +55,7 @@ public class ManageArticleRestController {
 	public List<Article> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		Criteria criteria = currentSession().createCriteria(Article.class);
 		
-		criteria.add(Restrictions.like("title", "%"+word+"%"));		
+		criteria.add(Restrictions.ilike("title", "%"+word+"%"));		
 		criteria.addOrder(Order.asc("title"));
 		criteria.setFirstResult(index).setMaxResults(30);
 		return criteria.list();		
@@ -96,7 +96,7 @@ public class ManageArticleRestController {
 			currentArticle.setLink(article.getLink());
 			dao.update(currentArticle);
 			       
-	        return new ResponseEntity<Article>(article,HttpStatus.FOUND);
+	        return new ResponseEntity<Article>(article,HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<List<String>>(checker.getErrors(),HttpStatus.CONFLICT);

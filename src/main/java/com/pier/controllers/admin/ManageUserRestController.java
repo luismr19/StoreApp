@@ -67,9 +67,9 @@ public class ManageUserRestController {
 		Criteria criteria = currentSession().createCriteria(User.class);
 		Disjunction or=Restrictions.disjunction();
 		if(word!=null && !word.isEmpty()){
-		or.add(Restrictions.like("username", "%"+word+"%"));
-		or.add(Restrictions.like("firstname", "%"+word+"%"));
-		or.add(Restrictions.like("lastname", "%"+word+"%"));
+		or.add(Restrictions.ilike("username", "%"+word+"%"));
+		or.add(Restrictions.ilike("firstname", "%"+word+"%"));
+		or.add(Restrictions.ilike("lastname", "%"+word+"%"));
 		}
 		criteria.addOrder(Order.asc("firstname"));
 		criteria.setFirstResult(index).setMaxResults(pageSize);
@@ -94,8 +94,8 @@ public class ManageUserRestController {
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(User.class);
 		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.like("username", "%"+word+"%"));
-		or.add(Restrictions.like("firstname", "%"+word+"%"));
+		or.add(Restrictions.ilike("username", "%"+word+"%"));
+		or.add(Restrictions.ilike("firstname", "%"+word+"%"));
 		criteria.addOrder(Order.asc("username"));
 		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();
@@ -106,7 +106,7 @@ public class ManageUserRestController {
 	@RequestMapping(value="/users/{id}",method=RequestMethod.GET)
 	public ResponseEntity<User> showUser(@PathVariable("id") long id){
 		
-		return new ResponseEntity<User>(userDao.find(id),HttpStatus.FOUND);
+		return new ResponseEntity<User>(userDao.find(id),HttpStatus.OK);
 		
 	}
 	
@@ -115,7 +115,7 @@ public class ManageUserRestController {
 	public ResponseEntity<?> showUserOrder(@PathVariable("id") long id){
 		User user=userDao.find(id);
 		if(user!=null)
-		return new ResponseEntity<UserOrder>(new UserOrder(user,user.getOrders()),HttpStatus.FOUND);
+		return new ResponseEntity<UserOrder>(new UserOrder(user,user.getOrders()),HttpStatus.OK);
 		
 		return new ResponseEntity<String>("user not found",HttpStatus.NOT_FOUND);
 		
@@ -135,7 +135,7 @@ public class ManageUserRestController {
         
 		return new ResponseEntity<HttpHeaders>(headers,HttpStatus.CREATED);
 		}else{
-			return new ResponseEntity<List<String>>(userCheker.getErrors(),HttpStatus.FOUND);
+			return new ResponseEntity<List<String>>(userCheker.getErrors(),HttpStatus.OK);
 		}
 		
 	}
