@@ -48,6 +48,7 @@ public class Product implements ObjectModel<Long>{
 	@ManyToOne
 	@JoinColumn(name="BRAND_ID")
 	@Cascade(CascadeType.SAVE_UPDATE)
+	@Fetch(FetchMode.SELECT)
 	private Brand brand;
 	
 	@Column(name="PRICE",nullable= false, precision=7, scale=2)    // Creates the database field with this size.
@@ -70,13 +71,14 @@ public class Product implements ObjectModel<Long>{
 	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID", referencedColumnName="ID")})
 	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
 	@Fetch(FetchMode.SELECT)
-	@BatchSize(size=50)//I want to load 50 sets of categories for 50 products in one query
+	@BatchSize(size=30)//I want to load 30 sets of categories for 30 products in one query
 	private Set<Category> categories;	
 	
 	
 	@ManyToOne
 	@JoinColumn(name="TYPE_ID")
 	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
+	@Fetch(FetchMode.SELECT)
 	private ProductType productType;
 	
 	/*@Column(name="EXISTENCE", length=50, unique=false, nullable=false)
@@ -86,6 +88,7 @@ public class Product implements ObjectModel<Long>{
 	@JsonIgnore
 	@OneToMany(mappedBy="id.product")
 	@Cascade(CascadeType.ALL)
+	@Fetch(FetchMode.SELECT)
 	Set<ProductFlavor> productFlavors;
 	
 	@Transient	

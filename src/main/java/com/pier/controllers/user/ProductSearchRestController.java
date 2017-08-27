@@ -1,14 +1,21 @@
 package com.pier.controllers.user;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.text.StrBuilder;
 import org.hibernate.Criteria;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
+import org.hibernate.transform.AliasToBeanResultTransformer;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pier.rest.model.Category;
 import com.pier.rest.model.Product;
 
 
@@ -55,6 +63,7 @@ public class ProductSearchRestController {
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(0);
 		criteria.setMaxResults(pageSize);
+		
 		List<Product> results=criteria.list();
 		
 		
@@ -78,7 +87,10 @@ public class ProductSearchRestController {
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index);
-		criteria.setMaxResults(pageSize);		
+		criteria.setMaxResults(pageSize);
+		/*criteria.setProjection( Projections.projectionList()
+		        .add( Projections.distinct(Projections.property("id"))))
+		.setResultTransformer(Transformers.aliasToBean(Product.class)); */
 		List<Product> results=criteria.list();
 		
 		
@@ -93,35 +105,35 @@ public class ProductSearchRestController {
 	public ResponseEntity<List<Product>> advancedSearch(@RequestBody AdvancedSearchRequest search, 
 		@RequestParam(value="index",required=false) Integer index){
 		index=(index==null)?0:index;
-		int pageSize=9;
+		int pageSize=9;		
+      
 		
-		Criteria criteria = currentSession().createCriteria(Product.class);
-		criteria.createAlias("brand", "br");
-		criteria.createAlias("productType", "type");
-		criteria.createAlias("categories", "cats");
-		Disjunction isPresentIn=Restrictions.disjunction();		
+		List<Long> typesIds=search.getProductTypeIds();
+		List<Long> brandsIds=search.getBrandIds();
+		List<Long> catsIds=search.getCategoryIds();
 		
-		if(search.getBrandIds()!=null && search.getBrandIds().size()>0)
-		isPresentIn.add(Restrictions.in("br.id", search.getBrandIds()));
+		if(typesIds.isEmpty())
+			typesIds=Arrays.asList(0L);
 		
-		if(search.getProductTypeIds()!=null && search.getProductTypeIds().size()>0)
-		isPresentIn.add(Restrictions.in("type.id", search.getProductTypeIds()));
+		if(brandsIds.isEmpty())
+			brandsIds=Arrays.asList(0L);
 		
-		if(search.getCategoryIds()!=null && search.getCategoryIds().size()>0)
-		isPresentIn.add(Restrictions.in("cats.id", search.getCategoryIds()));
+		if(catsIds.isEmpty())
+			catsIds=Arrays.asList(0L);
 		
-		if(!StringUtils.isEmpty(search.getName())){
-		criteria.add(Restrictions.ilike("name", "%"+search.getName()+"%"));
-		criteria.add(Restrictions.and(isPresentIn));
-		}else{
-			criteria.add(isPresentIn);	
-		}
-		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(index);
-		criteria.setMaxResults(pageSize);
+		String mainQuery="select distinct prod from Product prod left join prod.categories cats where prod.productType.id in (:productTypes) or "+
+			       "prod.brand.id in (:brands) or cats in (select cat from Category cat where cat.id in (:catsIds))";							 	 
 		
 		
-		List<Product> results=criteria.list();
+		Query findProducts=currentSession().createQuery(mainQuery);
+		
+		findProducts.setParameterList("productTypes", typesIds);
+		findProducts.setParameterList("brands", brandsIds);
+		findProducts.setParameterList("catsIds", catsIds);
+		
+	
+		
+		List<Product> results=findProducts.list();
 		
 		if(results.isEmpty()){
 			return new ResponseEntity<List<Product>>(HttpStatus.NO_CONTENT);

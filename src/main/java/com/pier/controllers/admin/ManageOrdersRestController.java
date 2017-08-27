@@ -66,7 +66,7 @@ public class ManageOrdersRestController {
   @RequestParam(value="from", required=false) String from, @RequestParam(value="to", required = false) String to,
   @RequestParam(value="user", required = false) Long userId) {
   int pageSize = 30;
-  Criteria criteria = currentSession().createCriteria(PurchaseOrder.class);
+  Criteria criteria = currentSession().createCriteria(PurchaseOrder.class,"order");
   List < PurchaseOrder > results = Collections.emptyList();
 
   if(order==null)order=new String();
@@ -267,7 +267,7 @@ private Criteria getOrdersByUser(String order,Criteria criteria, Long userId){
 	     else
 	      criteria.addOrder(Order.asc("purchaseDate"));
 
-	     criteria.createAlias("owner", "ownr");
+	     criteria.createAlias("order.owner", "ownr");
 	     criteria.add(Restrictions.eq("ownr.id", userId));
 	     
 	     return criteria;

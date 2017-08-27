@@ -1,14 +1,15 @@
 package com.pier.controllers.user;
 
+import java.util.Collections;
 import java.util.List;
 
 public class AdvancedSearchRequest {
 	
-	private List<Long> brandIds;
+	private List<Long> brandIds=Collections.emptyList();
 	
-	private List<Long> productTypeIds;
+	private List<Long> productTypeIds=Collections.emptyList();
 	
-	private List<Long> categoryIds;
+	private List<Long> categoryIds=Collections.emptyList();
 	
 	private String name;
 
