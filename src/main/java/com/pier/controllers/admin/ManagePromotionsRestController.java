@@ -1,9 +1,12 @@
 package com.pier.controllers.admin;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -13,6 +16,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +26,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.business.validation.PromotionIntegrityChecker;
@@ -43,6 +49,9 @@ public class ManagePromotionsRestController {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	@Value("${angular.images}")
+	String assetsPaths;
+	
 	private Session currentSession(){
 		return sessionFactory.getCurrentSession();
 	}
@@ -52,7 +61,7 @@ public class ManagePromotionsRestController {
 		index=(index==null)?0:index;
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Promotion.class);
-		criteria.addOrder(Order.asc("id"));
+		criteria.addOrder(Order.desc("endDate"));
 		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();
 	}
@@ -113,7 +122,7 @@ public class ManagePromotionsRestController {
 			dao.add(promo);
 			HttpHeaders headers = new HttpHeaders();
 			headers.setLocation(ucBuilder.path("/articles/{id}").buildAndExpand(promo.getId()).toUri());
-			return new ResponseEntity<Promotion>(promo, headers, HttpStatus.CREATED);
+			return new ResponseEntity<Promotion>(promo, headers, HttpStatus.OK);
 		}
 		return new ResponseEntity<List<String>>(checker.getErrors(), HttpStatus.CONFLICT);
 	}
@@ -154,4 +163,43 @@ public class ManagePromotionsRestController {
 		return new ResponseEntity<Promotion>(HttpStatus.NOT_FOUND);
 
 	}
+	
+	@RequestMapping(value="/upload", method=RequestMethod.POST)
+    public ResponseEntity<?> handleFileUpload( @RequestPart("file") MultipartFile file, @RequestParam("id") Long id, HttpServletRequest request){
+            
+        if (!file.isEmpty()) {
+            try {
+                /*byte[] bytes = file.getBytes();
+                BufferedOutputStream stream = 
+                        new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
+                stream.write(bytes);
+                stream.close();*/
+                String uploadsDir = assetsPaths;
+                //in case we need to change                
+                if(! new File(uploadsDir).exists())
+                {
+                    new File(uploadsDir).mkdir();
+                }
+                String hql= "select max(id) from Promotion";
+                List list = currentSession().createQuery(hql).list();
+                long maxID = ( (Long)list.get(0) ).longValue();
+                maxID++;
+                if(id==null){
+                	id=maxID;
+                }
+                
+                String name = Long.toString(id)+".jpg";
+                String filePath = uploadsDir + name;
+                File destination = new File(filePath);
+                file.transferTo(destination);
+                return new ResponseEntity<String>("success",HttpStatus.NO_CONTENT);
+            } catch (Exception e) {
+                
+            	return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            
+        	return new ResponseEntity<String>("file not valid",HttpStatus.BAD_REQUEST);
+        }
+    }
 }

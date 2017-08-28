@@ -79,7 +79,9 @@ public class CartOperationsDelegate {
 			cart.setOwner(user);
 			//ApplyPromotions if any
 			if(cart.getPurchaseItems()!=null && cart.getPurchaseItems().size()>0){
+				//first try to see if some promotion can be applied
 			if(PromotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart))){
+				//if something can be applied then add it
 			cart.setGift(promotionsAppliance.calculateBenefits(cart));
 			cart.getGift().setOrder(cart);
 			}

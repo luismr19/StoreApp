@@ -145,6 +145,9 @@ public class PromotionRule implements ObjectModel<Long> {
 	}
 
 	public void setPercentage(int percentage) {
+		if(percentage>100){
+			percentage=100;
+		}
 		this.percentage = percentage;
 	}
 
