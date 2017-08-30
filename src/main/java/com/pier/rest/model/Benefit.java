@@ -93,8 +93,7 @@ public class Benefit implements ObjectModel<Long>{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((discount == null) ? 0 : discount.hashCode());		
-		result = prime * result + ((order == null) ? 0 : order.hashCode());
+		result = prime * result + ((discount == null) ? 0 : discount.hashCode());
 		result = prime * result + ((points == null) ? 0 : points.hashCode());
 		result = prime * result + ((products == null) ? 0 : products.hashCode());
 		return result;
@@ -114,15 +113,6 @@ public class Benefit implements ObjectModel<Long>{
 				return false;
 		} else if (!discount.equals(other.discount))
 			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		}
-		if (order == null) {
-			if (other.order != null)
-				return false;
-		} else if (!order.equals(other.order))
-			return false;
 		if (points == null) {
 			if (other.points != null)
 				return false;
@@ -135,8 +125,6 @@ public class Benefit implements ObjectModel<Long>{
 			return false;
 		return true;
 	}
-
-	
 	
 	
 

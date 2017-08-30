@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -87,7 +89,27 @@ public class OrderDetailUtil {
 		return products;
 	}
 
-	public static OrderDetail removeProductFromDetails(Set<OrderDetail> ordersDetails, ProductFlavor product) {		
+	public static Set<OrderDetail> updateOrderDetailsQuantities(Set<OrderDetail> ordersDetails, List<OrderDetail> modifiedDetails) {
+		
+		Map<ProductFlavor,OrderDetail> resultMap=ordersDetails.stream().collect(Collectors.toMap(OrderDetail::getProduct, x->x));		
+		
+		
+		for(OrderDetail modifiedDetail: modifiedDetails){
+			OrderDetail item=resultMap.get(modifiedDetail.getProduct());
+			if(item!=null){
+				if(modifiedDetail.getQuantity()>0){
+				item.setQuantity(modifiedDetail.getQuantity());				
+				}else{					
+					resultMap.remove(modifiedDetail.getProduct());
+				}
+			}
+		}
+		
+		return new HashSet(resultMap.values());
+		
+	}
+	
+public static OrderDetail removeProductFromDetails(Set<OrderDetail> ordersDetails, ProductFlavor product) {		
 		
 		Optional<OrderDetail> optionalDetail = ordersDetails.stream().filter(dt -> dt.getProduct().equals(product)).findFirst();
 		OrderDetail detail=null;

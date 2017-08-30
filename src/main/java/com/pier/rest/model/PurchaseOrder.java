@@ -45,7 +45,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
   private BigDecimal total=new BigDecimal("0.00");
   
   @JoinColumn(name="GIFT")
-  @OneToOne(fetch=FetchType.EAGER)
+  @OneToOne(fetch=FetchType.EAGER, orphanRemoval=true)
   @Cascade(CascadeType.ALL)   
   private Benefit gift;   
   

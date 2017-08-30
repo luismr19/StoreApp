@@ -3,6 +3,7 @@ package com.pier.controllers.user;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -119,6 +120,24 @@ public class CartRestController {
 		}
 		
 		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);			
+	}
+	
+	@RequestMapping(value="updateQuants",method=RequestMethod.POST)
+	public ResponseEntity<?> updateQuantities(@RequestBody List<OrderDetail> details, HttpServletRequest request){
+		
+		String token=request.getHeader(tokenHeader);
+		String username=jwtTokenUtil.getUsernameFromToken(token);			
+		User user=userDao.find("username",username).get(0);
+		
+		PurchaseOrder cart=null;
+		try{
+			cart=cartOps.updateQuantities(user, details);
+		}catch(Exception e){
+			return new ResponseEntity<String>("unable to remove products",HttpStatus.CONFLICT);
+		}
+		
+		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);	
+		
 	}
 	
 	@RequestMapping(value="cart",method=RequestMethod.GET)	

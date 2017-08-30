@@ -2,27 +2,24 @@ package com.pier.business;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.pier.business.exception.OutOfStockException;
 import com.pier.business.util.OrderDetailUtil;
 import com.pier.model.security.User;
 import com.pier.rest.model.OrderDetail;
-import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.service.OrderDetailDao;
 import com.pier.service.ProductDao;
 import com.pier.service.PurchaseOrderDao;
 import com.pier.service.UserDao;
+import com.pier.service.impl.OrderService;
 import com.pier.service.impl.FlavorService;
 
 /**
@@ -51,6 +48,9 @@ public class CartOperationsDelegate {
 	@Autowired
 	FlavorService flavorSvc;
 	
+	@Autowired
+    OrderService cartService;
+	
 	public PurchaseOrder addToCart(User user,ProductFlavor product) throws OutOfStockException{
 		return addToCart(user,product,1);
 	}
@@ -58,12 +58,13 @@ public class CartOperationsDelegate {
 	public PurchaseOrder addToCart(User user,ProductFlavor product, int quantity) throws OutOfStockException{
 		PurchaseOrder cart=getUserCart(user);	
 		
+		//mapToOrder takes care of the adding and quantities manipulation aswell as calculating the totals
 			if(OrderDetailUtil.mapToOrder(product, cart, quantity)!=null){
 				userDao.update(user);							
 			}else{
 			throw new OutOfStockException("out of stock");
-			}
-			
+			}			
+			applyPromotions(cart);
 			return cart;
 	}
 	
@@ -79,10 +80,40 @@ public class CartOperationsDelegate {
 		}
 		
 		cart.setTotal(OrderDetailUtil.updateTotals(cart));
+		applyPromotions(cart);
 		userDao.update(user);
 		
 		return cart;
 			
+	}
+	
+	public PurchaseOrder updateQuantities(User user, List<OrderDetail> updatedDetails){
+		PurchaseOrder cart=getUserCart(user);
+		Set<OrderDetail> newOrderDetails=OrderDetailUtil.updateOrderDetailsQuantities(cart.getPurchaseItems(), updatedDetails);
+		cart.setPurchaseItems(newOrderDetails);
+		
+		cart.setTotal(OrderDetailUtil.updateTotals(cart));
+		applyPromotions(cart);
+		userDao.update(user);
+		
+		return cart;
+	}
+	
+	public void applyPromotions(PurchaseOrder cart){
+		if(cart.getPurchaseItems()!=null && cart.getPurchaseItems().size()>0){
+			//first try to see if some promotion can be applied
+		if(PromotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart))){
+			//if something can be applied then add it
+		cart.setGift(promotionsAppliance.calculateBenefits(cart));
+		cart.getGift().setOrder(cart);
+		}else{
+			//if no promotion was applied then delete any previous promotions
+			if(cart.getGift()!=null){
+				cartService.clearBenefit(cart);					
+			}
+		}
+		}
+		
 	}
 			
 	
@@ -107,14 +138,7 @@ public class CartOperationsDelegate {
 			}
 			cart.setOwner(user);
 			//ApplyPromotions if any
-			if(cart.getPurchaseItems()!=null && cart.getPurchaseItems().size()>0){
-				//first try to see if some promotion can be applied
-			if(PromotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart))){
-				//if something can be applied then add it
-			cart.setGift(promotionsAppliance.calculateBenefits(cart));
-			cart.getGift().setOrder(cart);
-			}
-			}
+			applyPromotions(cart);
 			
 			return cart;
 		}
