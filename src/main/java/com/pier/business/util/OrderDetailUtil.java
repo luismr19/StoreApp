@@ -4,22 +4,28 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+
 import com.pier.rest.model.OrderDetail;
+import com.pier.rest.model.OrderDetailId;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
 
 public class OrderDetailUtil {
 
-	public static boolean mapToOrder(ProductFlavor product, PurchaseOrder order, int quantity) {
-
+	public static OrderDetail mapToOrder(ProductFlavor product, PurchaseOrder order, int quantity) {		
+		
+		OrderDetail orderDetail=null;
 		try {
 			if (!product.getProduct().getEnabled() || product.getExistence() < 1) {
-				return false;
+				return null;
 			}
 			Set<OrderDetail> purchaseItems = order.getPurchaseItems();
 
@@ -27,23 +33,23 @@ public class OrderDetailUtil {
 				Optional<OrderDetail> detail = order.getPurchaseItems().stream()
 						.filter(dt -> dt.getProduct().equals(product)).findFirst();
 				if (detail.isPresent()) {
-					detail.get().setQuantity(detail.get().getQuantity() + quantity);
+					orderDetail=detail.get();
+					orderDetail.setQuantity(orderDetail.getQuantity() + quantity);					
 				} else {
-					order.getPurchaseItems().add(new OrderDetail(1, product, order));
+					orderDetail=new OrderDetail(quantity, product, order);
+					order.getPurchaseItems().add(orderDetail);
 				}
 
 			} else {
-				order.setPurchaseItems(new HashSet(Arrays.asList(new OrderDetail(1, product, order))));
+				orderDetail=new OrderDetail(quantity, product, order);
+				order.setPurchaseItems(new HashSet(Arrays.asList(orderDetail)));
 			}
-			BigDecimal total = BigDecimal.ZERO;
-			for (OrderDetail detail : order.getPurchaseItems()) {
-				total = total.add(detail.getProduct().getProduct().getPrice()).multiply(new BigDecimal(detail.getQuantity()));
-			}
-			order.setTotal(total);
+			
+			order.setTotal(updateTotals(order));
 		} catch (Exception e) {
-			return false;
+			return null;
 		}
-		return true;
+		return orderDetail;
 	}
 
 	public static List<OrderDetail> generate(List<ProductFlavor> products) {
@@ -81,16 +87,52 @@ public class OrderDetailUtil {
 		return products;
 	}
 
-	public static void removeProductFromDetails(Set<OrderDetail> ordersDetails, ProductFlavor product) {
-		Optional<OrderDetail> detail = ordersDetails.stream().filter(dt -> dt.getProduct().equals(product)).findFirst();
-		if (detail.isPresent()) {
+	public static OrderDetail removeProductFromDetails(Set<OrderDetail> ordersDetails, ProductFlavor product) {		
+		
+		Optional<OrderDetail> optionalDetail = ordersDetails.stream().filter(dt -> dt.getProduct().equals(product)).findFirst();
+		OrderDetail detail=null;
+		if (optionalDetail.isPresent()) {
+			detail=optionalDetail.get();
 			//if it's the last item then remove the whole reference
-			if (detail.get().getQuantity() > 1) {
-				detail.get().setQuantity(detail.get().getQuantity() - 1);
+			if (detail.getQuantity() > 1) {
+				detail.setQuantity(detail.getQuantity() - 1);
 			} else {
-				ordersDetails.remove(detail.get());
+				detail.setQuantity(0);								
 			}
 		}
+		return detail;
+	}
+	
+	public static int updateQuantity(Session session,OrderDetail detail){
+		Query query = session.createQuery("update OrderDetail detail set detail.quantity = :quantity "
+		        + "where detail.id=:id");
+		query.setParameter("quantity", detail.getQuantity());
+		query.setParameter("id", detail.getId());
+		
+		return query.executeUpdate();
+	}
+	
+	public static Set<OrderDetail> removeDetail(Set<OrderDetail> ordersDetails, OrderDetail detail){
+		Set<OrderDetail> detailsNew=new HashSet();
+		Iterator<OrderDetail> iterator=ordersDetails.iterator();
+		while(iterator.hasNext()){
+			OrderDetail orderDetail=iterator.next();
+			if(orderDetail.equals(detail)){
+				
+			}else{
+				detailsNew.add(orderDetail);
+			}		
+			
+		}
+		return detailsNew;
+	}
+	
+	public static BigDecimal updateTotals(PurchaseOrder order){
+		BigDecimal total = BigDecimal.ZERO;
+		for (OrderDetail detail : order.getPurchaseItems()) {
+			total = total.add(detail.getProduct().getProduct().getPrice()).multiply(new BigDecimal(detail.getQuantity()));
+		}
+		return total;
 	}
 
 }

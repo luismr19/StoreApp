@@ -3,6 +3,7 @@ package com.pier.business;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -51,13 +52,20 @@ public class InProductGiveAway implements BenefitGiveAway{
 					affectedProducts=productsInOrder
 							.stream().filter(isEligibleForPromotion).collect(Collectors.toList());
 					
+					//total is equal to the minimum price of the affected products
+					try{
 					total=affectedProducts.stream().map(product->product.getPrice()).min(new BigDecimalComparator()).get();
+					}catch(NoSuchElementException no){
+						return null;
+					}
 										
+				}else{
+					return null;
 				}
 				
 							
 				if(rule.getPercentage()!=0)
-				discount=total.multiply(new BigDecimal(1/rule.getPercentage()));
+				discount=total.multiply(new BigDecimal(1).divide(new BigDecimal(rule.getPercentage()))).setScale(2, BigDecimal.ROUND_HALF_DOWN);
 				
 				
 				Benefit result=new Benefit();

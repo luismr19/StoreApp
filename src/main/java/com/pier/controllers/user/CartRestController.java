@@ -48,29 +48,29 @@ public class CartRestController {
 	UserDao userDao;
 	
 	@RequestMapping(value="addToCart",method=RequestMethod.POST)
-	public ResponseEntity<String> addToCart(@RequestBody ProductFlavor product, HttpServletRequest request){
+	public ResponseEntity<?> addToCart(@RequestBody ProductFlavor product, HttpServletRequest request){
 			
 		
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
 		User user=userDao.find("username",username).get(0);		
 				
-			
+		PurchaseOrder cart=null;
 		try{
-			cartOps.addToCart(user,product);
+			cart= cartOps.addToCart(user,product);
 		}catch(OutOfStockException ex){
 		return new ResponseEntity<String>("out of stock",HttpStatus.OK);
 		}
 		catch(Exception e){
 			return new ResponseEntity<String>("Error adding product",HttpStatus.CONFLICT);	
 		}
-		return new ResponseEntity<String>("successfully added to Cart",HttpStatus.OK);
+		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);
 		
 	}
 	
 	
 	@RequestMapping(value="addItemsToCart",method=RequestMethod.POST)
-	public ResponseEntity<String> addToCart(@RequestBody ObjectNode json, HttpServletRequest request){
+	public ResponseEntity<?> addToCart(@RequestBody ObjectNode json, HttpServletRequest request){
 			
 		ObjectMapper mapper=new ObjectMapper();
 		
@@ -87,35 +87,38 @@ public class CartRestController {
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
 		User user=userDao.find("username",username).get(0);		
-				
+		
+		PurchaseOrder cart=null;
 			
 		try{
-			cartOps.addToCart(user,product,howmany);
+			cart=cartOps.addToCart(user,product,howmany);
 		}catch(OutOfStockException ex){
 		return new ResponseEntity<String>("out of stock",HttpStatus.OK);
 		}
 		catch(Exception e){
 			return new ResponseEntity<String>("Error adding product",HttpStatus.CONFLICT);	
 		}
-		return new ResponseEntity<String>("successfully added to Cart",HttpStatus.OK);
+		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);
 		
 	}
 	
 	
 	
-	@RequestMapping(value="removeFromCart",method=RequestMethod.GET)
-	public ResponseEntity<String> removeFromCart(ProductFlavor product, HttpServletRequest request){
+	@RequestMapping(value="removeFromCart",method=RequestMethod.POST)
+	public ResponseEntity<?> removeFromCart(@RequestBody ProductFlavor product, HttpServletRequest request){
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
 		User user=userDao.find("username",username).get(0);
 		
+		PurchaseOrder cart=null;
+		
 		try{
-		cartOps.removeFromCart(user, product);
+			cart=cartOps.removeFromCart(user, product);
 		}catch(Exception e){
 			return new ResponseEntity<String>("unable to remove product",HttpStatus.CONFLICT);
 		}
 		
-		return new ResponseEntity<String>("successfully removed",HttpStatus.OK);			
+		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);			
 	}
 	
 	@RequestMapping(value="cart",method=RequestMethod.GET)	

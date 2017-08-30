@@ -19,6 +19,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
@@ -41,7 +42,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
   
   @Column(name="TOTAL",nullable= false, precision=12, scale=2)    // Creates the database field with this size.
   @Digits(integer=12, fraction=2)    
-  private BigDecimal total;
+  private BigDecimal total=new BigDecimal("0.00");
   
   @JoinColumn(name="GIFT")
   @OneToOne(fetch=FetchType.EAGER)
@@ -62,9 +63,10 @@ public class PurchaseOrder implements ObjectModel<Long>{
   @Size(min = 4, max = 50)  
   private String trackingNumber;
   
-  @OneToMany(mappedBy="id.order",fetch=FetchType.EAGER) //since id is the composite Key have to do notation like this
+  @OneToMany(mappedBy="id.order",fetch=FetchType.EAGER,orphanRemoval=true) //since id is the composite Key have to do notation like this
   @Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
-  @Fetch(FetchMode.SUBSELECT)//to remove join duplicates
+  @BatchSize(size=5)
+  @Fetch(FetchMode.SELECT)//to remove join duplicates
   private Set<OrderDetail> orderDetails;  
   
   @ManyToOne
@@ -73,6 +75,9 @@ public class PurchaseOrder implements ObjectModel<Long>{
   
   @Column(name="CONCLUDED")  
   private Boolean concluded;
+  
+  @Column(name="DELIVERED")  
+  private Boolean delivered=false;
   
   @Column(name="REJECTED")  
   private Boolean rejected;
@@ -141,7 +146,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
     this.trackingNumber = trackingNumber;
   }
 
-  @JsonProperty  
+  @JsonProperty("orderDetails") 
   public Set<OrderDetail> getPurchaseItems() {
     return orderDetails;
   }
@@ -187,68 +192,88 @@ public class PurchaseOrder implements ObjectModel<Long>{
 	this.rejected = rejected;
   }
 
-@Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((deliveryAddress == null) ? 0 : deliveryAddress.hashCode());       
-    result = prime * result + ((owner == null) ? 0 : owner.hashCode());
-    result = prime * result + ((purchaseDate == null) ? 0 : purchaseDate.hashCode());
-    result = prime * result + ((total == null) ? 0 : total.hashCode());
-    result = prime * result + ((trackingNumber == null) ? 0 : trackingNumber.hashCode());
-    return result;
+  public Boolean getDelivered() {
+	return delivered;
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    PurchaseOrder other = (PurchaseOrder) obj;
-    if (deliveryAddress == null) {
-      if (other.deliveryAddress != null)
-        return false;
-    } else if (!deliveryAddress.equals(other.deliveryAddress))
-      return false;
-    if (gift == null) {
-      if (other.gift != null)
-        return false;
-    } else if (!gift.equals(other.gift))
-      return false;
-    if (id == null) {
-      if (other.id != null)
-        return false;
-    }
-    if (orderDetails == null) {
-      if (other.orderDetails != null)
-        return false;
-    } else if (!orderDetails.equals(other.orderDetails))
-      return false;
-    if (owner == null) {
-      if (other.owner != null)
-        return false;
-    } else if (!owner.equals(other.owner))
-      return false;
-    if (purchaseDate == null) {
-      if (other.purchaseDate != null)
-        return false;
-    } else if (!purchaseDate.equals(other.purchaseDate))
-      return false;
-    if (total == null) {
-      if (other.total != null)
-        return false;
-    } else if (!total.equals(other.total))
-      return false;
-    if (trackingNumber == null) {
-      if (other.trackingNumber != null)
-        return false;
-    } else if (!trackingNumber.equals(other.trackingNumber))
-      return false;
-    return true;
+  public void setDelivered(Boolean delivered) {
+	this.delivered = delivered;
   }
+
+@Override
+public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + ((concluded == null) ? 0 : concluded.hashCode());
+	result = prime * result + ((delivered == null) ? 0 : delivered.hashCode());
+	result = prime * result + ((deliveryAddress == null) ? 0 : deliveryAddress.hashCode());
+	result = prime * result + ((gift == null) ? 0 : gift.hashCode());
+	result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+	result = prime * result + ((purchaseDate == null) ? 0 : purchaseDate.hashCode());
+	result = prime * result + ((rejected == null) ? 0 : rejected.hashCode());
+	result = prime * result + ((total == null) ? 0 : total.hashCode());
+	result = prime * result + ((trackingNumber == null) ? 0 : trackingNumber.hashCode());
+	return result;
+}
+
+@Override
+public boolean equals(Object obj) {
+	if (this == obj)
+		return true;
+	if (obj == null)
+		return false;
+	if (getClass() != obj.getClass())
+		return false;
+	PurchaseOrder other = (PurchaseOrder) obj;
+	if (concluded == null) {
+		if (other.concluded != null)
+			return false;
+	} else if (!concluded.equals(other.concluded))
+		return false;
+	if (delivered == null) {
+		if (other.delivered != null)
+			return false;
+	} else if (!delivered.equals(other.delivered))
+		return false;
+	if (deliveryAddress == null) {
+		if (other.deliveryAddress != null)
+			return false;
+	} else if (!deliveryAddress.equals(other.deliveryAddress))
+		return false;
+	if (gift == null) {
+		if (other.gift != null)
+			return false;
+	} else if (!gift.equals(other.gift))
+		return false;
+	if (owner == null) {
+		if (other.owner != null)
+			return false;
+	} else if (!owner.equals(other.owner))
+		return false;
+	if (purchaseDate == null) {
+		if (other.purchaseDate != null)
+			return false;
+	} else if (!purchaseDate.equals(other.purchaseDate))
+		return false;
+	if (rejected == null) {
+		if (other.rejected != null)
+			return false;
+	} else if (!rejected.equals(other.rejected))
+		return false;
+	if (total == null) {
+		if (other.total != null)
+			return false;
+	} else if (!total.equals(other.total))
+		return false;
+	if (trackingNumber == null) {
+		if (other.trackingNumber != null)
+			return false;
+	} else if (!trackingNumber.equals(other.trackingNumber))
+		return false;
+	return true;
+}
+
+
   
   
 

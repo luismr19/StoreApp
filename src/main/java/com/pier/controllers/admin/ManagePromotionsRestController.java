@@ -21,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,11 +34,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.business.validation.PromotionIntegrityChecker;
 import com.pier.rest.model.Promotion;
+import com.pier.rest.model.PromotionRule;
 import com.pier.service.PromotionDao;
 
 
 @RestController
 @RequestMapping(value = "promotions")
+@Transactional
 public class ManagePromotionsRestController {
 
 	@Autowired
@@ -102,6 +105,27 @@ public class ManagePromotionsRestController {
 		}
 		return results;
 	}
+	
+	@RequestMapping("/featured")
+	public List<Promotion> getFeatured(){
+		
+		List<Promotion> results=Collections.EMPTY_LIST;
+		
+		Criteria criteria = currentSession().createCriteria(Promotion.class);
+		Conjunction and=Restrictions.conjunction();
+		and.add(Restrictions.le("startDate", LocalDateTime.now()));
+		and.add(Restrictions.ge("endDate", LocalDateTime.now()));	
+		and.add(Restrictions.eq("featured", true));	
+		criteria.add(and);
+        
+		criteria.addOrder(Order.desc("endDate"));
+		try{
+			results= criteria.list();
+		}catch(Exception e){
+			
+		}
+		return results;
+	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public ResponseEntity<?> getPromotion(@PathVariable Long id) {
@@ -121,7 +145,7 @@ public class ManagePromotionsRestController {
 		if (!checker.checkIfDuplicate(promo) && checker.checkIfValid(promo)) {
 			dao.add(promo);
 			HttpHeaders headers = new HttpHeaders();
-			headers.setLocation(ucBuilder.path("/articles/{id}").buildAndExpand(promo.getId()).toUri());
+			headers.setLocation(ucBuilder.path("/promotion/{id}").buildAndExpand(promo.getId()).toUri());
 			return new ResponseEntity<Promotion>(promo, headers, HttpStatus.OK);
 		}
 		return new ResponseEntity<List<String>>(checker.getErrors(), HttpStatus.CONFLICT);
@@ -141,7 +165,18 @@ public class ManagePromotionsRestController {
 				currentPromo.setEndDate(promo.getEndDate());
 				currentPromo.setStartDate(promo.getStartDate());
 				currentPromo.setInclusive(promo.getInclusive());
-				currentPromo.setPromotionrule(promo.getPromotionRule());
+				PromotionRule promoRule=promo.getPromotionRule();
+				
+				currentPromo.getPromotionRule().setBehavior(promoRule.getBehavior());
+				currentPromo.getPromotionRule().setBrands(promoRule.getBrands());
+				currentPromo.getPromotionRule().setCategories(promoRule.getCategories());
+				currentPromo.getPromotionRule().setProductTypes(promoRule.getProductTypes());
+				currentPromo.getPromotionRule().setProducts(promoRule.getProducts());
+				currentPromo.getPromotionRule().setMinAmount(promoRule.getMinAmount());
+				currentPromo.getPromotionRule().setMinPurchase(promoRule.getMinPurchase());
+				currentPromo.getPromotionRule().setPercentage(promoRule.getPercentage());
+				currentPromo.getPromotionRule().setPoints(promoRule.getPoints());
+				currentPromo.getPromotionRule().setGiveAway(promoRule.getGiveAway());
 
 				dao.update(currentPromo);
 				return new ResponseEntity<Promotion>(currentPromo, HttpStatus.OK);
@@ -184,7 +219,7 @@ public class ManagePromotionsRestController {
                 List list = currentSession().createQuery(hql).list();
                 long maxID = ( (Long)list.get(0) ).longValue();
                 maxID++;
-                if(id==null){
+                if(id==null || id==0){
                 	id=maxID;
                 }
                 

@@ -36,12 +36,14 @@ public class Promotion implements ObjectModel<Long>{
 	private String displayName;
 	
 	@Column(name = "START_DATE")	
-	@Type(type="org.hibernate.type.LocalDateTimeType")		
+	@Type(type="org.hibernate.type.LocalDateTimeType")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime startDate;
 	
 	
 	@Column(name = "END_DATE")
 	@Type(type="org.hibernate.type.LocalDateTimeType")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime endDate;
 	
 	@Column(name="DESCRIPTION", columnDefinition = "TEXT")
@@ -50,16 +52,16 @@ public class Promotion implements ObjectModel<Long>{
 	
 	@OneToOne
 	@Cascade(CascadeType.SAVE_UPDATE)
-	private PromotionRule promotionrule;
+	private PromotionRule promotionRule;
 		
 	@Column(name="ENABLED")
 	private Boolean enabled;
 	
-	@Column(name="INCLUSIVE", columnDefinition="tinyint(1) default 1")
-	private Boolean inclusive;
+	@Column(name="INCLUSIVE", columnDefinition="tinyint(1) default 0")
+	private Boolean inclusive=false;
 	
 	@Column(name="FEATURED", columnDefinition="tinyint(1) default 0")
-	private Boolean featured;
+	private Boolean featured=false;
 
 	@Override
 	public Long getId() {
@@ -73,7 +75,7 @@ public class Promotion implements ObjectModel<Long>{
 	public String getDisplayName() {
 		return displayName;
 	}
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+	
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
@@ -82,6 +84,7 @@ public class Promotion implements ObjectModel<Long>{
 		return startDate;
 	}
 
+	
 	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
 	}
@@ -91,7 +94,7 @@ public class Promotion implements ObjectModel<Long>{
 		return endDate;
 	}
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+	
 	public void setEndDate(LocalDateTime endDate) {
 		this.endDate = endDate;
 	}
@@ -105,11 +108,11 @@ public class Promotion implements ObjectModel<Long>{
 	}
 
 	public PromotionRule getPromotionRule() {
-		return promotionrule;
+		return promotionRule;
 	}
 
 	public void setPromotionrule(PromotionRule promotionrule) {
-		this.promotionrule = promotionrule;
+		this.promotionRule = promotionrule;
 	}	
 
 	public Boolean getEnabled() {
@@ -145,7 +148,7 @@ public class Promotion implements ObjectModel<Long>{
 		result = prime * result + ((enabled == null) ? 0 : enabled.hashCode());
 		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
 		result = prime * result + ((inclusive == null) ? 0 : inclusive.hashCode());
-		result = prime * result + ((promotionrule == null) ? 0 : promotionrule.hashCode());
+		result = prime * result + ((promotionRule == null) ? 0 : promotionRule.hashCode());
 		result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
 		return result;
 	}
@@ -184,10 +187,10 @@ public class Promotion implements ObjectModel<Long>{
 				return false;
 		} else if (!inclusive.equals(other.inclusive))
 			return false;
-		if (promotionrule == null) {
-			if (other.promotionrule != null)
+		if (promotionRule == null) {
+			if (other.promotionRule != null)
 				return false;
-		} else if (!promotionrule.equals(other.promotionrule))
+		} else if (!promotionRule.equals(other.promotionRule))
 			return false;
 		if (startDate == null) {
 			if (other.startDate != null)

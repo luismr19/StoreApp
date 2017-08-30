@@ -169,7 +169,8 @@ public class ManageOrdersRestController {
 	 PurchaseOrder originalOrder=orderDao.find(id);
 	 
 	 if(originalOrder!=null){
-		 originalOrder.setConcluded(order.getConcluded());
+		 
+		 originalOrder.setDelivered(order.getDelivered());
 		 originalOrder.setTrackingNumber(order.getTrackingNumber());
 		 originalOrder.setDeliveryAddress(order.getDeliveryAddress());
 		 originalOrder.setRejected(order.getRejected());

@@ -51,8 +51,8 @@ public class PromotionRule implements ObjectModel<Long> {
 	Set<Category> categories;
 	
 	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(name="PROMO_CATEGORIES", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
-	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID" ,referencedColumnName="ID")})
+	@JoinTable(name="PROMO_BRANDS", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
+	inverseJoinColumns={@JoinColumn(name="BRAND_ID" ,referencedColumnName="ID")})
 	Set<Brand> brands;
 	
 	@Column(name="MINPURCHASE",nullable= false, precision=12, scale=2)

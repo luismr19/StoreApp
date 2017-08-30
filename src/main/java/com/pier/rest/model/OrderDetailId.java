@@ -3,6 +3,7 @@ package com.pier.rest.model;
 import java.io.Serializable;
 
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
@@ -21,7 +22,7 @@ public class OrderDetailId implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name = "ORDER_ID",referencedColumnName="ID")
 	@Cascade(CascadeType.SAVE_UPDATE)
 	@JsonIgnore
@@ -56,7 +57,7 @@ public class OrderDetailId implements Serializable{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((order == null) ? 0 : order.getOwner().hashCode());
+		result = prime * result + ((order == null) ? 0 : order.hashCode());
 		result = prime * result + ((product == null) ? 0 : product.hashCode());
 		return result;
 	}
@@ -82,6 +83,8 @@ public class OrderDetailId implements Serializable{
 			return false;
 		return true;
 	}
+
+	
 	
 	
 

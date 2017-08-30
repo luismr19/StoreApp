@@ -2,8 +2,11 @@ package com.pier.business;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Optional;
+import java.util.Set;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,19 +15,29 @@ import org.springframework.stereotype.Component;
 import com.pier.business.exception.OutOfStockException;
 import com.pier.business.util.OrderDetailUtil;
 import com.pier.model.security.User;
+import com.pier.rest.model.OrderDetail;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
+import com.pier.service.OrderDetailDao;
 import com.pier.service.ProductDao;
 import com.pier.service.PurchaseOrderDao;
 import com.pier.service.UserDao;
 import com.pier.service.impl.FlavorService;
 
+/**
+ * @author Daniel Gz
+ * 
+ * this class is like a controller delegate to handle and manipulate complex logic outside the controller
+ */
 @Component
 public class CartOperationsDelegate {
 	
 	@Autowired
 	UserDao userDao;
+	
+	@Autowired
+	OrderDetailDao detailDao;
 	
 	@Autowired
 	PurchaseOrderDao orderDao;
@@ -38,25 +51,37 @@ public class CartOperationsDelegate {
 	@Autowired
 	FlavorService flavorSvc;
 	
-	public void addToCart(User user,ProductFlavor product) throws OutOfStockException{
-		addToCart(user,product,1);
+	public PurchaseOrder addToCart(User user,ProductFlavor product) throws OutOfStockException{
+		return addToCart(user,product,1);
 	}
 	
-	public void addToCart(User user,ProductFlavor product, int quantity) throws OutOfStockException{
+	public PurchaseOrder addToCart(User user,ProductFlavor product, int quantity) throws OutOfStockException{
 		PurchaseOrder cart=getUserCart(user);	
 		
-			if(OrderDetailUtil.mapToOrder(product, cart, quantity)){
-				userDao.update(user);
-				orderDao.update(cart);			
+			if(OrderDetailUtil.mapToOrder(product, cart, quantity)!=null){
+				userDao.update(user);							
 			}else{
 			throw new OutOfStockException("out of stock");
 			}
+			
+			return cart;
 	}
 	
-	public void removeFromCart(User user, ProductFlavor product) throws OutOfStockException{
+	public PurchaseOrder removeFromCart(User user, ProductFlavor product) throws OutOfStockException{
 		PurchaseOrder cart=getUserCart(user);			
-		OrderDetailUtil.removeProductFromDetails(cart.getPurchaseItems(), product);
-		orderDao.update(cart);		
+		OrderDetail detail=OrderDetailUtil.removeProductFromDetails(cart.getPurchaseItems(), product);
+		if(detail.getQuantity()<=0){
+			//we do this because hibernate won't remove the objects from the set in their implementation in certain cases
+			Set purchaseItems=new HashSet(cart.getPurchaseItems());
+			cart.getPurchaseItems().clear();
+			//method removeDetail basically creates a new collection without the specified detail
+			cart.setPurchaseItems(OrderDetailUtil.removeDetail(purchaseItems, detail));
+		}
+		
+		cart.setTotal(OrderDetailUtil.updateTotals(cart));
+		userDao.update(user);
+		
+		return cart;
 			
 	}
 			
@@ -65,7 +90,9 @@ public class CartOperationsDelegate {
 	       PurchaseOrder cart=new PurchaseOrder();	
 	       cart.setTrackingNumber("PENDING");
 	       cart.setConcluded(false);
-			if(user.getOrders()==null){			
+			if(user.getOrders()==null){
+				//okay no orders then create the cart for our buddy
+				orderDao.add(cart);
 				user.setOrders(new HashSet(Arrays.asList(cart)));
 			}else{
 			Optional<PurchaseOrder> pendingOrder=user.getOrders().stream()
@@ -73,6 +100,8 @@ public class CartOperationsDelegate {
 			if(pendingOrder.isPresent()){
 				cart=pendingOrder.get();
 			}else{
+				//okay there are orders but none of them is pending
+				orderDao.add(cart);
 				user.getOrders().add(cart);
 			}
 			}
