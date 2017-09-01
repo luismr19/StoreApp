@@ -80,11 +80,7 @@ public class Product implements ObjectModel<Long>{
 	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
 	@Fetch(FetchMode.SELECT)
 	private ProductType productType;
-	
-	/*@Column(name="EXISTENCE", length=50, unique=false, nullable=false)
-	@NotNull
-	private Long existence;*/
-	
+
 	@JsonIgnore
 	@OneToMany(mappedBy="id.product")
 	@Cascade(CascadeType.ALL)
@@ -118,7 +114,7 @@ public class Product implements ObjectModel<Long>{
 		this.description = description;
 		this.categories = categories;
 		this.productType = productType;
-		//this.existence = existence;
+		this.existence = existence;
 		this.enabled = enabled;
 	}
 	
@@ -132,7 +128,7 @@ public class Product implements ObjectModel<Long>{
 		this.categories = categories;
 		this.productType = productType;
 		this.secondaryDescription=secondaryDescription;
-		//this.existence = existence;
+		this.existence = existence;
 		this.enabled = enabled;
 	}
 	
@@ -199,14 +195,6 @@ public class Product implements ObjectModel<Long>{
 		this.productType = productType;
 	}
 
-	/*public Long getExistence() {
-		return existence;
-	}*/
-
-	/*public void setExistence(Long existence) {
-		this.existence = existence;
-	}*/
-
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -225,22 +213,24 @@ public class Product implements ObjectModel<Long>{
 		return productFlavors.stream().map(pflav->pflav.getFlavor()).collect(Collectors.toList());
 	}	
 	
-	 @JsonIgnore
-		public Set<ProductFlavor> getProductFlavors() {
+	@JsonIgnore
+	public Set<ProductFlavor> getProductFlavors() {
 			return productFlavors;
-		}
-
-	    @JsonIgnore
-		private void setProductFlavors(Set<ProductFlavor> productFlavors) {
-			this.productFlavors = productFlavors;
-		}
-	//not persisted- only used to keep a hold of existence for single flavor products
-	public void setExistence(Long existence){
-		this.existence=existence;
 	}
+
+	 @JsonIgnore
+	private void setProductFlavors(Set<ProductFlavor> productFlavors) {
+	  this.productFlavors = productFlavors;
+	}	 
 	
+	//used only when there's no flavor provided see Product controller "create product"
 	public Long getExistence() {
-		return this.existence;
+		return existence;
+	}
+
+	//used only when there's no flavor provided see Product controller "create product"
+	public void setExistence(Long existence) {
+		this.existence = existence;
 	}
 
 	@Override

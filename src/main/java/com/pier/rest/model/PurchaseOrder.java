@@ -70,7 +70,9 @@ public class PurchaseOrder implements ObjectModel<Long>{
   private Set<OrderDetail> orderDetails;  
   
   @ManyToOne
-  @JoinColumn(name="OWNER" ,referencedColumnName="ID")  
+  @JoinColumn(name="OWNER" ,referencedColumnName="ID")
+  @BatchSize(size=1)
+  @Fetch(FetchMode.SELECT)
   private User owner;
   
   @Column(name="CONCLUDED")  

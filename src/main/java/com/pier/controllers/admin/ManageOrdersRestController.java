@@ -94,7 +94,7 @@ public class ManageOrdersRestController {
   }
  //set default to show of current day
 	  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	  from=(from==null)?LocalDate.now().format(formatter):from;
+	  from=(from==null)?LocalDate.now().minusDays(1).format(formatter):from;
 	  to=(to==null)?LocalDate.now().plusDays(1).format(formatter):to;
 	  criteria=this.getOrdersByDate(order, criteria, from, to);
 

@@ -62,7 +62,7 @@ public class AuthenticationRestController {
 		User user=userDao.find("username", request.getUsername()).get(0);
 		//User user=userDao.find(new Long(1));
 		
-		if(user!=null){
+		if(user!=null && user.getEnabled()){
 			
 			final Authentication authentication=authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(request.getUsername(),request.getPassword()));

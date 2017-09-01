@@ -65,9 +65,9 @@ public class PurchaseOperationsDelegate {
 
 		for (ProductFlavor product : purchasedProducts) {
 			product.setExistence(product.getExistence() - 1);
-			productFlavorDao.update(product);
-			cart.setConcluded(true);
+			productFlavorDao.update(product);			
 		}
+		cart.setConcluded(true);
 		orderDao.update(cart);
 
 	}

@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -59,7 +61,8 @@ public class ManageUserRestController {
 		return sessionFactory.getCurrentSession();
 	}
 	
-	@RequestMapping(value="/users/ordes")
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="/usersorders")
 	public List<UserOrder> fetch(@RequestParam(value="index",required=false) Integer index, @RequestParam(value="filter",required=false)String word){
 		index=(index==null)?0:index;
 		int pageSize=30;
@@ -78,27 +81,24 @@ public class ManageUserRestController {
 		return users.stream().map(user->new UserOrder(user,user.getOrders())).collect(Collectors.toList());
 	}
 	
-	//@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/users",method=RequestMethod.GET)
 	public List<User> list(@RequestParam(value="index",required=false) Integer index){
 		index=(index==null)?0:index;
-		int pageSize=30;
-		Criteria criteria = currentSession().createCriteria(User.class);
-		criteria.addOrder(Order.asc("id"));
-		criteria.setFirstResult(index).setMaxResults(pageSize);
-		return criteria.list();
+		int pageSize=30;		
+		Query<User> query=currentSession().createQuery("select distinct user from User user order by user.username");		
+		query.setFirstResult(index).setMaxResults(pageSize);
+		return query.getResultList();
 		
 	}
 	@RequestMapping(value="/users",params = {"filter","index"},method=RequestMethod.GET)
 	public List<User> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		int pageSize=30;
-		Criteria criteria = currentSession().createCriteria(User.class);
-		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.ilike("username", "%"+word+"%"));
-		or.add(Restrictions.ilike("firstname", "%"+word+"%"));
-		criteria.addOrder(Order.asc("username"));
-		criteria.setFirstResult(index).setMaxResults(pageSize);
-		return criteria.list();
+		Query<User> query=currentSession().createQuery("select distinct user from User user where user.username=:username or user.email=:email order by user.username");
+		query.setParameter("username", word);
+		query.setParameter("email", word);
+		query.setFirstResult(index).setMaxResults(pageSize);		
+		return query.getResultList();
 		
 	}
 	
@@ -111,9 +111,10 @@ public class ManageUserRestController {
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value="/users/orders/{id}",method=RequestMethod.GET)
+	@RequestMapping(value="/usersorders/{id}",method=RequestMethod.GET)
 	public ResponseEntity<?> showUserOrder(@PathVariable("id") long id){
 		User user=userDao.find(id);
+		Hibernate.initialize(user.getOrders());
 		if(user!=null)
 		return new ResponseEntity<UserOrder>(new UserOrder(user,user.getOrders()),HttpStatus.OK);
 		
@@ -122,26 +123,29 @@ public class ManageUserRestController {
 	}
 	
 	
-	@RequestMapping(value="/users/",method=RequestMethod.POST)
+	@RequestMapping(value="users",method=RequestMethod.POST)
 	public ResponseEntity<?> createUser(@RequestBody User user,UriComponentsBuilder ucBuilder){
 		
 		if(!userCheker.checkIfDuplicate(user) && userCheker.checkIfValid(user)){
+		user.setUsername(user.getUsername().toLowerCase());
+		user.setEmail(user.getEmail().toLowerCase());
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		user.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
-		user.setAuthorities(authDao.find("AuthorityName", AuthorityName.ROLE_USER));
+		user.setLastPasswordResetDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
+		user.setAuthorities(authDao.find("name", AuthorityName.ROLE_USER));		
 		userDao.add(user);		
 		HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());
         
 		return new ResponseEntity<HttpHeaders>(headers,HttpStatus.CREATED);
 		}else{
-			return new ResponseEntity<List<String>>(userCheker.getErrors(),HttpStatus.OK);
+			return new ResponseEntity<List<String>>(userCheker.getErrors(),HttpStatus.CONFLICT);
 		}
 		
 	}
 	
 	 @PreAuthorize("hasRole('ADMIN')")
-	 @RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
+	 @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
 	    public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) {
 	        System.out.println("Updating User " + id);
 	         
@@ -168,7 +172,7 @@ public class ManageUserRestController {
 	    }
 	 
 	 @PreAuthorize("hasRole('ADMIN')")
-	 @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
+	 @RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
 	    public ResponseEntity<User> deleteUser(@PathVariable("id") long id) {
 		 User user = userDao.find(id);
 	        if (user == null) {
@@ -178,6 +182,19 @@ public class ManageUserRestController {
 	 
 	        userDao.delete(user);
 	        return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
+	 }
+	 
+	 @RequestMapping(value = "/name/check", method = RequestMethod.GET)
+	 public ResponseEntity<Boolean> checkExists(@RequestParam(value="field") String  value ){
+		 Query query= userDao.currentSession().createQuery("from User where username=:username or email=:email");
+		 query.setParameter("username", value);
+		 query.setParameter("email", value);
+		 
+		 boolean exists=query.setMaxResults(1).uniqueResult() != null;
+		 
+		 return new ResponseEntity<Boolean>(exists,HttpStatus.OK);
+		 
+		 
 	 }
 
 }

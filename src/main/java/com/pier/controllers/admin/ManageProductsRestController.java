@@ -104,15 +104,16 @@ public class ManageProductsRestController {
 		if(checker.checkIfDuplicate(product) || !checker.checkIfValid(product)){
 			return new ResponseEntity<List<String>>(checker.getErrors(),HttpStatus.CONFLICT);
 		}
-		List<Flavor> flavors=new ArrayList<Flavor>();
+				
+		//if a flavor doesn't exist yet, then a new one is generated		
+		product.getFlavors().stream().filter(flav->flav.getId()==null).forEach(flav->flav.setId(flavorSvc.generateFlavor(flav.getFlavorName(), flav.getExistence()).getId()));
 		
-		product.getFlavors().forEach(flav->flavors.add(flavorSvc.generateFlavor(flav.getFlavorName(), flav.getExistence())));
-		
-		if(flavors.isEmpty()){
+		if(product.getFlavors().isEmpty()){
+			List<Flavor> flavors=new ArrayList<Flavor>();
 			flavors.add(flavorSvc.generateFlavor("default",product.getExistence()));
+			product.setFlavors(flavors);
 		}
 		
-		product.setFlavors(flavors);
 		dao.add(product);
 		
 		HttpHeaders headers = new HttpHeaders();
@@ -146,10 +147,14 @@ public class ManageProductsRestController {
 			}
 			
 		try{
-		List<Flavor> flavors=new ArrayList<Flavor>();
-		
-		product.getFlavors().forEach(flav->flavors.add(flavorSvc.generateFlavor(flav.getFlavorName(), flav.getExistence())));
-		currentProduct.setFlavors(flavors);
+			//if a flavor doesn't exist yet, then a new one is generated		
+			product.getFlavors().stream().filter(flav->flav.getId()==null).forEach(flav->flav.setId(flavorSvc.generateFlavor(flav.getFlavorName(), flav.getExistence()).getId()));
+			
+			if(product.getFlavors().isEmpty()){
+				List<Flavor> flavors=new ArrayList<Flavor>();
+				flavors.add(flavorSvc.generateFlavor("default",product.getExistence()));
+				product.setFlavors(flavors);
+			}
 		}catch(NullPointerException ex){
 			//do nothing, do not modify flavors
 		}

@@ -31,6 +31,7 @@ public class FlavorService {
 	public Flavor generateFlavor(String name, Long existence){
 		
 		Flavor flavor=dao.find("flavorName",name).stream().findFirst().orElse(new Flavor(name,existence));
+		flavor.setExistence(existence);
 		dao.add(flavor);
 		return flavor;
 		

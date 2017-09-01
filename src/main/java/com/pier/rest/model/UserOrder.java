@@ -8,14 +8,14 @@ public class UserOrder {
 	
 	private User user;
 	
-	private Set<PurchaseOrder> orders;
+	private Set<PurchaseOrder> purchaseOrders;
 	
 	
 
 	public UserOrder(User user, Set<PurchaseOrder> orders) {
 		super();
 		this.user = user;
-		this.orders = orders;
+		this.purchaseOrders = orders;
 	}
 
 	public User getUser() {
@@ -26,12 +26,12 @@ public class UserOrder {
 		this.user = user;
 	}
 
-	public Set<PurchaseOrder> getOrder() {
-		return orders;
+	public Set<PurchaseOrder> getPurchaseOrders() {
+		return purchaseOrders;
 	}
 
-	public void setOrder(Set<PurchaseOrder> order) {
-		this.orders = order;
+	public void setPurchaseOrders(Set<PurchaseOrder> orders) {
+		this.purchaseOrders = orders;
 	}
 	
 	

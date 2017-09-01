@@ -60,7 +60,7 @@ public class CartOperationsDelegate {
 		
 		//mapToOrder takes care of the adding and quantities manipulation aswell as calculating the totals
 			if(OrderDetailUtil.mapToOrder(product, cart, quantity)!=null){
-				userDao.update(user);							
+				orderDao.update(cart);							
 			}else{
 			throw new OutOfStockException("out of stock");
 			}			
@@ -81,7 +81,7 @@ public class CartOperationsDelegate {
 		
 		cart.setTotal(OrderDetailUtil.updateTotals(cart));
 		applyPromotions(cart);
-		userDao.update(user);
+		orderDao.update(cart);
 		
 		return cart;
 			
@@ -94,7 +94,7 @@ public class CartOperationsDelegate {
 		
 		cart.setTotal(OrderDetailUtil.updateTotals(cart));
 		applyPromotions(cart);
-		userDao.update(user);
+		orderDao.update(cart);
 		
 		return cart;
 	}
@@ -112,6 +112,9 @@ public class CartOperationsDelegate {
 				cartService.clearBenefit(cart);					
 			}
 		}
+		}else{
+			if(cart.getGift()!=null)
+			cartService.clearBenefit(cart);	
 		}
 		
 	}
@@ -126,10 +129,9 @@ public class CartOperationsDelegate {
 				orderDao.add(cart);
 				user.setOrders(new HashSet(Arrays.asList(cart)));
 			}else{
-			Optional<PurchaseOrder> pendingOrder=user.getOrders().stream()
-					.filter(order->order.getConcluded()==false).findFirst();		
-			if(pendingOrder.isPresent()){
-				cart=pendingOrder.get();
+			PurchaseOrder pendingOrder=cartService.getCart(user);	
+			if(pendingOrder!=null){
+				cart=pendingOrder;
 			}else{
 				//okay there are orders but none of them is pending
 				orderDao.add(cart);

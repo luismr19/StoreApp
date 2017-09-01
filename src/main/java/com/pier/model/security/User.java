@@ -24,6 +24,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
@@ -35,6 +36,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.pier.rest.model.Address;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.rest.model.ObjectModel;
@@ -59,7 +61,8 @@ public class User implements ObjectModel<Long>{
 	
 	@Column(name="PASSWORD", length=100)
 	@NotNull
-	@Size(min=4,max=100)		
+	@Size(min=4,max=100)	
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
 	
 	 @Column(name = "FIRSTNAME", length = 50)
@@ -85,12 +88,14 @@ public class User implements ObjectModel<Long>{
 	 @NotNull	 
 	 @JsonFormat(pattern="yyyy-MM-dd HH:mm")
 	 @Type(type="org.hibernate.type.LocalDateTimeType")
+	 @JsonProperty(access = Access.READ_ONLY)
 	 private LocalDateTime lastPasswordResetDate;
 	 
 	 @Column(name="CREATION_DATE", nullable=false)	 
 	 @NotNull	 
 	 @JsonFormat(pattern="yyyy-MM-dd HH:mm")
 	 @Type(type="org.hibernate.type.LocalDateTimeType")
+	 @JsonProperty(access = Access.READ_ONLY)
 	 private LocalDateTime createdDate;
 	 
 	 @JoinColumn(name="ADDRESS",updatable=true)	
@@ -107,8 +112,9 @@ public class User implements ObjectModel<Long>{
 	 inverseJoinColumns={@JoinColumn(name="AUTHORITY_ID", referencedColumnName="ID")})
 	 private List<Authority> authorities;
 	 
-	 @OneToMany(mappedBy="owner",fetch=FetchType.EAGER)
+	 @OneToMany(mappedBy="owner",fetch=FetchType.LAZY)
 	 @Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
+	 @BatchSize(size=5)
 	 @Fetch(FetchMode.SELECT) //since it is eagerly loaded using "join" expects an existing id
 	 Set<PurchaseOrder> orders;
 	 
@@ -131,7 +137,7 @@ public class User implements ObjectModel<Long>{
 	        this.username = username;
 	    }
 
-	    @JsonIgnore
+	    
 	    public String getPassword() {
 	        return password;
 	    }	    
@@ -191,8 +197,7 @@ public class User implements ObjectModel<Long>{
 	    public LocalDateTime getLastPasswordResetDate() {
 	        return lastPasswordResetDate;
 	    }
-
-	    @JsonIgnore
+	    
 	    public void setLastPasswordResetDate(LocalDateTime lastPasswordResetDate) {
 	        this.lastPasswordResetDate = lastPasswordResetDate;
 	    }
@@ -231,12 +236,12 @@ public class User implements ObjectModel<Long>{
 			this.points = points;
 		}		
 		
-		@JsonProperty("joinDate")
+		
 		public LocalDateTime getCreatedDate() {
 			return createdDate;
 		}
 		
-		@JsonIgnore
+		
 		public void setCreatedDate(LocalDateTime createdDate) {
 			this.createdDate = createdDate;
 		}
