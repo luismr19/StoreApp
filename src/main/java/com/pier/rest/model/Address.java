@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -37,13 +38,18 @@ public class Address implements ObjectModel<Long>{
 	@Size(min=3, max=40)
 	private String street;
 	
-	@Column(name="DISTRICT",length=40)	
+	@Column(name="DISTRICT",length=40)
+	@NotNull
+	@Size(min=3, max=40)
 	private String district;
 	
 	@Column(name="ZIPCODE")	
+	@NotNull
+	@Min(value=1)
 	private Integer ZipCode;
 	
 	@Column(name="NUM")
+	@NotNull	
 	private Integer number;
 	
 	@Column(name="INTERIOR")

@@ -1,5 +1,9 @@
 package com.pier.service.impl;
 
+import java.util.List;
+
+import javax.persistence.NoResultException;
+
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,9 +31,20 @@ public class OrderService {
 	}
 	
 	public PurchaseOrder getCart(User user){
+		try{
 		Query<PurchaseOrder> cartQuery=orderDao.currentSession().createQuery("select pOrder from PurchaseOrder pOrder where pOrder.concluded=false and pOrder.owner.id=:id");
 		cartQuery.setParameter("id", user.getId());
 		
 		return cartQuery.getSingleResult();
+		}catch(NoResultException e){
+			return null;
+		}
+	}
+	
+	public List<PurchaseOrder> getOrderHistory(String username){
+		Query<PurchaseOrder> cartQuery=orderDao.currentSession().createQuery("select pOrder from PurchaseOrder pOrder where pOrder.concluded=true and pOrder.owner.username=:username order by pOrder.purchaseDate");
+		cartQuery.setParameter("username", username);
+		
+		return cartQuery.getResultList();
 	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -70,13 +71,13 @@ public class CartOperationsDelegate {
 	
 	public PurchaseOrder removeFromCart(User user, ProductFlavor product) throws OutOfStockException{
 		PurchaseOrder cart=getUserCart(user);			
-		OrderDetail detail=OrderDetailUtil.removeProductFromDetails(cart.getPurchaseItems(), product);
+		OrderDetail detail=OrderDetailUtil.removeProductFromDetails(cart.getOrderDetails(), product);
 		if(detail.getQuantity()<=0){
 			//we do this because hibernate won't remove the objects from the set in their implementation in certain cases
-			Set purchaseItems=new HashSet(cart.getPurchaseItems());
-			cart.getPurchaseItems().clear();
+			Set purchaseItems=new HashSet(cart.getOrderDetails());
+			cart.getOrderDetails().clear();
 			//method removeDetail basically creates a new collection without the specified detail
-			cart.setPurchaseItems(OrderDetailUtil.removeDetail(purchaseItems, detail));
+			cart.setOrderDetails(OrderDetailUtil.removeDetail(purchaseItems, detail));
 		}
 		
 		cart.setTotal(OrderDetailUtil.updateTotals(cart));
@@ -89,8 +90,8 @@ public class CartOperationsDelegate {
 	
 	public PurchaseOrder updateQuantities(User user, List<OrderDetail> updatedDetails){
 		PurchaseOrder cart=getUserCart(user);
-		Set<OrderDetail> newOrderDetails=OrderDetailUtil.updateOrderDetailsQuantities(cart.getPurchaseItems(), updatedDetails);
-		cart.setPurchaseItems(newOrderDetails);
+		Set<OrderDetail> newOrderDetails=OrderDetailUtil.updateOrderDetailsQuantities(cart.getOrderDetails(), updatedDetails);
+		cart.setOrderDetails(newOrderDetails);
 		
 		cart.setTotal(OrderDetailUtil.updateTotals(cart));
 		applyPromotions(cart);
@@ -100,7 +101,7 @@ public class CartOperationsDelegate {
 	}
 	
 	public void applyPromotions(PurchaseOrder cart){
-		if(cart.getPurchaseItems()!=null && cart.getPurchaseItems().size()>0){
+		if(cart.getOrderDetails()!=null && cart.getOrderDetails().size()>0){
 			//first try to see if some promotion can be applied
 		if(PromotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart))){
 			//if something can be applied then add it
@@ -126,19 +127,22 @@ public class CartOperationsDelegate {
 	       cart.setConcluded(false);
 			if(user.getOrders()==null){
 				//okay no orders then create the cart for our buddy
+				cart.setOwner(user);
 				orderDao.add(cart);
 				user.setOrders(new HashSet(Arrays.asList(cart)));
 			}else{
 			PurchaseOrder pendingOrder=cartService.getCart(user);	
 			if(pendingOrder!=null){
 				cart=pendingOrder;
+				cart.setOwner(user);
 			}else{
 				//okay there are orders but none of them is pending
+				cart.setOwner(user);
 				orderDao.add(cart);
-				user.getOrders().add(cart);
+				/*Hibernate.initialize(user.getOrders());
+				user.getOrders().add(cart);*/
 			}
-			}
-			cart.setOwner(user);
+			}			
 			//ApplyPromotions if any
 			applyPromotions(cart);
 			

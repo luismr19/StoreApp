@@ -35,7 +35,7 @@ public class InProductGiveAway implements BenefitGiveAway{
 	@Override
 	public Benefit calculateBenefit() {
 		
-		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getPurchaseItems())
+		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getOrderDetails())
 				.stream().map(prodFlav->prodFlav.getProduct()).collect(Collectors.toList());
 				
 		

@@ -78,7 +78,10 @@ public class ManageOrdersRestController {
    criteria=getAllOrders(order,criteria);
   } else {
    //returns only concluded orders (you don't say!)
-   if (filter.toLowerCase().equals("concluded")) {
+   if (filter.toLowerCase().equals("delivered")) { //returns orders which have a tracking number
+		    //returns only shipped orders (you don't say!)
+	criteria=getDeliveredOrders(order,criteria);    
+   }else if (filter.toLowerCase().equals("concluded")) {
 	   criteria=getConcludedOrders(order,criteria);
    } else if (filter.toLowerCase().equals("shipped")) { //returns orders which have a tracking number
     //returns only shipped orders (you don't say!)
@@ -173,6 +176,8 @@ public class ManageOrdersRestController {
 		 originalOrder.setDelivered(order.getDelivered());
 		 originalOrder.setTrackingNumber(order.getTrackingNumber());
 		 originalOrder.setDeliveryAddress(order.getDeliveryAddress());
+		 if(order.getRejected())
+			 originalOrder.setConcluded(true);			 
 		 originalOrder.setRejected(order.getRejected());
 		 //originalOrder.setGift(order.getGift());		 
 		 //originalOrder.setOwner(order.getOwner());		 
@@ -230,8 +235,8 @@ private Criteria getPendingOrders(String order,Criteria criteria){
 	      criteria.addOrder(Order.asc("purchaseDate"));
 	
 	     criteria.add(Restrictions.isNotNull("deliveryAddress"));
-
 	     criteria.add(Restrictions.eq("trackingNumber","PENDING"));
+	     criteria.add(Restrictions.eq("rejected", false));
 	     
 	     return criteria;
 }
@@ -257,6 +262,18 @@ private Criteria getShippedOrders(String order,Criteria criteria){
 	      criteria.addOrder(Order.asc("purchaseDate"));
 
 	     criteria.add(Restrictions.neOrIsNotNull("trackingNumber", "PENDING"));
+	     
+	     return criteria;
+}
+
+private Criteria getDeliveredOrders(String order,Criteria criteria){
+	if (order.equals("desc"))
+	     //check order
+	      criteria.addOrder(Order.desc("purchaseDate"));
+	     else
+	      criteria.addOrder(Order.asc("purchaseDate"));
+
+	     criteria.add(Restrictions.eq("delivered", true));
 	     
 	     return criteria;
 }

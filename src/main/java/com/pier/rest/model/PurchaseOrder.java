@@ -78,11 +78,11 @@ public class PurchaseOrder implements ObjectModel<Long>{
   @Column(name="CONCLUDED")  
   private Boolean concluded;
   
-  @Column(name="DELIVERED")  
+  @Column(name="DELIVERED", columnDefinition = "boolean default true")  
   private Boolean delivered=false;
   
-  @Column(name="REJECTED")  
-  private Boolean rejected;
+  @Column(name="REJECTED",columnDefinition = "boolean default false")  
+  private Boolean rejected=false;
   
   public PurchaseOrder(){
     
@@ -149,12 +149,12 @@ public class PurchaseOrder implements ObjectModel<Long>{
   }
 
   @JsonProperty("orderDetails") 
-  public Set<OrderDetail> getPurchaseItems() {
+  public Set<OrderDetail> getOrderDetails() {
     return orderDetails;
   }
 
   @JsonIgnore
-  public void setPurchaseItems(Set<OrderDetail> purchaseItems) {
+  public void setOrderDetails(Set<OrderDetail> purchaseItems) {
     this.orderDetails = purchaseItems;
     linkDetails();
   }

@@ -29,22 +29,22 @@ public class OrderDetailUtil {
 			if (!product.getProduct().getEnabled() || product.getExistence() < 1) {
 				return null;
 			}
-			Set<OrderDetail> purchaseItems = order.getPurchaseItems();
+			Set<OrderDetail> purchaseItems = order.getOrderDetails();
 
 			if (purchaseItems != null) {
-				Optional<OrderDetail> detail = order.getPurchaseItems().stream()
+				Optional<OrderDetail> detail = order.getOrderDetails().stream()
 						.filter(dt -> dt.getProduct().equals(product)).findFirst();
 				if (detail.isPresent()) {
 					orderDetail=detail.get();
 					orderDetail.setQuantity(orderDetail.getQuantity() + quantity);					
 				} else {
 					orderDetail=new OrderDetail(quantity, product, order);
-					order.getPurchaseItems().add(orderDetail);
+					order.getOrderDetails().add(orderDetail);
 				}
 
 			} else {
 				orderDetail=new OrderDetail(quantity, product, order);
-				order.setPurchaseItems(new HashSet(Arrays.asList(orderDetail)));
+				order.setOrderDetails(new HashSet(Arrays.asList(orderDetail)));
 			}
 			
 			order.setTotal(updateTotals(order));
@@ -151,7 +151,7 @@ public static OrderDetail removeProductFromDetails(Set<OrderDetail> ordersDetail
 	
 	public static BigDecimal updateTotals(PurchaseOrder order){
 		BigDecimal total = BigDecimal.ZERO;
-		for (OrderDetail detail : order.getPurchaseItems()) {
+		for (OrderDetail detail : order.getOrderDetails()) {
 			total = total.add(detail.getProduct().getProduct().getPrice()).multiply(new BigDecimal(detail.getQuantity()));
 		}
 		return total;

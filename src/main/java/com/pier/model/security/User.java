@@ -21,6 +21,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -40,6 +41,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.pier.rest.model.Address;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.rest.model.ObjectModel;
+import com.pier.rest.model.Product;
 
 @Entity
 @Table(name = "USER")
@@ -117,6 +119,16 @@ public class User implements ObjectModel<Long>{
 	 @BatchSize(size=5)
 	 @Fetch(FetchMode.SELECT) //since it is eagerly loaded using "join" expects an existing id
 	 Set<PurchaseOrder> orders;
+	 
+	 @ManyToMany(fetch=FetchType.LAZY)	 
+	 @JoinTable(name="USER_FAVORITES",
+	        joinColumns = {@JoinColumn(name = "USER_ID")},
+	        inverseJoinColumns = {@JoinColumn(name = "PRODUCT_ID")},
+	        uniqueConstraints = {@UniqueConstraint(columnNames = {"USER_ID", "PRODUCT_ID"})}
+	)
+	 @BatchSize(size=5)
+	 @Fetch(FetchMode.SELECT)
+	 Set<Product> favorites;
 	 
 	 @Column(name="POINTS")
 	 Long points;
@@ -244,6 +256,15 @@ public class User implements ObjectModel<Long>{
 		
 		public void setCreatedDate(LocalDateTime createdDate) {
 			this.createdDate = createdDate;
+		}
+		
+		@JsonIgnore		
+		public Set<Product> getFavorites() {
+			return favorites;
+		}
+
+		public void setFavorites(Set<Product> favories) {
+			this.favorites = favories;
 		}
 
 		@Override

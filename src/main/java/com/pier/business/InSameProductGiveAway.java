@@ -35,7 +35,7 @@ public class InSameProductGiveAway implements BenefitGiveAway {
 	@Override
 	public Benefit calculateBenefit() {
 		
-		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getPurchaseItems())
+		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getOrderDetails())
 				.stream().map(prodFlav->prodFlav.getProduct()).collect(Collectors.toList());
 		BigDecimal discount=BigDecimal.ZERO;
 		
@@ -49,7 +49,7 @@ public class InSameProductGiveAway implements BenefitGiveAway {
 			Predicate<Product> isEligibleForPromotion=isProductPresent.or(isInCategories).or(isInTypes).or(isInBrands);
 			
 			//this emulates a buy N get 1 promotion in which if the quantity is more or equal to the specified the product is eligible
-			affectedProducts=order.getPurchaseItems().stream()
+			affectedProducts=order.getOrderDetails().stream()
 					.filter(item->item.getQuantity()>=rule.getMinAmount())
 					.map(item->item.getProduct().getProduct())
 					.filter(isEligibleForPromotion).collect(Collectors.toList());

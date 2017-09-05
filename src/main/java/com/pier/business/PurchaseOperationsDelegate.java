@@ -42,7 +42,7 @@ public class PurchaseOperationsDelegate {
 		int index=0;
 		
 		// check existence before buying
-		for (OrderDetail detail : cart.getPurchaseItems()) {
+		for (OrderDetail detail : cart.getOrderDetails()) {
 			index++;
 			if (detail.getQuantity() > productFlavorDao.find(detail.getProduct().getId()).getExistence()) {				
 				throw new OutOfStockException(detail.getProduct().getProduct().getName() + " is out of stock for that flavor");
@@ -56,12 +56,26 @@ public class PurchaseOperationsDelegate {
 		cart.setPurchaseDate(LocalDateTime.now());
 		orderDao.update(cart);
 		//call credit card api here "maybe"
+		
+		completeOrder(cart);
 
 	}
 
 	public void completeOrder(User user) {
 		PurchaseOrder cart = cartOps.getUserCart(user);		
-		List<ProductFlavor> purchasedProducts = OrderDetailUtil.getAsProductList(cart.getPurchaseItems());
+		List<ProductFlavor> purchasedProducts = OrderDetailUtil.getAsProductList(cart.getOrderDetails());
+
+		for (ProductFlavor product : purchasedProducts) {
+			product.setExistence(product.getExistence() - 1);
+			productFlavorDao.update(product);			
+		}
+		cart.setConcluded(true);
+		orderDao.update(cart);
+
+	}
+	
+	public void completeOrder(PurchaseOrder cart) {			
+		List<ProductFlavor> purchasedProducts = OrderDetailUtil.getAsProductList(cart.getOrderDetails());
 
 		for (ProductFlavor product : purchasedProducts) {
 			product.setExistence(product.getExistence() - 1);

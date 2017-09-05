@@ -74,6 +74,12 @@ public class HibernateDao<E, K extends Serializable> implements GenericDao<E, K>
 	public E find(K key) {		
 		return (E)currentSession().get(daoType,key);
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public E lazyFind(K key) {		
+		return (E)currentSession().load(daoType,key);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
