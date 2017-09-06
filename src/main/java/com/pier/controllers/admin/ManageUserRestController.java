@@ -86,7 +86,7 @@ public class ManageUserRestController {
 	public List<User> list(@RequestParam(value="index",required=false) Integer index){
 		index=(index==null)?0:index;
 		int pageSize=30;		
-		Query<User> query=currentSession().createQuery("select distinct user from User user order by user.username");		
+		Query<User> query=currentSession().createQuery("select distinct user from User user order by user.username asc");		
 		query.setFirstResult(index).setMaxResults(pageSize);
 		return query.getResultList();
 		
@@ -94,7 +94,7 @@ public class ManageUserRestController {
 	@RequestMapping(value="/users",params = {"filter","index"},method=RequestMethod.GET)
 	public List<User> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		int pageSize=30;
-		Query<User> query=currentSession().createQuery("select distinct user from User user where user.username=:username or user.email=:email order by user.username");
+		Query<User> query=currentSession().createQuery("select distinct user from User user where user.username=:username or user.email=:email order by user.username asc");
 		query.setParameter("username", word);
 		query.setParameter("email", word);
 		query.setFirstResult(index).setMaxResults(pageSize);		

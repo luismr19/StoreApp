@@ -29,7 +29,7 @@ public class Category implements ObjectModel<Long> {
 	
 	@Column(name="NAME", length=50, unique=true)
 	@NotNull
-	@Size(min=4, max=20)
+	@Size(min=3, max=20)
 	private String name;
 	
 	@JsonIgnore

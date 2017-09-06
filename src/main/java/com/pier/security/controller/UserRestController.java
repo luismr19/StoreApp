@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pier.model.security.User;
@@ -59,19 +61,36 @@ public class UserRestController {
 	}
 	
 	@RequestMapping(value="/history", method=RequestMethod.GET)
-	public ResponseEntity<?> getMyHistory(HttpServletRequest request){
+	public ResponseEntity<?> getMyHistory(@RequestParam(value="pageSize") Integer pageSize,@RequestParam(value="index") Integer index,  HttpServletRequest request){
 		JwtUser user=null;
 		List<PurchaseOrder> orders=Collections.emptyList();
 		try{
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);		
 		// we call this method instead of retrieving the user's orders collection to seize the username already present in token claims
-		orders=orderSvc.getOrderHistory(username);
+		orders=orderSvc.getOrderHistory(index,pageSize,username);
 		}catch(Exception e){
 			return new ResponseEntity<String>("",HttpStatus.NOT_FOUND);
 		}
 		
 		return new ResponseEntity<List<PurchaseOrder>>(orders,HttpStatus.OK);
+		
+	}
+	
+	@RequestMapping(value="/history/{id}", method=RequestMethod.GET)
+	public ResponseEntity<?> getMyHistoryOrder(@PathVariable Long id,  HttpServletRequest request){
+		JwtUser user=null;
+		PurchaseOrder order=null;
+		try{
+		String token=request.getHeader(tokenHeader);
+		String username=jwtTokenUtil.getUsernameFromToken(token);		
+		// we call this method instead of retrieving the user's orders collection to seize the username already present in token claims
+		order=orderSvc.getOrder(id, username);
+		}catch(Exception e){
+			return new ResponseEntity<String>("",HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<PurchaseOrder>(order,HttpStatus.OK);
 		
 	}
 	

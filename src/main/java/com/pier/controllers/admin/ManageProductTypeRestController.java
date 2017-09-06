@@ -86,7 +86,7 @@ public class ManageProductTypeRestController {
 		if(currentProductType!=null){
 			currentProductType.setName(productType.getName());
 			dao.update(currentProductType);
-			return new ResponseEntity<ProductType>(currentProductType,HttpStatus.NOT_FOUND);
+			return new ResponseEntity<ProductType>(currentProductType,HttpStatus.OK);
 		}		
 		return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 	}

@@ -41,10 +41,20 @@ public class OrderService {
 		}
 	}
 	
-	public List<PurchaseOrder> getOrderHistory(String username){
-		Query<PurchaseOrder> cartQuery=orderDao.currentSession().createQuery("select pOrder from PurchaseOrder pOrder where pOrder.concluded=true and pOrder.owner.username=:username order by pOrder.purchaseDate");
+	public List<PurchaseOrder> getOrderHistory(Integer index, Integer pageSize, String username){
+		Query<PurchaseOrder> cartQuery=orderDao.currentSession().createQuery("select pOrder from PurchaseOrder pOrder where pOrder.concluded=true and pOrder.owner.username=:username order by pOrder.id desc");
+		cartQuery.setFirstResult(index);
+		cartQuery.setMaxResults(pageSize);
 		cartQuery.setParameter("username", username);
 		
 		return cartQuery.getResultList();
+	}
+	
+	public PurchaseOrder getOrder(Long id, String username){
+		Query<PurchaseOrder> cartQuery=orderDao.currentSession().createQuery("select pOrder from PurchaseOrder pOrder where pOrder.id=:id and pOrder.owner.username=:username");		
+		cartQuery.setParameter("id", id);
+		cartQuery.setParameter("username", username);
+		
+		return cartQuery.getSingleResult();
 	}
 }

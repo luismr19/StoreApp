@@ -94,7 +94,7 @@ public class ManageCategoryRestController {
 		if(currentCategory!=null){
 			currentCategory.setName(category.getName());
 			dao.update(currentCategory);
-			return new ResponseEntity<Category>(currentCategory,HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Category>(currentCategory,HttpStatus.OK);
 		}		
 		return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 	}

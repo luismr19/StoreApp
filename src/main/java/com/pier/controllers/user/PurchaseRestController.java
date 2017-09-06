@@ -50,15 +50,17 @@ public class PurchaseRestController {
 	PurchaseOperationsDelegate purchaseOps;
 	
 	@RequestMapping(value="checkout",method=RequestMethod.PUT)
-	public ResponseEntity<String> checkout(@RequestBody Address deliveryAddress, HttpServletRequest request){
+	public ResponseEntity<?> checkout(@RequestBody Address deliveryAddress, HttpServletRequest request){
 		
 		
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
-		User user=userDao.find("username",username).get(0);					
+		User user=userDao.find("username",username).get(0);	
+		
+		PurchaseOrder order=null;
 		
 		try{		
-		purchaseOps.checkout(user,deliveryAddress);
+			order=purchaseOps.checkout(user,deliveryAddress);
 		}catch(OutOfStockException os){
 			return new ResponseEntity<String>(os.getMessage(),HttpStatus.CONFLICT);
 		}catch(EmptyCartException ec){
@@ -67,25 +69,26 @@ public class PurchaseRestController {
 		catch(Exception e){
 			return new ResponseEntity<String>("error performing operation",HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<String>("success",HttpStatus.OK);
+		return new ResponseEntity<PurchaseOrder>(order,HttpStatus.OK);
 		
 		
 	}
 	
 	//after the card api returns any flag we should call this method
 	@RequestMapping(value="completePurchase",method=RequestMethod.PUT)
-	public ResponseEntity<String> completeOrder(HttpServletRequest request){
+	public ResponseEntity<?> completeOrder(HttpServletRequest request){
 		
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
 		User user=userDao.find("username",username).get(0);	
+		PurchaseOrder order=null;
 		
 		try{
-		purchaseOps.completeOrder(user);
+			order=purchaseOps.completeOrder(user);
 		}catch(Exception e){
 			return new ResponseEntity<String>("error performing operation",HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<String>("success",HttpStatus.OK);
+		return new ResponseEntity<PurchaseOrder>(order,HttpStatus.OK);
 	}
 	
 	

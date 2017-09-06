@@ -35,7 +35,7 @@ public class PurchaseOperationsDelegate {
 	@Autowired
 	CartOperationsDelegate cartOps;
 
-	public void checkout(User user, Address deliveryAddress) throws OutOfStockException,EmptyCartException {
+	public PurchaseOrder checkout(User user, Address deliveryAddress) throws OutOfStockException,EmptyCartException {
 
 		PurchaseOrder cart = cartOps.getUserCart(user);
          
@@ -57,11 +57,13 @@ public class PurchaseOperationsDelegate {
 		orderDao.update(cart);
 		//call credit card api here "maybe"
 		
-		completeOrder(cart);
+		 completeOrder(cart);
+		 
+		 return cart;
 
 	}
 
-	public void completeOrder(User user) {
+	public PurchaseOrder completeOrder(User user) {
 		PurchaseOrder cart = cartOps.getUserCart(user);		
 		List<ProductFlavor> purchasedProducts = OrderDetailUtil.getAsProductList(cart.getOrderDetails());
 
@@ -71,6 +73,8 @@ public class PurchaseOperationsDelegate {
 		}
 		cart.setConcluded(true);
 		orderDao.update(cart);
+		
+		return cart;
 
 	}
 	
