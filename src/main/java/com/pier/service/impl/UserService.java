@@ -1,11 +1,14 @@
 package com.pier.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Set;
 
 import org.hibernate.Hibernate;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,9 @@ public class UserService {
 	
 	@Autowired
 	UserDao userDao;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 	
 	public Product addToFavorites(Product product, String token){
         User user=getUserFromTokenWithFavs(token);
@@ -54,6 +60,13 @@ public class UserService {
 		return user;
 	}
 	
+	public User getUserFromToken(String token){
+		String username=jwtTokenUtil.getUsernameFromToken(token);		
+		User user=userDao.find("username",username).get(0);
+		
+		return user;
+	}
+	
 	public User getUserFromTokenWithFavs(String token){
 		String username=jwtTokenUtil.getUsernameFromToken(token);		
 		User user=userDao.find("username",username).get(0);
@@ -72,6 +85,36 @@ public class UserService {
 			}
 			
 			return null;
+	}
+	
+	public User updateAddressAndPassword(User user, String token){
+		User currentUser=getUserFromToken(token);
+		currentUser.setAddress(user.getAddress());
+		currentUser.setPassword(passwordEncoder.encode(user.getPassword()));		
+		currentUser.setLastPasswordResetDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
+		
+		userDao.update(currentUser);
+		
+		return currentUser;
+	}
+	
+	public User updateAddress(User user, String token){
+		User currentUser=getUserFromToken(token);
+		currentUser.setAddress(user.getAddress());		
+		
+		userDao.update(currentUser);
+		
+		return currentUser;
+	}
+	
+	public User updatePassword(User user, String token){
+		User currentUser=getUserFromToken(token);
+		currentUser.setPassword(passwordEncoder.encode(user.getPassword()));		
+		currentUser.setLastPasswordResetDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
+		
+		userDao.update(currentUser);
+		
+		return currentUser;
 	}
 
 }

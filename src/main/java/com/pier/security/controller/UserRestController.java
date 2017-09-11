@@ -135,5 +135,38 @@ public class UserRestController {
 		return new ResponseEntity<Set<Product>>(results,HttpStatus.OK);		
 	}
 	
+	@RequestMapping(value="/user/info",method=RequestMethod.GET)
+	public ResponseEntity<?> getUserInfo(HttpServletRequest request){		
+		User user=null;
+		
+		try{
+			String token=request.getHeader(tokenHeader);
+			user=userSvc.getUserFromToken(token);
+		}catch(Exception e){
+			return new ResponseEntity<String>("error getting user info",HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<User>(user, HttpStatus.OK);
+		
+	}
+	
+	@RequestMapping(value="/user/info",method=RequestMethod.PUT)
+	public ResponseEntity<?> changeUserInfo(@RequestBody User user, HttpServletRequest request){		
+		User currentUser=null;
+		if(user.getPassword()==null || user.getPassword().isEmpty()){
+			return new ResponseEntity<String>("error, must contain password",HttpStatus.NOT_FOUND);
+		}
+		try{
+			String token=request.getHeader(tokenHeader);
+			currentUser=userSvc.updateAddressAndPassword(user, token);	
+			
+		}catch(Exception e){
+			return new ResponseEntity<String>("error getting user info",HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<User>(currentUser, HttpStatus.OK);
+		
+	}
+	
 
 }

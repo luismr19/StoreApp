@@ -122,7 +122,7 @@ public class ProductSearchRestController {
 			catsIds=Arrays.asList(0L);
 		
 		String mainQuery="select distinct prod from Product prod left join prod.categories cats where prod.productType.id in (:productTypes) or "+
-			       "prod.brand.id in (:brands) or cats in (select cat from Category cat where cat.id in (:catsIds))";							 	 
+			       "prod.brand.id in (:brands) or cats in (select cat from Category cat where cat.id in (:catsIds)) order by prod.name";							 	 
 		
 		
 		Query findProducts=currentSession().createQuery(mainQuery);
@@ -131,6 +131,8 @@ public class ProductSearchRestController {
 		findProducts.setParameterList("brands", brandsIds);
 		findProducts.setParameterList("catsIds", catsIds);
 		
+		findProducts.setMaxResults(pageSize);
+		findProducts.setFirstResult(index);
 	
 		
 		List<Product> results=findProducts.list();

@@ -100,7 +100,7 @@ public class CartOperationsDelegate {
 		return cart;
 	}
 	
-	public void applyPromotions(PurchaseOrder cart){
+	public PurchaseOrder applyPromotions(PurchaseOrder cart){
 		if(cart.getOrderDetails()!=null && cart.getOrderDetails().size()>0){
 			//first try to see if some promotion can be applied
 		if(PromotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart))){
@@ -117,6 +117,22 @@ public class CartOperationsDelegate {
 			if(cart.getGift()!=null)
 			cartService.clearBenefit(cart);	
 		}
+		
+		return cart;
+		
+	}
+	
+	public PurchaseOrder applyPromotionsReadOnly(PurchaseOrder cart){
+		if(cart.getOrderDetails()!=null && cart.getOrderDetails().size()>0){
+			//first try to see if some promotion can be applied
+		if(PromotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart))){
+			//if something can be applied then add it
+		cart.setGift(promotionsAppliance.calculateBenefits(cart));
+		cart.getGift().setOrder(cart);
+		}
+		}
+		
+		return cart;
 		
 	}
 			

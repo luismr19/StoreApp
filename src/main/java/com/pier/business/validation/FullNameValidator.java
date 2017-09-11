@@ -8,7 +8,7 @@ public class FullNameValidator {
 	   
 	   public static boolean validateLastName( String lastName )
 	   {
-	      return lastName.matches( "[a-zA-z]+([ '-][a-zA-Z]+)*" );
+	      return lastName.matches( "[a-zA-Z]+([ '-][a-zA-Z]+)*" );
 	   } // end method validateLastName
 
 }

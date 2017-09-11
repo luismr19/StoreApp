@@ -98,10 +98,12 @@ public class OrderDetailUtil {
 			OrderDetail item=resultMap.get(modifiedDetail.getProduct());
 			if(item!=null){
 				if(modifiedDetail.getQuantity()>0){
-				item.setQuantity(modifiedDetail.getQuantity());				
+				item.setQuantity(modifiedDetail.getQuantity());		
 				}else{					
 					resultMap.remove(modifiedDetail.getProduct());
 				}
+			}else{
+				resultMap.put(modifiedDetail.getProduct(), modifiedDetail);
 			}
 		}
 		
@@ -152,7 +154,7 @@ public static OrderDetail removeProductFromDetails(Set<OrderDetail> ordersDetail
 	public static BigDecimal updateTotals(PurchaseOrder order){
 		BigDecimal total = BigDecimal.ZERO;
 		for (OrderDetail detail : order.getOrderDetails()) {
-			total = total.add(detail.getProduct().getProduct().getPrice()).multiply(new BigDecimal(detail.getQuantity()));
+			total = total.add(detail.getProduct().getProduct().getPrice().multiply(new BigDecimal(detail.getQuantity())));
 		}
 		return total;
 	}

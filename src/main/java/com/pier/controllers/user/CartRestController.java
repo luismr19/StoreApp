@@ -157,5 +157,15 @@ public class CartRestController {
 		
 	}
 	
+	@RequestMapping(value="cart/promos",method=RequestMethod.POST)
+	public ResponseEntity<?> getEligiblePromotions(@RequestBody PurchaseOrder cart){
+		try{
+			return ResponseEntity.ok(cartOps.applyPromotionsReadOnly(cart));
+		}catch(Exception e){
+			return new ResponseEntity<String>("error getting promotions",HttpStatus.CONFLICT);
+		}
+		
+	}
+	
 
 }
