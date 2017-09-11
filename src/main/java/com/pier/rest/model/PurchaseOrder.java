@@ -78,7 +78,7 @@ public class PurchaseOrder implements ObjectModel<Long>{
   @Column(name="CONCLUDED")  
   private Boolean concluded;
   
-  @Column(name="DELIVERED", columnDefinition = "boolean default true")  
+  @Column(name="DELIVERED", columnDefinition = "boolean default false")  
   private Boolean delivered=false;
   
   @Column(name="REJECTED",columnDefinition = "boolean default false")  

@@ -262,6 +262,7 @@ private Criteria getShippedOrders(String order,Criteria criteria){
 	      criteria.addOrder(Order.asc("purchaseDate"));
 
 	     criteria.add(Restrictions.neOrIsNotNull("trackingNumber", "PENDING"));
+	     criteria.add(Restrictions.eqOrIsNull("delivered", false));
 	     
 	     return criteria;
 }
