@@ -45,8 +45,9 @@ public class ProductSearchRestController {
 	
 	@RequestMapping(value="like",method=RequestMethod.GET)
 	public ResponseEntity<List<Product>> searchProductLike(@RequestParam(value="word",required=false) String word,
-			@RequestParam(value="name",required=false) String name){
+		@RequestParam(value="name",required=false) String name, @RequestParam("index") Integer index){
 		int pageSize=30;
+		index=(index!=null)?index:0;
 		
 		Criteria criteria = currentSession().createCriteria(Product.class);
 		Disjunction or=Restrictions.disjunction();
@@ -61,36 +62,9 @@ public class ProductSearchRestController {
 		
 		criteria.add(or);
 		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(0);
-		criteria.setMaxResults(pageSize);
-		
-		List<Product> results=criteria.list();
-		
-		
-		if(results.isEmpty()){
-			return new ResponseEntity<List<Product>>(HttpStatus.NO_CONTENT);
-		}else{
-			return new ResponseEntity<List<Product>>(results,HttpStatus.OK);
-		}
-	}	
-	
-	
-	@RequestMapping(value="more",method=RequestMethod.GET)
-	public ResponseEntity<List<Product>> getMoreResults(@RequestParam("word") String word,@RequestParam("index") int index){
-		int pageSize=30;
-		
-		Criteria criteria = currentSession().createCriteria(Product.class);
-		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.ilike("description", "%"+word+"%"));
-		or.add(Restrictions.ilike("name", "%"+word+"%"));
-		
-		criteria.add(or);
-		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index);
 		criteria.setMaxResults(pageSize);
-		/*criteria.setProjection( Projections.projectionList()
-		        .add( Projections.distinct(Projections.property("id"))))
-		.setResultTransformer(Transformers.aliasToBean(Product.class)); */
+		
 		List<Product> results=criteria.list();
 		
 		

@@ -18,6 +18,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -37,22 +38,30 @@ public class PromotionRule implements ObjectModel<Long> {
 	
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="PROMO_PRODUCT", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
-	inverseJoinColumns=@JoinColumn(name="PRODUCT_ID" ,referencedColumnName="PRODUCT_ID"))	
+	inverseJoinColumns=@JoinColumn(name="PRODUCT_ID" ,referencedColumnName="PRODUCT_ID"))
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size=5)
 	Set<Product> products;
 	
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="PROMO_TYPES", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
 	inverseJoinColumns={@JoinColumn(name="PRODUCT_TYPE_ID" ,referencedColumnName="ID")})
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size=5)
 	Set<ProductType> productTypes;
 	
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="PROMO_CATEGORIES", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
 	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID" ,referencedColumnName="ID")})
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size=5)
 	Set<Category> categories;
 	
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="PROMO_BRANDS", joinColumns={@JoinColumn(name="PROMO_RULE_ID", referencedColumnName="ID")},
 	inverseJoinColumns={@JoinColumn(name="BRAND_ID" ,referencedColumnName="ID")})
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size=5)
 	Set<Brand> brands;
 	
 	@Column(name="MINPURCHASE",nullable= false, precision=12, scale=2)
@@ -67,6 +76,7 @@ public class PromotionRule implements ObjectModel<Long> {
 	@JoinTable(name="RULE_PRODUCT", joinColumns=@JoinColumn(name="RULE_ID" ,referencedColumnName="ID"),
 	inverseJoinColumns={@JoinColumn(name="PRODUCT_ID", referencedColumnName="PRODUCT_ID")})
 	@Fetch(FetchMode.SELECT)
+	@BatchSize(size=5)
 	private List<Product> giveAway;
 	
 	@Column(name="POINTS")

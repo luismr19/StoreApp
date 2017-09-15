@@ -102,7 +102,7 @@ public class OrderDetailUtil {
 				}else{					
 					resultMap.remove(modifiedDetail.getProduct());
 				}
-			}else{
+			}else if(modifiedDetail.getQuantity()>0){
 				resultMap.put(modifiedDetail.getProduct(), modifiedDetail);
 			}
 		}
