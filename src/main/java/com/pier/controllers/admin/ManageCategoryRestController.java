@@ -45,12 +45,19 @@ public class ManageCategoryRestController {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public List<Category> list(@RequestParam("index") int index){
+	public List<Category> list(@RequestParam("index") int index, @RequestParam(value="clothing",required=false) Boolean clothing,
+			@RequestParam(value="all",required=false) Boolean all){
+		if(clothing==null){
+			clothing=false;
+		}
 		int pageSize=30;
 		Criteria criteria = currentSession().createCriteria(Category.class);
 		criteria.addOrder(Order.asc("id"));
 		criteria.setFirstResult(index).setMaxResults(pageSize);
-		return criteria.list();
+		if(all==null || all==false)
+		criteria.add(Restrictions.eq("clothing", clothing));
+		List results=criteria.list();
+		return results;
 	}
 	
 	@RequestMapping(params = "word",method=RequestMethod.GET)
@@ -93,6 +100,7 @@ public class ManageCategoryRestController {
 		Category currentCategory=dao.find(id);		
 		if(currentCategory!=null){
 			currentCategory.setName(category.getName());
+			currentCategory.setClothing(category.getClothing());
 			dao.update(currentCategory);
 			return new ResponseEntity<Category>(currentCategory,HttpStatus.OK);
 		}		

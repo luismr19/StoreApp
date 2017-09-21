@@ -46,11 +46,13 @@ public class JwtTokenUtil implements Serializable{
     
     private Long expiration;
 
-    public String getUsernameFromToken(String token) {
+    public String getUsernameFromToken(String token) throws ExpiredJwtException {
         String username;
         try {
             final Claims claims = getClaimsFromToken(token);
             username = claims.getSubject();
+        }catch(ExpiredJwtException exp){
+        	username=null;        	
         }catch (Exception e) {
             username = null;
         }
@@ -98,6 +100,9 @@ public class JwtTokenUtil implements Serializable{
                     .setSigningKey(secret)
                     .parseClaimsJws(token)
                     .getBody();
+        }catch(ExpiredJwtException exp){
+        	claims=null;
+            throw new ExpiredJwtException(null, claims, exp.getMessage());
         }catch (Exception ex) {
             claims = null;
         }

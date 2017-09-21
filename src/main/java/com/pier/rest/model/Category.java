@@ -1,5 +1,7 @@
 package com.pier.rest.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -30,7 +32,11 @@ public class Category implements ObjectModel<Long> {
 	@Column(name="NAME", length=50, unique=true)
 	@NotNull
 	@Size(min=3, max=20)
-	private String name;
+	private String name;	
+	
+	@Column(name="CLOTHING" , columnDefinition="boolean default false")
+	@NotNull
+	private Boolean clothing=false;
 	
 	@JsonIgnore
 	@ManyToMany(mappedBy="categories", fetch=FetchType.LAZY)
@@ -72,6 +78,15 @@ public class Category implements ObjectModel<Long> {
 	
 	public void setProducts(List<Product> products) {
 		this.products = products;
+	}	
+	
+
+	public Boolean getClothing() {
+		return clothing;
+	}
+
+	public void setClothing(Boolean clothing) {
+		this.clothing = clothing;
 	}
 
 	@Override

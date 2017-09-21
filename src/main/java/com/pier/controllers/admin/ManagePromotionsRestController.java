@@ -227,7 +227,7 @@ public class ManagePromotionsRestController {
                 String filePath = uploadsDir + name;
                 File destination = new File(filePath);
                 file.transferTo(destination);
-                return new ResponseEntity<String>("success",HttpStatus.NO_CONTENT);
+                return new ResponseEntity<String>(""+id,HttpStatus.OK);
             } catch (Exception e) {
                 
             	return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);

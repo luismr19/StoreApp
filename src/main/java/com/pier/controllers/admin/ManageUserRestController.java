@@ -173,7 +173,7 @@ public class ManageUserRestController {
 	 
 	 @PreAuthorize("hasRole('ADMIN')")
 	 @RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
-	    public ResponseEntity<User> deleteUser(@PathVariable("id") long id) {
+	    public ResponseEntity<?> deleteUser(@PathVariable("id") long id) {
 		 User user = userDao.find(id);
 	        if (user == null) {
 	            System.out.println("Unable to delete. User with id " + id + " not found");

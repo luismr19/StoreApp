@@ -1,4 +1,4 @@
-package com.pier.security.controller;
+package com.pier.controllers.user;
 
 import java.util.Collections;
 import java.util.HashSet;
