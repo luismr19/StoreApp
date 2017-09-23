@@ -18,6 +18,7 @@ import com.pier.business.exception.EmptyCartException;
 import com.pier.business.exception.OutOfStockException;
 import com.pier.model.security.User;
 import com.pier.rest.model.Address;
+import com.pier.rest.model.CheckoutRequest;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.security.util.JwtTokenUtil;
 import com.pier.service.ProductDao;
@@ -50,7 +51,7 @@ public class PurchaseRestController {
 	PurchaseOperationsDelegate purchaseOps;
 	
 	@RequestMapping(value="checkout",method=RequestMethod.PUT)
-	public ResponseEntity<?> checkout(@RequestBody Address deliveryAddress, HttpServletRequest request){
+	public ResponseEntity<?> checkout(@RequestBody CheckoutRequest checkoutInfo, HttpServletRequest request){
 		
 		
 		String token=request.getHeader(tokenHeader);
@@ -60,7 +61,7 @@ public class PurchaseRestController {
 		PurchaseOrder order=null;
 		
 		try{		
-			order=purchaseOps.checkout(user,deliveryAddress);
+			order=purchaseOps.checkout(user,checkoutInfo.getAddress());
 		}catch(OutOfStockException os){
 			return new ResponseEntity<String>(os.getMessage(),HttpStatus.CONFLICT);
 		}catch(EmptyCartException ec){

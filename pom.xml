@@ -26,6 +26,12 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<repositories>
+	<repository>
+        <id>mercadopago</id>
+        <url>https://github.com/mercadopago/sdk-java/raw/master/releases</url>
+    </repository>
+    </repositories>
 
 	<dependencies>
 
@@ -195,6 +201,13 @@
     <artifactId>commons-lang3</artifactId>
     <version>3.5</version>
 </dependency>
+
+   <!--  payments -->
+      <dependency>
+        <groupId>com.mercadopago</groupId>
+        <artifactId>sdk</artifactId>
+        <version>0.3.4</version>
+    </dependency>
 	</dependencies>
 	<build>
 		<finalName>FStore</finalName>
