@@ -57,4 +57,8 @@ public class OrderService {
 		
 		return cartQuery.getSingleResult();
 	}
+	
+	public PurchaseOrder getOrderByPaymentId(String paymentId){
+		return orderDao.find("paymentId", paymentId).get(0);
+	}
 }

@@ -4,6 +4,8 @@ public class CheckoutRequest {
 	
 	private Address address;
 	private String token;
+	private String paymentMethod;
+	
 	
 	public Address getAddress() {
 		return address;
@@ -17,4 +19,12 @@ public class CheckoutRequest {
 	public void setToken(String token) {
 		this.token = token;
 	}
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
+	
+	
 }

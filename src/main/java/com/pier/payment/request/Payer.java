@@ -2,6 +2,10 @@ package com.pier.payment.request;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Payer {
 	
 	public static String ENT_TYPE_INDIVIDUAL="individual";
@@ -14,11 +18,12 @@ public class Payer {
 	private String type;
 	private String id;
 	private String email;
-	private String identification;
+	private Identification identification;
 	private Phone phone;
 	private String first_name;
 	private String last_name;
 	private PayerAddress address;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")
 	private LocalDateTime registration_date;
 	
 	
@@ -76,10 +81,10 @@ public class Payer {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getIdentification() {
+	public Identification getIdentification() {
 		return identification;
 	}
-	public void setIdentification(String identification) {
+	public void setIdentification(Identification identification) {
 		this.identification = identification;
 	}
 	public Phone getPhone() {

@@ -2,6 +2,8 @@ package com.pier.payment.request;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class Card {
 	
 	private long id;
@@ -9,8 +11,12 @@ public class Card {
 	private String first_six_digits;
 	private int expiration_year;
 	private int expiration_month;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")
 	private LocalDateTime date_created;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")
 	private LocalDateTime date_last_updated;
+	private CardHolder cardholder;
+	
 	public long getId() {
 		return id;
 	}
@@ -53,6 +59,14 @@ public class Card {
 	public void setDate_last_updated(LocalDateTime date_last_updated) {
 		this.date_last_updated = date_last_updated;
 	}
+	public CardHolder getCardholder() {
+		return cardholder;
+	}
+	public void setCardholder(CardHolder cardholder) {
+		this.cardholder = cardholder;
+	}
+	
+	
 	
 	
 	

@@ -1,6 +1,9 @@
 package com.pier.payment.request;
 
-public class Order {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class PaymentOrder {
 	
 	public static String MERCADOLIBRE="mercadolibre";
 	public static String MERCADOPAGO="mercadopago";

@@ -2,6 +2,9 @@ package com.pier.payment.request;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AdditionalInfo {
 	
 	private String ip_address; //IP from where the request comes from (only for bank transfers)

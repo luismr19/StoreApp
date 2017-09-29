@@ -46,7 +46,7 @@ public class Address implements ObjectModel<Long>{
 	@Column(name="ZIPCODE")	
 	@NotNull
 	@Min(value=1)
-	private Integer ZipCode;
+	private Integer zipCode;
 	
 	@Column(name="NUM")
 	@NotNull	
@@ -66,7 +66,7 @@ public class Address implements ObjectModel<Long>{
 		this.state = state;
 		this.street = street;
 		this.district = district;
-		ZipCode = zipCode;
+		zipCode = zipCode;
 		this.number = number;
 	}
 	
@@ -120,11 +120,11 @@ public class Address implements ObjectModel<Long>{
 	}
 
 	public Integer getZipCode() {
-		return ZipCode;
+		return zipCode;
 	}
 
 	public void setZipCode(Integer zipCode) {
-		ZipCode = zipCode;
+		this.zipCode = zipCode;
 	}
 
 	public Integer getNumber() {
@@ -147,7 +147,7 @@ public class Address implements ObjectModel<Long>{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((ZipCode == null) ? 0 : ZipCode.hashCode());
+		result = prime * result + ((zipCode == null) ? 0 : zipCode.hashCode());
 		result = prime * result + ((country == null) ? 0 : country.hashCode());
 		result = prime * result + ((district == null) ? 0 : district.hashCode());		
 		result = prime * result + ((interior == null) ? 0 : interior.hashCode());
@@ -166,10 +166,10 @@ public class Address implements ObjectModel<Long>{
 		if (getClass() != obj.getClass())
 			return false;
 		Address other = (Address) obj;
-		if (ZipCode == null) {
-			if (other.ZipCode != null)
+		if (zipCode == null) {
+			if (other.zipCode != null)
 				return false;
-		} else if (!ZipCode.equals(other.ZipCode))
+		} else if (!zipCode.equals(other.zipCode))
 			return false;
 		if (country == null) {
 			if (other.country != null)

@@ -1,5 +1,8 @@
 package com.pier.payment.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CardHolder {
 	
 	private String name;

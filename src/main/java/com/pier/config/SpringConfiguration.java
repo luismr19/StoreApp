@@ -11,7 +11,8 @@ import org.springframework.context.annotation.PropertySources;
 @PropertySources({
 @PropertySource("classpath:jwt2.properties"),
 @PropertySource("classpath:paths.properties"),
-@PropertySource("classpath:payment.properties")
+@PropertySource("classpath:payment.properties"),
+@PropertySource("classpath:app.properties")
 })
 @EnableAspectJAutoProxy(proxyTargetClass=true)
 public class SpringConfiguration {

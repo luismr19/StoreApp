@@ -2,6 +2,8 @@ package com.pier.payment.request;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class Refund {
 	
 	private int id;
@@ -9,6 +11,7 @@ public class Refund {
 	private float amount;
 	private Object metadata;
 	private Source source; //Who made the refund 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")
 	private LocalDateTime date_created;
 	private String unique_sequence_number;//Refund identifier given by the card processor 
 	public int getId() {
