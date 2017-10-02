@@ -66,9 +66,8 @@ public class PaymentUtils {
 		}
 		
 	}
-	
-	public Payment pay(PurchaseOrder order, String token, String paymentMethod) throws PaymentErrorException{
-		
+	public Payment pay(PurchaseOrder order, String token, String paymentMethod, Integer issuerId,Integer installments) throws PaymentErrorException{
+
 		MP mp = new MP (access_token);
 		mp.sandboxMode(environment.equals("test"));
 		
@@ -108,8 +107,14 @@ public class PaymentUtils {
 		payment.setPayment_method_id(paymentMethod);
 		payment.setToken(token);
 		payment.setStatement_descriptor(application_name);
+		
 		if(!(notification_url.isEmpty() || notification_url.equals("disabled")))
 		payment.setNotification_url(notificationsUrl);
+		
+		if(issuerId!=null)
+			payment.setIssuer_id(issuerId.toString());
+		if(installments!=null)
+			payment.setInstallments(installments);
 		//payment.setAdditional_info(buildDetails(order));
 		
 		JSONObject paymentJson=null;
@@ -133,6 +138,10 @@ public class PaymentUtils {
 		
 		
 		return response;
+	}
+	
+	public Payment pay(PurchaseOrder order, String token, String paymentMethod) throws PaymentErrorException{
+		return this.pay(order, token, paymentMethod,null,null);
 		
 	}
 	

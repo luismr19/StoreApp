@@ -59,11 +59,9 @@ public class PurchaseOperationsDelegate {
 	@Value("${ENVIRONMENT}")
 	String environment;
 	
-
 	public PurchaseOrder checkout(User user, CheckoutRequest checkoutInfo) throws OutOfStockException,EmptyCartException, PaymentException, PaymentErrorException {
-
 		PurchaseOrder cart = cartOps.getUserCart(user);
-         
+        
 		int index=0;
 		
 		// check existence before buying
@@ -76,15 +74,22 @@ public class PurchaseOperationsDelegate {
 		
 		if(index==0)
 			throw new EmptyCartException("Cart is empty");		
-				
-		//payment api
-		Payment payment=paymentUtils.pay(cart, checkoutInfo.getToken(), checkoutInfo.getPaymentMethod());
 		
+		Payment payment=null;
+		//payment api
+		if(checkoutInfo.getIssuer_id()>-1 && checkoutInfo.getInstallments()>1){
+			payment=paymentUtils.pay(cart, checkoutInfo.getToken(), checkoutInfo.getPaymentMethod(),checkoutInfo.getIssuer_id(),checkoutInfo.getInstallments());
+		}else{
+			payment=paymentUtils.pay(cart, checkoutInfo.getToken(), checkoutInfo.getPaymentMethod());
+		}
+		
+		System.out.println("ONEEE");
 		//if payment request was successful
 		if(payment!=null){
 		cart.setPaymentId(payment.getId());
 		//if status is approved
 		if(payment.getStatus().equals(Statuses.approved)){  
+		 this.updateExistence(cart);			
 		 completeOrder(cart,checkoutInfo.getAddress());
 		 //else if status is in process or pending
 		}else if(payment.getStatus().equals(Statuses.authorized) || payment.getStatus().equals(Statuses.in_process) || payment.getStatus().equals(Statuses.pending)){
@@ -99,7 +104,11 @@ public class PurchaseOperationsDelegate {
 			throw new PaymentErrorException("default");
 		}		
 		return cart;
+	
 	}
+	
+
+	
 
 	public PurchaseOrder completeOrder(User user) {
 		PurchaseOrder cart = cartOps.getUserCart(user);		

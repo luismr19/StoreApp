@@ -55,8 +55,8 @@ public class PurchaseRestController {
 	PurchaseOperationsDelegate purchaseOps;
 	
 	@RequestMapping(value="checkout",method=RequestMethod.PUT)
-	public ResponseEntity<?> checkout(@RequestBody CheckoutRequest checkoutInfo, HttpServletRequest request){
-		
+	public ResponseEntity<?> checkout(@RequestBody CheckoutRequest checkoutInfo,
+			HttpServletRequest request){		
 		
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
@@ -97,25 +97,7 @@ public class PurchaseRestController {
 		return new ResponseEntity<String>("failure",HttpStatus.NOT_FOUND);
 		
 		
-	}
-	
-	//after the card api returns any flag we should call this method
-	@RequestMapping(value="completePurchase",method=RequestMethod.PUT)
-	public ResponseEntity<?> completeOrder(HttpServletRequest request){
-		
-		String token=request.getHeader(tokenHeader);
-		String username=jwtTokenUtil.getUsernameFromToken(token);			
-		User user=userDao.find("username",username).get(0);	
-		PurchaseOrder order=null;
-		
-		try{
-			order=purchaseOps.completeOrder(user);
-		}catch(Exception e){
-			return new ResponseEntity<String>("error performing operation",HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return new ResponseEntity<PurchaseOrder>(order,HttpStatus.OK);
-	}
-	
+	}	
 	
 
 }
