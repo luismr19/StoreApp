@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,10 +31,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.pier.business.util.PurchaseOrderComparator;
 import com.pier.business.validation.UserIntegrityChecker;
 import com.pier.model.security.Authority;
 import com.pier.model.security.AuthorityName;
 import com.pier.model.security.User;
+import com.pier.rest.model.PurchaseOrder;
 import com.pier.rest.model.UserOrder;
 import com.pier.service.AuthorityDao;
 import com.pier.service.UserDao;
@@ -78,7 +81,7 @@ public class ManageUserRestController {
 		criteria.setFirstResult(index).setMaxResults(pageSize);
 		List<User> users=criteria.list();
 		
-		return users.stream().map(user->new UserOrder(user,user.getOrders())).collect(Collectors.toList());
+		return users.stream().map(user->new UserOrder(user,new ArrayList<PurchaseOrder>(user.getOrders()))).collect(Collectors.toList());
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
@@ -110,13 +113,18 @@ public class ManageUserRestController {
 		
 	}
 	
+	@SuppressWarnings("unused")
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/usersorders/{id}",method=RequestMethod.GET)
 	public ResponseEntity<?> showUserOrder(@PathVariable("id") long id){
 		User user=userDao.find(id);
 		Hibernate.initialize(user.getOrders());
-		if(user!=null)
-		return new ResponseEntity<UserOrder>(new UserOrder(user,user.getOrders()),HttpStatus.OK);
+		
+		if(user!=null){
+			List<PurchaseOrder> userOrders=new ArrayList<PurchaseOrder>(user.getOrders());
+		Collections.sort(userOrders,Collections.reverseOrder(new PurchaseOrderComparator()));
+		return new ResponseEntity<UserOrder>(new UserOrder(user,userOrders),HttpStatus.OK);
+		}
 		
 		return new ResponseEntity<String>("user not found",HttpStatus.NOT_FOUND);
 		
@@ -132,7 +140,8 @@ public class ManageUserRestController {
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		user.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
 		user.setLastPasswordResetDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
-		user.setAuthorities(authDao.find("name", AuthorityName.ROLE_USER));		
+		user.setAuthorities(authDao.find("name", AuthorityName.ROLE_USER));
+		user.setPhoneNumber(user.getPhoneNumber());
 		userDao.add(user);		
 		HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());
@@ -161,8 +170,7 @@ public class ManageUserRestController {
 	        currentUser.setEnabled(user.getEnabled());
 	        currentUser.setPassword(passwordEncoder.encode(user.getPassword()));
 	        currentUser.setAddress(user.getAddress());
-	        currentUser.setEmail(user.getEmail());
-	        currentUser.setAuthorities(user.getAuthorities());
+	        currentUser.setEmail(user.getEmail());	       
 	        
 	        userDao.update(currentUser);
 	        return new ResponseEntity<User>(currentUser, HttpStatus.OK);

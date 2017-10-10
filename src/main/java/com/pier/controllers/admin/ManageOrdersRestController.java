@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pier.model.security.User;
+import com.pier.payment.PaymentUtils;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.service.PurchaseOrderDao;
 import com.pier.service.UserDao;
@@ -40,6 +41,9 @@ public class ManageOrdersRestController {
 
  @Autowired
  private SessionFactory sessionFactory;
+ 
+ @Autowired
+ PaymentUtils paymentUtils;
 
  private Session currentSession() {
   return sessionFactory.getCurrentSession();
@@ -176,9 +180,11 @@ public class ManageOrdersRestController {
 		 originalOrder.setDelivered(order.getDelivered());
 		 originalOrder.setTrackingNumber(order.getTrackingNumber());
 		 originalOrder.setDeliveryAddress(order.getDeliveryAddress());
-		 if(order.getRejected())
-			 originalOrder.setConcluded(true);			 
+		 if(order.getRejected()){
+			 originalOrder.setConcluded(true);
+			 if(paymentUtils.makeRefund(order))		     		 
 		 originalOrder.setRejected(order.getRejected());
+		 }
 		 //originalOrder.setGift(order.getGift());		 
 		 //originalOrder.setOwner(order.getOwner());		 
 		 //originalOrder.setPurchaseItems(order.getPurchaseItems());

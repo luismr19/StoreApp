@@ -1,5 +1,6 @@
 package com.pier.rest.model;
 
+import java.util.List;
 import java.util.Set;
 
 import com.pier.model.security.User;
@@ -8,11 +9,11 @@ public class UserOrder {
 	
 	private User user;
 	
-	private Set<PurchaseOrder> purchaseOrders;
+	private List<PurchaseOrder> purchaseOrders;
 	
 	
 
-	public UserOrder(User user, Set<PurchaseOrder> orders) {
+	public UserOrder(User user, List<PurchaseOrder> orders) {
 		super();
 		this.user = user;
 		this.purchaseOrders = orders;
@@ -26,11 +27,11 @@ public class UserOrder {
 		this.user = user;
 	}
 
-	public Set<PurchaseOrder> getPurchaseOrders() {
+	public List<PurchaseOrder> getPurchaseOrders() {
 		return purchaseOrders;
 	}
 
-	public void setPurchaseOrders(Set<PurchaseOrder> orders) {
+	public void setPurchaseOrders(List<PurchaseOrder> orders) {
 		this.purchaseOrders = orders;
 	}
 	

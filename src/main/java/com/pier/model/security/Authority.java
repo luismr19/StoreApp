@@ -8,21 +8,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
-@Table(name="AUTHORITY")
+@Table(name = "AUTHORITY")
 public class Authority {
 
 	@Id
-	@Column(name="ID")
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@Column(name="NAME")
+
+	@Column(name = "NAME")
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	AuthorityName name;
-	
+
 	@JsonIgnore
-	@ManyToMany(mappedBy="authorities", fetch=FetchType.LAZY)
+	@ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)
 	List<User> users;
 
 	public Long getId() {
@@ -48,6 +48,5 @@ public class Authority {
 	public void setUsers(List<User> users) {
 		this.users = users;
 	}
-	
-	
+
 }
