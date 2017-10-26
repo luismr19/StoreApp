@@ -39,6 +39,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.pier.rest.model.Address;
+import com.pier.rest.model.Article;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.rest.model.ObjectModel;
 import com.pier.rest.model.Product;
@@ -129,6 +130,11 @@ public class User implements ObjectModel<Long>{
 	 @BatchSize(size=5)
 	 @Fetch(FetchMode.SELECT)
 	 Set<Product> favorites;
+	 
+	 @OneToMany(mappedBy="owner",fetch=FetchType.LAZY)
+	 @Fetch(FetchMode.SELECT)
+	 @BatchSize(size=5)
+	 Set<Article> articles;
 	 
 	 @Column(name="POINTS")
 	 Long points;
@@ -265,6 +271,16 @@ public class User implements ObjectModel<Long>{
 
 		public void setFavorites(Set<Product> favories) {
 			this.favorites = favories;
+		}
+		
+		
+
+		public Set<Article> getArticles() {
+			return articles;
+		}
+
+		public void setArticles(Set<Article> articles) {
+			this.articles = articles;
 		}
 
 		@Override

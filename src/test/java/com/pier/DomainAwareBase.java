@@ -17,8 +17,8 @@ import com.pier.config.WebConfiguration;
 @ContextConfiguration(classes={WebConfiguration.class,SpringConfiguration.class})
 public class DomainAwareBase extends AbstractJUnit4SpringContextTests {
 	
-	 private final String deleteScript = "src/main/resources/sql/cleanup.sql";
-	 private final String populateScript = "src/main/resources/sql/populate.sql";
+	 private final String deleteScript = "src/main/resources/sql/cleanupx.sql";
+	 private final String populateScript = "src/main/resources/sql/populatex.sql";
 
 	 @Autowired
 	    private JdbcTemplate jdbcTemplate;

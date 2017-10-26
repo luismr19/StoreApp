@@ -13,10 +13,10 @@ public class ArticleIntegrityChecker extends IntegrityCheckerImpl<Article,Articl
 	@Override
 	public boolean checkIfValid(Article article){
 		errors.clear();
-		UrlValidator validator= new UrlValidator();
-		boolean valid=validator.isValid(article.getLink());
+		//UrlValidator validator= new UrlValidator();
+		boolean valid=true;
 		if(!valid){
-		errors.add("Url is not valid");
+		errors.add("article is not valid");
 		}
 		return valid;
 	}
@@ -24,9 +24,9 @@ public class ArticleIntegrityChecker extends IntegrityCheckerImpl<Article,Articl
 	@Override
 	public boolean checkIfDuplicate(Article article){
 		errors.clear();
-		boolean result=dao.find("link", article.getLink()).size()>0;
+		boolean result=dao.find("title", article.getTitle()).size()>0;
 		if(result)
-			errors.add("Article already exists or a resource already exists under that URL");
+			errors.add("Article already exists or a resource already exists under that name");
 		return result;
 	}
 
