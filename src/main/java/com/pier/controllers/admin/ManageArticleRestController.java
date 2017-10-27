@@ -46,6 +46,7 @@ import com.pier.config.SpecObjectMapper;
 import com.pier.model.security.User;
 import com.pier.rest.model.Article;
 import com.pier.rest.model.ArticleTag;
+import com.pier.security.JwtUser;
 import com.pier.service.ArticleDao;
 import com.pier.service.impl.UserService;
 
@@ -82,11 +83,10 @@ public class ManageArticleRestController {
 	public List<Article> list() {
 
 		Criteria criteria = currentSession().createCriteria(Article.class);
-		criteria.addOrder(Order.asc("id"));
+		criteria.addOrder(Order.desc("id"));
 		criteria.setFirstResult(0).setMaxResults(30);
 		return criteria.list();
-	}
-	
+	}	
 	 
 
 	@RequestMapping(value="article", params = { "word", "index" }, method = RequestMethod.GET)
@@ -98,7 +98,8 @@ public class ManageArticleRestController {
 		criteria.setFirstResult(index).setMaxResults(30);
 		return criteria.list();
 	}
-
+	
+	@PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
 	@RequestMapping(value = "article/{id}", method = RequestMethod.GET)
 	public ResponseEntity<?> getArticle(@PathVariable Long id) {
 		Article article = dao.find(id);
@@ -123,32 +124,77 @@ public class ManageArticleRestController {
 
 		return new ResponseEntity<List<String>>(checker.getErrors(), HttpStatus.CONFLICT);
 	}
-
+	
 	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="article", method = RequestMethod.POST)
+	public ResponseEntity<?> enableArticle(@PathVariable Long id) {
+		
+		Article currentArticle = dao.find(id);
+		if(currentArticle==null)
+			return new ResponseEntity<String>("article not found",HttpStatus.NOT_FOUND);
+		currentArticle.setEnabled(true);
+		dao.update(currentArticle);
+		
+		return new ResponseEntity<Article>(currentArticle,HttpStatus.OK);
+	}
+
+	@PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
 	@RequestMapping(method = RequestMethod.PUT, value = "article/{id}")
-	public ResponseEntity<?> updateArticle(@PathVariable Long id, @RequestBody Article article) {
+	public ResponseEntity<?> updateArticle(@PathVariable Long id, @RequestBody ObjectNode articleBody, HttpServletRequest request) {
 
 		Article currentArticle = dao.find(id);
-		if (article != null) {
-			if (checker.checkIfValid(article)) {
-
-				currentArticle.setLink(article.getLink());
-				currentArticle.setEnabled(article.getEnabled());
-				currentArticle.setLastEdited(LocalDateTime.now());
-				currentArticle.setTags(article.getTags());
-				currentArticle.setTitle(article.getTitle());
-				dao.update(currentArticle);
-
-				return new ResponseEntity<Article>(article, HttpStatus.OK);
-			}
-
-			return new ResponseEntity<List<String>>(checker.getErrors(), HttpStatus.CONFLICT);
+		String filePath=articlesPaths+ articleBody.get("title").textValue().replaceAll(" ", "_")+".json";
+		
+		String token=request.getHeader(tokenHeader);
+		JwtUser user=userService.getJwtUserFromToken(token);
+		
+		if(currentArticle==null || !currentArticle.getAutor().getUsername().equals(user.getUsername())){
+			return new ResponseEntity<String>("article not found",HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<Article>(article, HttpStatus.NOT_FOUND);
+		
+		File jsonFile = new File(filePath);
+			
+		
+			try {
+				//write the json into a file
+				objectMapper.writeValue(jsonFile,articleBody);
+				
+				JsonNode articleTagsNode=articleBody.get("tags");
+				
+				List<ArticleTag> articleTags=objectMapper.readValue(articleTagsNode.traverse(), new TypeReference<ArrayList<ArticleTag>>(){});
+				
+				currentArticle.setTitle(articleBody.get("title").textValue());							
+				currentArticle.setLastEdited(LocalDateTime.now());
+				currentArticle.setLink(filePath);
+				
+				currentArticle.setTags(new HashSet<ArticleTag>(articleTags));
+				
+				if (checker.checkIfValid(currentArticle)) {
+					dao.update(currentArticle);
+					
+					return new ResponseEntity<Article>(currentArticle, HttpStatus.CREATED);
+				}
+				
+				return new ResponseEntity<String>("Invalid article",HttpStatus.CONFLICT);
+			} catch (IOException e) {
+				if(jsonFile.exists()) {
+					if(!jsonFile.delete()){
+						return new ResponseEntity<String>("there was an error saving the article,"
+								+ "the file needs to be removed manually",HttpStatus.INTERNAL_SERVER_ERROR);	
+					}
+				}
+				return new ResponseEntity<String>("Error writing file",HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		
+		
+			
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="articles/list", params = { "from", "to" }, method = RequestMethod.GET)
 	public ResponseEntity < ? > getArticles(@RequestParam(value = "filter", required = false) String filter,
-			  @RequestParam("index") int index, @RequestParam(value = "order", required = false) String order,
+			  @RequestParam("index") int index,
+			  @RequestParam(value = "order", required = false) String order,
 			  @RequestParam(value="from", required=false) String from,			  
 			  @RequestParam(value="to", required=false) String to,
 			  @RequestParam(value="user", required = false) Long userId) {
@@ -192,14 +238,18 @@ public class ManageArticleRestController {
 			
 		 }		 
 		 
+		 articleQuery.orderBy(criteriaBuilder.desc(rootArticle.get("featured")),
+				 criteriaBuilder.desc(rootArticle.get("writeDate")));
+		 
+		 
 		 List<Article> results=dao.currentSession().createQuery(articleQuery.select(rootArticle)
-				 .where(conditionsList.toArray(new Predicate[]{}))).getResultList();
+				 .where(conditionsList.toArray(new Predicate[]{}))).setFirstResult(index).setMaxResults(pageSize).getResultList();
 		 
 		 return new ResponseEntity<List<Article>>(results,HttpStatus.OK);
 	 
 	 }
 	
-	@PreAuthorize("hasRole(EDITOR)")
+	@PreAuthorize("hasRole(EDITOR) or hasRole(ADMIN)")
 	@RequestMapping(value="publish", method=RequestMethod.POST)
 	public ResponseEntity<?> publishArticle(@RequestBody ObjectNode articleBody, HttpServletRequest request, UriComponentsBuilder ucBuilder){
 		
@@ -222,6 +272,7 @@ public class ManageArticleRestController {
 				newArticle.setEnabled(false);
 				newArticle.setAutor(userService.getUserFromToken(token));
 				newArticle.setWriteDate(LocalDateTime.now());
+				newArticle.setLastEdited(LocalDateTime.now());
 				newArticle.setLink(filePath);
 				
 				newArticle.setTags(new HashSet<ArticleTag>(articleTags));
