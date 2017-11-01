@@ -74,6 +74,14 @@ public class UserService {
 		
 		return user;
 	}
+	
+	public User getUserFromTokenWithArticles(String token){
+		String username=jwtTokenUtil.getUsernameFromToken(token);		
+		User user=userDao.find("username",username).get(0);
+		Hibernate.initialize(user.getArticles());
+		
+		return user;
+	}
 
 	public Product removeFromFavorites(Product removedProduct, String token) {
 		  User user=getUserFromTokenWithFavs(token);

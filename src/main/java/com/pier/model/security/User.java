@@ -131,7 +131,7 @@ public class User implements ObjectModel<Long>{
 	 @Fetch(FetchMode.SELECT)
 	 Set<Product> favorites;
 	 
-	 @OneToMany(mappedBy="owner",fetch=FetchType.LAZY)
+	 @OneToMany(mappedBy="autor",fetch=FetchType.LAZY)
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size=5)
 	 Set<Article> articles;
@@ -274,7 +274,7 @@ public class User implements ObjectModel<Long>{
 		}
 		
 		
-
+		@JsonIgnore
 		public Set<Article> getArticles() {
 			return articles;
 		}
