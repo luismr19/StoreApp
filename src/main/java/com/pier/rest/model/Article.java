@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
@@ -44,8 +45,11 @@ public class Article implements ObjectModel<Long> {
 	private String title;
 
 	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(name = "ARTICLE_TAGS", joinColumns = @JoinColumn(name = "ARTICLE_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "TAG_ID", referencedColumnName = "ID"))
-	@Cascade(CascadeType.SAVE_UPDATE)
+	@JoinTable(name = "ARTICLE_TAGS", joinColumns = @JoinColumn(name = "ARTICLE_ID", referencedColumnName = "ID"), 
+	inverseJoinColumns = @JoinColumn(name = "TAG_ID", referencedColumnName = "ID"))
+	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size=30)//I want to load 30 sets of categories for 30 products in one query
 	private Set<ArticleTag> tags;
 
 	@ManyToOne

@@ -1,7 +1,6 @@
 package com.pier.business.validation;
 
 
-import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.stereotype.Component;
 
 import com.pier.rest.model.Article;
@@ -28,6 +27,17 @@ public class ArticleIntegrityChecker extends IntegrityCheckerImpl<Article,Articl
 		if(result)
 			errors.add("Article already exists or a resource already exists under that name");
 		return result;
+	}
+	
+	
+	public boolean checkNotOwner(String username, Article article){
+		errors.clear();
+		Article result=dao.find("title", article.getTitle()).get(0);
+		if(result!=null && !result.getAutor().getUsername().equals(username)){
+			errors.add("Article already exists or a resource already exists under that name");
+			return true;
+		}
+		return false;
 	}
 
 }
