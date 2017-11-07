@@ -1,5 +1,9 @@
 package com.pier.controllers.user;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,15 +23,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.pier.config.SpecObjectMapper;
 import com.pier.rest.model.Article;
+import com.pier.rest.model.ArticleTag;
 import com.pier.service.ArticleDao;
+import com.pier.service.impl.ArticleService;
 import com.pier.service.impl.UserService;
 
+@RestController
 public class ArticleDashboardRestController {
 	
 	@Autowired
@@ -42,60 +53,20 @@ public class ArticleDashboardRestController {
 	@Value("${jwt.header}")
 	private String tokenHeader;
 	
+	@Autowired
+	SpecObjectMapper objectMapper;
 	
-	@RequestMapping(value="articles",method = RequestMethod.GET)
-	public List<Article> list() {
-
-		Criteria criteria = dao.currentSession().createCriteria(Article.class);
-		criteria.addOrder(Order.desc("id"));
-		criteria.setFirstResult(0).setMaxResults(30);
-		return criteria.list();
-	}	
+	@Autowired
+	ArticleService articleService;
 	
-	@RequestMapping(value="articles/list", params = { "from", "to" }, method = RequestMethod.GET)
+	
+	@RequestMapping(value="articles", method = RequestMethod.GET)
 	public ResponseEntity<?> getArticles(
-			  @RequestParam("index") int index,
-			  @RequestParam(value = "order", required = false) String order,
-			  @RequestParam(value="from", required=false) String from,			  
-			  @RequestParam(value="to", required=false) String to  ) {
-		 int pageSize = 30;
-		 //this is using the one and only ugly criteria builder 
-		 CriteriaBuilder criteriaBuilder = dao.currentSession().getCriteriaBuilder();
-		 CriteriaQuery<Article> articleQuery=criteriaBuilder.createQuery(Article.class);
-		 
-		 LocalDateTime fromDate;
-		 LocalDateTime toDate=LocalDateTime.now();
-		 
-		 
-		 List<Predicate> conditionsList = new ArrayList<Predicate>();
-		 
-		 Root<Article> rootArticle=articleQuery.from(Article.class);
-		 
-		 
-		 if(from!=null){
-			 final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			 fromDate= LocalDate.parse(from, formatter).atStartOfDay();			 
-			 Predicate afterDate=criteriaBuilder.greaterThanOrEqualTo(rootArticle.get("writeDate"), fromDate);
-			 conditionsList.add(afterDate);			 
-		 }
-		 
-		 Predicate beforeDate= criteriaBuilder.lessThanOrEqualTo(rootArticle.get("writeDate"), toDate);
-		 conditionsList.add(beforeDate);
-		 
-		 
-		 Predicate enabled=criteriaBuilder.equal(rootArticle.get("enabled"), true);
-		 conditionsList.add(enabled); 
-		 
+			  @RequestParam("index") int index,			  
+			  @RequestParam(value="tag",required=false) List<Long> tags) {
 		
-		 
-		 articleQuery.orderBy(criteriaBuilder.desc(rootArticle.get("featured")),
-				 criteriaBuilder.desc(rootArticle.get("writeDate")));
-		 
-		 
-		 List<Article> results=dao.currentSession().createQuery(articleQuery.select(rootArticle)
-				 .where(conditionsList.toArray(new Predicate[]{}))).setFirstResult(index).setMaxResults(pageSize).getResultList();
-		 
-		 return new ResponseEntity<List<Article>>(results,HttpStatus.OK);
+		List<Article> articles=articleService.getPublicArticles(index, tags); 
+		 return new ResponseEntity<List<Article>>(articles,HttpStatus.OK);
 	 
 	 }
 	
@@ -109,14 +80,59 @@ public class ArticleDashboardRestController {
 		return criteria.list();
 	}
 	
+	@RequestMapping(value="articles/tags", params = { "word", "index" }, method = RequestMethod.GET)
+	public List<ArticleTag> findTags(@RequestParam("filter") String word) {
+		Criteria criteria = dao.currentSession().createCriteria(ArticleTag.class);
+
+		criteria.add(Restrictions.ilike("name", "%" + word + "%"));
+		criteria.addOrder(Order.asc("name"));
+		criteria.setFirstResult(0).setMaxResults(10);
+		return criteria.list();
+	}
 	
-	@RequestMapping(value = "article/{id}", method = RequestMethod.GET)
+	
+	
+	@RequestMapping(value = "articles/{id}", method = RequestMethod.GET)
 	public ResponseEntity<?> getArticle(@PathVariable Long id) {
 		Article article = dao.find(id);
 		if (article != null) {
-			return new ResponseEntity<Article>(article, HttpStatus.OK);
+			ResponseEntity respEntity = null;
+
+			byte[] reportBytes = null;
+			String fileName=getArticleFile(article);
+			File result = new File(fileName);
+
+			ObjectNode articleBody = objectMapper.createObjectNode();
+			articleBody = objectMapper.createObjectNode();
+
+			if (result.exists()) {
+				InputStream inputStream;
+
+				String type;
+				try {
+					inputStream = new FileInputStream(result);					
+
+					articleBody.putPOJO("article", article);
+					articleBody.set("body", objectMapper.readTree(inputStream));
+
+					respEntity = new ResponseEntity(articleBody, HttpStatus.OK);
+				} catch (IOException e) {
+					return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+				}
+
+			} else {
+				articleBody.putPOJO("article", article);
+				articleBody.putObject("body");
+				respEntity = new ResponseEntity(articleBody, HttpStatus.OK);
+			}
+			return respEntity;
+
 		}
 		return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+	}
+	
+	private String getArticleFile(Article article){
+		return this.articlesPaths + article.getId() + "_" + article.getTitle().replaceAll(" ", "_")+ ".json";
 	}
 
 }

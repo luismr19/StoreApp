@@ -43,6 +43,10 @@ public class Article implements ObjectModel<Long> {
 	@Column(name = "TITLE", length = 40)
 	@Size(max = 40)
 	private String title;
+	
+	@Column(name="DESCRIPTION", length=180)
+	@Size(max=180)
+	private String description;
 
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name = "ARTICLE_TAGS", joinColumns = @JoinColumn(name = "ARTICLE_ID", referencedColumnName = "ID"), 
@@ -147,7 +151,16 @@ public class Article implements ObjectModel<Long> {
 	public Boolean getFeatured(){
 		return this.featured;
 	}
+		
 	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	@JsonProperty("autor")
 	public String getAutorName(){
 		return this.autor.getFirstname()+" "+autor.getLastname();

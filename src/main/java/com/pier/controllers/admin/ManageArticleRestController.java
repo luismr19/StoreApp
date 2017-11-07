@@ -2,37 +2,20 @@ package com.pier.controllers.admin;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
-import org.hibernate.query.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -168,7 +151,7 @@ public class ManageArticleRestController {
 			dao.add(article);
 
 			HttpHeaders headers = new HttpHeaders();
-			headers.setLocation(ucBuilder.path("/articles/{id}").buildAndExpand(article.getId()).toUri());
+			headers.setLocation(ucBuilder.path("/article/{id}").buildAndExpand(article.getId()).toUri());
 			return new ResponseEntity<Article>(article, headers, HttpStatus.CREATED);
 		}
 
@@ -183,6 +166,19 @@ public class ManageArticleRestController {
 		if (currentArticle == null)
 			return new ResponseEntity<String>("article not found", HttpStatus.NOT_FOUND);
 		currentArticle.setEnabled(true);
+		dao.update(currentArticle);
+
+		return new ResponseEntity<Article>(currentArticle, HttpStatus.OK);
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value = "article/disable/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<?> disableArticle(@PathVariable Long id) {
+
+		Article currentArticle = dao.find(id);
+		if (currentArticle == null)
+			return new ResponseEntity<String>("article not found", HttpStatus.NOT_FOUND);
+		currentArticle.setEnabled(false);
 		dao.update(currentArticle);
 
 		return new ResponseEntity<Article>(currentArticle, HttpStatus.OK);
@@ -236,15 +232,15 @@ public class ManageArticleRestController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = "articles/list", method = RequestMethod.GET)
+	@RequestMapping(value = "article/list", method = RequestMethod.GET)
 	public ResponseEntity<?> getArticles(@RequestParam("index") int index,
 			@RequestParam(value = "filter", required = false) String filter,
 			@RequestParam(value = "order", required = false) String order,
 			@RequestParam(value = "from", required = false) String from,
 			@RequestParam(value = "to", required = false) String to,
-			@RequestParam(value = "user", required = false) Long userId) {
+			@RequestParam(value = "autor", required = false) String autor) {
 
-		List<Article> articles = articleService.getArticles(index, filter, order, from, to, userId);
+		List<Article> articles = articleService.getArticles(index, filter, order, from, to, autor);
 		return new ResponseEntity<List<Article>>(articles, HttpStatus.OK);
 
 	}
@@ -265,6 +261,7 @@ public class ManageArticleRestController {
 			User user = userService.getUserFromToken(token);
 
 			if (newArticle == null || !newArticle.getAutor().getUsername().equals(user.getUsername())) {
+				if(!request.isUserInRole("ADMIN"))
 				return new ResponseEntity<String>("article not found", HttpStatus.NOT_FOUND);
 			}
 			// write the json into a file
@@ -279,17 +276,18 @@ public class ManageArticleRestController {
 			newArticle.setTitle(article.getTitle());
 			newArticle.setEnabled(false); 
 			newArticle.setAutor(user);
+			newArticle.setDescription(article.getDescription());
 			//newArticle.setWriteDate(LocalDateTime.now());
 			newArticle.setLastEdited(LocalDateTime.now());
 			newArticle.setLink(filePath);
 
 			newArticle.setTags(new HashSet<ArticleTag>(articleService.handleTags(articleTags)));
 
-			if (checker.checkIfValid(newArticle) && !checker.checkNotOwner(user.getUsername(), newArticle)) {
+			if (checker.checkIfValid(newArticle) && (request.isUserInRole("ADMIN") || !checker.isNotOwner(user.getUsername(), newArticle))) {
 				dao.update(newArticle);
 
 				HttpHeaders headers = new HttpHeaders();
-				headers.setLocation(ucBuilder.path("/articles/{id}").buildAndExpand(newArticle.getId()).toUri());
+				headers.setLocation(ucBuilder.path("/article/{id}").buildAndExpand(newArticle.getId()).toUri());
 				return new ResponseEntity<Article>(newArticle, headers, HttpStatus.CREATED);
 			}
 

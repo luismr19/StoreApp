@@ -30,13 +30,18 @@ public class ArticleIntegrityChecker extends IntegrityCheckerImpl<Article,Articl
 	}
 	
 	
-	public boolean checkNotOwner(String username, Article article){
+	public boolean isNotOwner(String username, Article article){
 		errors.clear();
+		try{
 		Article result=dao.find("title", article.getTitle()).get(0);
 		if(result!=null && !result.getAutor().getUsername().equals(username)){
 			errors.add("Article already exists or a resource already exists under that name");
 			return true;
 		}
+		}catch(IndexOutOfBoundsException ex){
+			return false;
+		}		
+		
 		return false;
 	}
 
