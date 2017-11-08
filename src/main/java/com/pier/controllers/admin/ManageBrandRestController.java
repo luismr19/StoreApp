@@ -66,10 +66,7 @@ public class ManageBrandRestController {
 	@RequestMapping(params = {"index","word"},method=RequestMethod.GET)
 	public List<Brand> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
 		int pageSize=30;
-		Criteria criteria = currentSession().createCriteria(Brand.class);
-		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.ilike("shortName", "%"+word+"%"));
-		or.add(Restrictions.ilike("name", "%"+word+"%"));
+		Criteria criteria = currentSession().createCriteria(Brand.class);		
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();		

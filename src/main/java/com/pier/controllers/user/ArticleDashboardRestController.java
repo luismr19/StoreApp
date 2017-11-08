@@ -17,6 +17,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import com.pier.service.impl.ArticleService;
 import com.pier.service.impl.UserService;
 
 @RestController
+@RequestMapping(value="articles")
 public class ArticleDashboardRestController {
 	
 	@Autowired
@@ -60,7 +62,7 @@ public class ArticleDashboardRestController {
 	ArticleService articleService;
 	
 	
-	@RequestMapping(value="articles", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getArticles(
 			  @RequestParam("index") int index,			  
 			  @RequestParam(value="tag",required=false) List<Long> tags) {
@@ -70,29 +72,24 @@ public class ArticleDashboardRestController {
 	 
 	 }
 	
-	@RequestMapping(value="articles/find", params = { "word", "index" }, method = RequestMethod.GET)
-	public List<Article> filter(@RequestParam("index") int index, @RequestParam("filter") String word) {
-		Criteria criteria = dao.currentSession().createCriteria(Article.class);
-
-		criteria.add(Restrictions.ilike("title", "%" + word + "%"));
-		criteria.addOrder(Order.asc("title"));
-		criteria.setFirstResult(index).setMaxResults(30);
-		return criteria.list();
+	@RequestMapping(value="find", params = { "filter", "index" }, method = RequestMethod.GET)
+	public List<Article> filter(@RequestParam("index") int index, @RequestParam("filter") String word, @RequestParam(value="tag",required=false) List<Long> tags) {
+		if(tags!=null && !tags.isEmpty())
+			return articleService.findArticles(index, word, tags);			
+		else
+			return articleService.findArticles(index,word);
+		
+			
 	}
 	
-	@RequestMapping(value="articles/tags", params = { "word", "index" }, method = RequestMethod.GET)
+	@RequestMapping(value="tags", params = { "filter"}, method = RequestMethod.GET)
 	public List<ArticleTag> findTags(@RequestParam("filter") String word) {
-		Criteria criteria = dao.currentSession().createCriteria(ArticleTag.class);
-
-		criteria.add(Restrictions.ilike("name", "%" + word + "%"));
-		criteria.addOrder(Order.asc("name"));
-		criteria.setFirstResult(0).setMaxResults(10);
-		return criteria.list();
+		return articleService.findTags(word);
 	}
 	
 	
 	
-	@RequestMapping(value = "articles/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<?> getArticle(@PathVariable Long id) {
 		Article article = dao.find(id);
 		if (article != null) {

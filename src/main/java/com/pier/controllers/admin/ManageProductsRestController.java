@@ -75,12 +75,9 @@ public class ManageProductsRestController {
 	}
 	
 	@RequestMapping(params = {"word","index"},method=RequestMethod.GET)
-	public List<Product> filter(@RequestParam("index") int index,@RequestParam("filter") String word){
+	public List<Product> filter(@RequestParam("index") int index){
 		int pageSize=30;
-		Criteria criteria = currentSession().createCriteria(Product.class);
-		Disjunction or=Restrictions.disjunction();
-		or.add(Restrictions.ilike("name", "%"+word+"%"));
-		or.add(Restrictions.ilike("description", "%"+word+"%"));
+		Criteria criteria = currentSession().createCriteria(Product.class);		
 		criteria.addOrder(Order.asc("name"));
 		criteria.setFirstResult(index).setMaxResults(pageSize);
 		return criteria.list();		

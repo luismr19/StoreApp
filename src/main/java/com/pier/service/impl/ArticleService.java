@@ -16,6 +16,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -162,5 +167,48 @@ public List<Article> getArticles(int index, String filter,String order,String fr
 		 return results;
 	 
 	 }
+
+	public List<Article> findArticles(int index, String word) {
+		Criteria criteria = dao.currentSession().createCriteria(Article.class);
+		Disjunction or=Restrictions.disjunction();
+		or.add(Restrictions.ilike("title", "%"+word+"%"));
+		or.add(Restrictions.ilike("description", "%"+word+"%"));
+		criteria.add(or);
+		criteria.add(Restrictions.eq("enabled", true));
+		criteria.addOrder(Order.asc("title"));
+		criteria.setFirstResult(index).setMaxResults(30);
+		return criteria.list();
+	}
+	
+	public List<Article> findArticles(int index, String word,List<Long> tags) {
+		int pageSize = 30;
+		 
+		 String mainQuery="select distinct art from Article art left join art.tags tags where art.enabled=true and art.title like :title or art.description like :description"
+		 		+ " and tags in (select tag from ArticleTag tag where tag.id in (:tagsIds)) order by art.id desc";
+		 
+		 if(word==null)
+			 word="";
+		 
+		 Query findTags=null;
+		
+			 findTags=dao.currentSession().createQuery(mainQuery);		
+			 findTags.setParameterList("tagsIds", tags);
+			 findTags.setParameter("title", "%"+word+"%");
+			 findTags.setParameter("description", "%"+word+"%");
+	
+		 
+		 List<Article> results=findTags.list();
+		
+		 return results;
+	}
+
+	public List<ArticleTag> findTags(String word) {
+		Criteria criteria = dao.currentSession().createCriteria(ArticleTag.class);
+
+		criteria.add(Restrictions.ilike("name", "%" + word + "%"));
+		criteria.addOrder(Order.asc("name"));
+		criteria.setFirstResult(0).setMaxResults(10);
+		return criteria.list();
+	}
 
 }
