@@ -156,6 +156,7 @@ public static OrderDetail removeProductFromDetails(Set<OrderDetail> ordersDetail
 		for (OrderDetail detail : order.getOrderDetails()) {
 			total = total.add(detail.getProduct().getProduct().getPrice().multiply(new BigDecimal(detail.getQuantity())));
 		}
+		total=total.add(order.getDeliveryCost());
 		return total;
 	}
 

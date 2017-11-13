@@ -1,5 +1,6 @@
 package com.pier.business;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.pier.business.exception.OutOfStockException;
@@ -51,6 +53,9 @@ public class CartOperationsDelegate {
 	
 	@Autowired
     OrderService cartService;
+	
+	@Value("${delivery_cost}")
+	String delivery_cost;
 	
 	public PurchaseOrder addToCart(User user,ProductFlavor product) throws OutOfStockException{
 		return addToCart(user,product,1);
@@ -140,7 +145,7 @@ public class CartOperationsDelegate {
 	public PurchaseOrder getUserCart(User user){
 	       PurchaseOrder cart=new PurchaseOrder();	
 	       cart.setTrackingNumber("PENDING");
-	       cart.setConcluded(false);
+	       cart.setConcluded(false);	       
 			if(user.getOrders()==null){
 				//okay no orders then create the cart for our buddy
 				cart.setOwner(user);
@@ -161,7 +166,8 @@ public class CartOperationsDelegate {
 			}			
 			//ApplyPromotions if any
 			applyPromotions(cart);
-			
+			//by doing this we ensure that the delivery cost is always up to date inc ase there are carts created before an update in the delivery cost
+			cart.setDeliveryCost(new BigDecimal(delivery_cost));
 			return cart;
 		}
 

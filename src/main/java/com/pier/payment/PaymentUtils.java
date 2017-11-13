@@ -110,7 +110,7 @@ public class PaymentUtils {
 		Payer payer = buildPayer(order);
 
 		payment.setPayer(payer);
-		payment.setBinary_mode(false);
+		payment.setBinary_mode(true);
 		PaymentOrder paymentOrder = new PaymentOrder();
 		paymentOrder.setType(PaymentOrder.MERCADOPAGO);
 		payment.setExternal_reference(String.valueOf(order.getId()));
@@ -123,7 +123,7 @@ public class PaymentUtils {
 		payment.setStatement_descriptor(application_name);
 
 		if (!(notification_url.isEmpty() || notification_url.equals("disabled")))
-			//payment.setNotification_url(notificationsUrl);
+			payment.setNotification_url(notificationsUrl);
 
 		if (issuerId != null)
 			payment.setIssuer_id(issuerId.toString());

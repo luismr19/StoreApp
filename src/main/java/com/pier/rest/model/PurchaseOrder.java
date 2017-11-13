@@ -40,15 +40,11 @@ public class PurchaseOrder implements ObjectModel<Long> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "TOTAL", nullable = false, precision = 12, scale = 2) // Creates
-																			// the
-																			// database
-																			// field
-																			// with
-																			// this
-																			// size.
-	@Digits(integer = 12, fraction = 2)
+	@Column(name = "TOTAL", nullable = false, precision = 12, scale = 2)
 	private BigDecimal total = new BigDecimal("0.00");
+	
+	@Column(name = "DELIVERY_COST", nullable = false, precision = 12, scale = 2)
+	private BigDecimal deliveryCost = new BigDecimal("0.00");
 
 	@JoinColumn(name = "GIFT")
 	@OneToOne(fetch = FetchType.EAGER, orphanRemoval = true)
@@ -69,18 +65,7 @@ public class PurchaseOrder implements ObjectModel<Long> {
 	@Size(min = 4, max = 50)
 	private String trackingNumber;
 
-	@OneToMany(mappedBy = "id.order", fetch = FetchType.EAGER, orphanRemoval = true) // since
-																						// id
-																						// is
-																						// the
-																						// composite
-																						// Key
-																						// have
-																						// to
-																						// do
-																						// notation
-																						// like
-																						// this
+	@OneToMany(mappedBy = "id.order", fetch = FetchType.EAGER, orphanRemoval = true) // since id is the composite Key have to do notation like this
 	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE })
 	@BatchSize(size = 5)
 	@Fetch(FetchMode.SELECT) // to remove join duplicates
@@ -102,8 +87,7 @@ public class PurchaseOrder implements ObjectModel<Long> {
 	private Boolean rejected = false;
 
 	@Column(name = "PAYMENT_ID")
-	private String paymentId; // id of the payment corresponding to the payments
-								// API
+	private String paymentId; // id of the payment corresponding to the payments API
 
 	public PurchaseOrder() {
 
@@ -228,6 +212,14 @@ public class PurchaseOrder implements ObjectModel<Long> {
 
 	public void setPaymentId(String paymentId) {
 		this.paymentId = paymentId;
+	}
+	
+	public BigDecimal getDeliveryCost() {
+		return deliveryCost;
+	}
+
+	public void setDeliveryCost(BigDecimal deliveryCost) {
+		this.deliveryCost = deliveryCost;
 	}
 
 	@Override
