@@ -30,6 +30,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentR
 		"com.pier.rest,com.pier.security.*" })
 public class WebConfiguration extends WebMvcConfigurerAdapter {
 	
+	@Autowired
+	WebCrawlerInterceptor crawlerInterceptor;
+	
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
@@ -57,6 +60,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(deviceResolverHandlerInterceptor());
+		registry.addInterceptor(crawlerInterceptor);
 
 	}
 	

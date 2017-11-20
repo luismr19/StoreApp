@@ -187,6 +187,7 @@ public class ManageProductsRestController {
 	
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value="/upload", method=RequestMethod.POST)
     public ResponseEntity<?> handleFileUpload( @RequestPart("file") MultipartFile file, @RequestParam("id") Long id, HttpServletRequest request){
             
