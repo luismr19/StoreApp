@@ -33,17 +33,9 @@ public class WebCrawlerInterceptor extends HandlerInterceptorAdapter {
 	@Value("${whatsapp_crawler}")
 	String whatsappCrawlers;
 	
-	@Qualifier("whatsapp")
-	@Autowired
-	List<WebCrawler> whatsAppUserAgents;
+	@Value("#{servletContext.contextPath}")
+    private String servletContextPath;
 	
-	@Qualifier("facebook")
-	@Autowired
-	List<WebCrawler> facebookUserAgents;
-	
-	@Qualifier("google")
-	@Autowired
-	List<WebCrawler> googleUserAgents;
 	
 	List<String> whatsAppAgents;
 	List<String> googleAgents;
@@ -51,9 +43,9 @@ public class WebCrawlerInterceptor extends HandlerInterceptorAdapter {
 	
 	@PostConstruct
 	void initialize(){
-		facebookAgents=Arrays.asList(facebookCrawlers.split("|"));
-		googleAgents=Arrays.asList(googleCrawlers.split("|"));
-		whatsAppAgents=Arrays.asList(whatsappCrawlers.split("|"));
+		facebookAgents=Arrays.asList(facebookCrawlers.split("::::"));
+		googleAgents=Arrays.asList(googleCrawlers.split("::::"));
+		whatsAppAgents=Arrays.asList(whatsappCrawlers.split("::::"));
 	}
 	
 	
@@ -76,14 +68,25 @@ public class WebCrawlerInterceptor extends HandlerInterceptorAdapter {
 		allCrawlers.addAll(facebookAgents);
 		allCrawlers.addAll(whatsAppAgents);		
 		
-		if(method.equalsIgnoreCase(RequestMethod.GET.name()) && entityId!=null && isAnyKeyContained(userAgent,allCrawlers)){			
-			if(isAnyKeyContained(userAgent,googleAgents))
+		boolean requestFromSEO=isAnyKeyContained(userAgent,allCrawlers);
+		
+		if(method.equalsIgnoreCase(RequestMethod.GET.name()) && entityId!=null && requestFromSEO){			
+			/*if(isAnyKeyContained(userAgent,googleAgents))
 				response.sendRedirect("/seo/google/"+getRequestedResource(requestURI)+"/"+entityId);
 			else if(isAnyKeyContained(userAgent,facebookAgents))
 				response.sendRedirect("/seo/facebook/"+getRequestedResource(requestURI)+"/"+entityId);	
 			else if(isAnyKeyContained(userAgent,whatsAppAgents))
-				response.sendRedirect("/seo/whatsapp/"+getRequestedResource(requestURI)+"/"+entityId);	
+				response.sendRedirect("/seo/whatsapp/"+getRequestedResource(requestURI)+"/"+entityId);	*/
 			
+			//response.sendRedirect(servletContextPath+"/seo/"+getRequestedResource(requestURI)+"/"+entityId);	
+			request.getRequestDispatcher("/seo/"+getRequestedResource(requestURI)+"/"+entityId).forward(request, response);
+			
+			return false;
+		}else if(isAnyKeyContained(userAgent,googleAgents)){
+			request.getRequestDispatcher("/seo/google/none").forward(request, response);
+			return false;
+		}else if(requestFromSEO){
+			request.getRequestDispatcher("/seo").forward(request, response);
 			return false;
 		}
 		
@@ -101,11 +104,7 @@ public class WebCrawlerInterceptor extends HandlerInterceptorAdapter {
 	 }
 	 
 	 private String getRequestedResource(String requestURI){
-		 List<String> resources=Arrays.asList("articles",
-		 "products",
-		 "categories",
-		 "productTypes",
-		 "brands");
+		 List<String> resources=Arrays.asList(Crawlers.ENTITY_ARTICLES,Crawlers.ENTITY_PRODUCTS,Crawlers.ENTITY_CATEGORIES,Crawlers.ENTITY_PRODUCTTYPES,Crawlers.ENTITY_PRODUCTTYPES);
 		 try{
 		 return resources.stream().filter(resource->requestURI.contains(resource)).findFirst().get();
 		 }catch(NoSuchElementException noEl){
@@ -141,11 +140,13 @@ public class WebCrawlerInterceptor extends HandlerInterceptorAdapter {
 		 return Arrays.asList(facebookCrawlers.split("|")).stream().map(str->new WebCrawler("Facebook",str)).collect(Collectors.toList());		 
 	 }
 	 
+	 
 	 @Bean(name="google")
 	 public List<WebCrawler> getGoogleCrawlers(){
 		 
 		 return Arrays.asList(googleCrawlers.split("|")).stream().map(str->new WebCrawler("Google",str)).collect(Collectors.toList());	 
 	 }
+	 
 	 
 	 @Bean(name="whatsapp")
 	 public List<WebCrawler> getWhatsAppCrawlers(){		 

@@ -1,6 +1,8 @@
 package com.pier.config;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
@@ -60,7 +64,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(deviceResolverHandlerInterceptor());
-		registry.addInterceptor(crawlerInterceptor);
+		registry.addInterceptor(crawlerInterceptor).excludePathPatterns("/seo/**");
 
 	}
 	
@@ -79,9 +83,15 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 	  @Autowired SpecObjectMapper domainMapper;
 	  
 	  @Override public void  configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		  
 	  MappingJackson2HttpMessageConverter converter = new
 	  MappingJackson2HttpMessageConverter();
-	  converter.setObjectMapper(domainMapper); converters.add(converter);
+	  
+	  StringHttpMessageConverter stringConverter=new StringHttpMessageConverter(); 
+	  
+	  converter.setObjectMapper(domainMapper); 
+	  converters.add(stringConverter);
+	  converters.add(converter);	  
 	  super.configureMessageConverters(converters); }
 	 
 	 

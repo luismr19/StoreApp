@@ -34,13 +34,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pier.business.validation.ProductIntegrityChecker;
+import com.pier.config.Crawlers;
 import com.pier.rest.model.Flavor;
 import com.pier.rest.model.Product;
 import com.pier.service.ProductDao;
 import com.pier.service.impl.FlavorService;
 
 @RestController
-@RequestMapping(value="products")
+@RequestMapping(value=Crawlers.ENTITY_PRODUCTS)
 @Transactional
 public class ManageProductsRestController {
 	

@@ -29,11 +29,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.business.validation.BrandIntegrityChecker;
+import com.pier.config.Crawlers;
 import com.pier.rest.model.Brand;
 import com.pier.service.BrandDao;
 
 @RestController
-@RequestMapping(value="brands")
+@RequestMapping(value=Crawlers.ENTITY_BRANDS)
 @Transactional
 public class ManageBrandRestController {
 	

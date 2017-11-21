@@ -23,11 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.business.validation.ProductTypeIntegrityChecker;
+import com.pier.config.Crawlers;
 import com.pier.rest.model.ProductType;
 import com.pier.service.ProductTypeDao;
 
 @RestController
-@RequestMapping(value="productType")
+@RequestMapping(value=Crawlers.ENTITY_PRODUCTTYPES)
 @Transactional
 public class ManageProductTypeRestController {
 	

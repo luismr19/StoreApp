@@ -23,11 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.business.validation.CategoryIntegrityChecker;
+import com.pier.config.Crawlers;
 import com.pier.rest.model.Category;
 import com.pier.service.CategoryDao;
 
 @RestController
-@RequestMapping(value="categories")
+@RequestMapping(value=Crawlers.ENTITY_CATEGORIES)
 @Transactional
 public class ManageCategoryRestController {
 	
