@@ -77,9 +77,9 @@ public class SearchEngineController {
 		
 		response.setContentType(MediaType.TEXT_HTML_VALUE);
 	    response.setCharacterEncoding("UTF-8");
-	    
-	    response.setStatus(content.length()>1?HttpServletResponse.SC_OK:HttpServletResponse.SC_NOT_FOUND);
-		
+	    if(content.length()<2){
+	    content=defaultMarkup();
+	    }
 		return content;
 	}
 	
@@ -95,6 +95,12 @@ public class SearchEngineController {
 		
 		return content;
 	}
+	
+	@RequestMapping(method = RequestMethod.GET)
+	public String getResultNone(HttpServletRequest request,HttpServletResponse response){		
+		return getGoogleResultNone(request,response);		
+	}
+	
 	
 	
 	@RequestMapping(value="facebook/{entityType}/{id}",method=RequestMethod.GET)	
@@ -163,7 +169,9 @@ public class SearchEngineController {
 		response.setContentType(MediaType.TEXT_HTML_VALUE);
 	    response.setCharacterEncoding("UTF-8");
 	    
-	    response.setStatus(content.length()>1?HttpServletResponse.SC_OK:HttpServletResponse.SC_NOT_FOUND);
+	    if(content.length()<2){
+		    content=defaultMarkup();
+	    }
 		
 		return content;
 		
@@ -202,11 +210,11 @@ public class SearchEngineController {
 		}else if(entity instanceof Product){
 			Product product=(Product) entity;
 			return parseMetaContentFacebook(product.getName(),product.getDescription(),"http://"+domain+"/products/"+product.getId(),
-					"http://"+domain+imagesPath+"+products/+prod_"+product.getId()+".jpg","product");			
+					"http://"+domain+imagesPath+"products/prod_"+product.getId()+".jpg","product");			
 		}else if(entity instanceof Brand){
 			Brand brand=(Brand) entity;
 			return parseMetaContentFacebook(brand.getName(),brand.getName(),"http://"+domain+"/products?brands="+brand.getId(),
-					"http://"+domain+imagesPath+"+brands/"+brand.getId()+".jpg","website");	
+					"http://"+domain+imagesPath+"brands/"+brand.getId()+".jpg","website");	
 		}else if(entity instanceof ProductType ){
 			ProductType productType=(ProductType) entity;
 			return parseMetaContentFacebook(productType.getName(),productType.getName(),"http://"+domain+"/products?types="+productType.getId(),
@@ -230,19 +238,19 @@ public class SearchEngineController {
 		if(entity instanceof Article){
 			Article article=(Article) entity;
 			return parseMetaContentAll(article.getTitle(),article.getDescription(),"http://"+domain+"/articles/"+article.getId(),
-					"http://"+domain+"/"+this.articlesPaths+ "images/art"+article.getId(),"article"); 
+					"http://"+domain+this.articlesPaths+ "images/art"+article.getId()+".jpg","article"); 
 		}else if(entity instanceof Product){
 			Product product=(Product) entity;
 			return parseMetaContentAll(product.getName(),product.getDescription(),"http://"+domain+"/products/"+product.getId(),
-					"http://"+domain+"/"+imagesPath+"+products/+prod_"+product.getId()+".jpg","product");			
+					"http://"+domain+imagesPath+"+products/+prod_"+product.getId()+".jpg","product");			
 		}else if(entity instanceof Brand){
 			Brand brand=(Brand) entity;
 			return parseMetaContentAll(brand.getName(),brand.getName(),"http://"+domain+"/products?brands="+brand.getId(),
-					"http://"+domain+"/"+imagesPath+"+brands/"+brand.getId()+".jpg","website");	
+					"http://"+domain+imagesPath+"+brands/"+brand.getId()+".jpg","website");	
 		}else if(entity instanceof ProductType ){
 			ProductType productType=(ProductType) entity;
 			return parseMetaContentAll(productType.getName(),productType.getName(),"http://"+domain+"/products?types="+productType.getId(),
-					"http://"+domain+"/"+imagesPath+"main_logo.jpg","website");	
+					"http://"+domain+imagesPath+"main_logo.jpg","website");	
 		}
 		else if(entity instanceof Category){
 			Category category=(Category) entity;
@@ -275,7 +283,7 @@ public class SearchEngineController {
 		"<html>"+
 		"<head>"+
 		"<meta charset=\"utf-8\">"+
-		"<meta name=\"Description\" CONTENT=\""+description+"\">"+		
+		"<meta name=\"description\" content=\""+description+"\">"+		
 		"<title>"+title+"</title>"+
 		"<meta name=\"robots\" content=\"nofollow\">"+
 		"</head>"+
@@ -296,13 +304,31 @@ public class SearchEngineController {
 				return htmlMarkup;
 	}
 	
+	private String defaultMarkup(){
+		String htmlMarkup="<!DOCTYPE html>"+
+				"<html>"+
+				"<head>"+
+				"<meta name=\"googlebot\" content=\"noindex, nofollow\" />"+
+				"<meta name=\"robots\" content=\"noindex, nofollow\">"+
+				"<meta property=\"og:site_name\" content=\"mxphysique.com\">"+
+				"<meta property=\"og:url\" content=\"http://www.mxphysique.com\"/>"+
+				"<meta property=\"og:type\" content=\"website\"/><meta property=\"og:title\" content=\"MxPhysique.com\" />"+
+				"<meta property=\"og:description\" content=\"sitio de fitness para Mexicanos \" />"+
+				"<meta property=\"og:image\" content=\"http://www.mxphysique.com//users/pc/workspace/fstore-app/src/assets/images/main_logo.jpg\" />"+
+				"</head>"+
+				"</html>";
+				
+				return htmlMarkup;
+		
+	}
+	
 	
 	private String parseMetaContentAll(String title, String description, String og_url, String og_image, String og_type){
 		String htmlMarkup="<!DOCTYPE html>"+
 		"<html>"+
 		"<head>"+
 		"<meta charset=\"utf-8\">"+
-		"<meta name=\"Description\" CONTENT=\""+description+"\">"+		
+		"<meta name=\"description\" content=\""+description+"\">"+		
 		"<title>"+title+"</title>"+
 		"<meta name=\"robots\" content=\"nofollow\">"+
 		

@@ -57,18 +57,24 @@ public class WebCrawlerInterceptor extends HandlerInterceptorAdapter {
 		 
 		final String userAgent = request.getHeader(USER_AGENT_HEADER);		
 		final String method=request.getMethod();		
-		final String requestURI = request.getRequestURI();
-		@SuppressWarnings("unchecked")
-		final Map<String, String> pathVariables = (Map<String, String>) request
-                    .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+		final String requestURI = request.getRequestURI();	
+		final String path = requestURI.substring(request.getContextPath().length());
 		
-		final String entityId=pathVariables.get("id");
+		String[] urlParts=requestURI.split("/");
+		Long entityId=null;				
+		try{
+			entityId=Long.parseLong(urlParts[urlParts.length-1]);
+		}catch(NumberFormatException e){
+			return true;
+		}	
+		
 		List<String> allCrawlers=new ArrayList<String>();
 		allCrawlers.addAll(googleAgents);
 		allCrawlers.addAll(facebookAgents);
 		allCrawlers.addAll(whatsAppAgents);		
 		
 		boolean requestFromSEO=isAnyKeyContained(userAgent,allCrawlers);
+		
 		
 		if(method.equalsIgnoreCase(RequestMethod.GET.name()) && entityId!=null && requestFromSEO){			
 			/*if(isAnyKeyContained(userAgent,googleAgents))

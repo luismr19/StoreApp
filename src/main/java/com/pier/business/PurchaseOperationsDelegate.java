@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.mercadopago.MP;
 import com.pier.business.exception.EmptyCartException;
 import com.pier.business.exception.OutOfStockException;
+import com.pier.business.util.AddressValidationUtil;
 import com.pier.business.util.OrderDetailUtil;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -63,6 +64,10 @@ public class PurchaseOperationsDelegate {
 		PurchaseOrder cart = cartOps.getUserCart(user);
         
 		int index=0;
+		
+		if(!AddressValidationUtil.isAddressValid(checkoutInfo.getAddress())){
+			throw new PaymentErrorException("address is incorrect"); 
+		}
 		
 		// check existence before buying
 		for (OrderDetail detail : cart.getOrderDetails()) {

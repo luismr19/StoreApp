@@ -59,7 +59,7 @@ public class PurchaseRestController {
 			HttpServletRequest request){		
 		
 		String token=request.getHeader(tokenHeader);
-		String username=jwtTokenUtil.getUsernameFromToken(token);			
+		String username=jwtTokenUtil.getUsernameFromToken(token);		
 		User user=userDao.find("username",username).get(0);	
 		
 		PurchaseOrder order=null;

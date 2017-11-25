@@ -64,7 +64,8 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(deviceResolverHandlerInterceptor());
-		registry.addInterceptor(crawlerInterceptor).excludePathPatterns("/seo/**");
+		//won't use this interceptor right now as our custom jboss httphandler is taking care ;)
+		//registry.addInterceptor(crawlerInterceptor).addPathPatterns("/meta/**").excludePathPatterns("/seo/**");
 
 	}
 	

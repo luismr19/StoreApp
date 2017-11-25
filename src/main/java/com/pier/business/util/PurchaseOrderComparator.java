@@ -10,7 +10,7 @@ public class PurchaseOrderComparator implements Comparator<PurchaseOrder> {
 	@Override
 	public int compare(PurchaseOrder o1, PurchaseOrder o2) {
 		// TODO Auto-generated method stub
-		return o1.getPurchaseDate().compareTo(o2.getPurchaseDate());
+		return o1.getId().compareTo(o2.getId());
 	}
 
 	
