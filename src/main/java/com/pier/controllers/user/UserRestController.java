@@ -154,7 +154,7 @@ public class UserRestController {
 	public ResponseEntity<?> changeUserInfo(@RequestBody User user, HttpServletRequest request){		
 		User currentUser=null;
 		if(user.getPassword()==null || user.getPassword().isEmpty()){
-			return new ResponseEntity<String>("error, must contain password",HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("error, must contain password",HttpStatus.CONFLICT);
 		}
 		try{
 			String token=request.getHeader(tokenHeader);

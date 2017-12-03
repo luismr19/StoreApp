@@ -263,7 +263,7 @@ public class SearchEngineController {
 	
 	private String parseMetaContentFacebook(String title, String description, String og_url, String og_image, String og_type){
 		String htmlMarkup="<!DOCTYPE html>"+
-		"<html>"+
+		"<html prefix=\"og: http://ogp.me/ns#\">"+
 		"<head>"+	
 		//facebook & WhatsApp
 		"<meta property=\"og:site_name\" content=\"mxphysique.com\">"+
@@ -280,7 +280,7 @@ public class SearchEngineController {
 	
 	private String parseMetaContentGoogle(String title, String description){
 		String htmlMarkup="<!DOCTYPE html>"+
-		"<html>"+
+		"<html prefix=\"og: http://ogp.me/ns#\">"+
 		"<head>"+
 		"<meta charset=\"utf-8\">"+
 		"<meta name=\"description\" content=\""+description+"\">"+		
@@ -294,7 +294,7 @@ public class SearchEngineController {
 	
 	private String nonIndexedGoogleMarkup(){
 		String htmlMarkup="<!DOCTYPE html>"+
-				"<html>"+
+				"<html prefix=\"og: http://ogp.me/ns#\">"+
 				"<head>"+
 				"<meta name=\"googlebot\" content=\"noindex, nofollow\" />"+
 				"<meta name=\"robots\" content=\"noindex, nofollow\">"+
@@ -306,7 +306,7 @@ public class SearchEngineController {
 	
 	private String defaultMarkup(){
 		String htmlMarkup="<!DOCTYPE html>"+
-				"<html>"+
+				"<html prefix=\"og: http://ogp.me/ns#\">"+
 				"<head>"+
 				"<meta name=\"googlebot\" content=\"noindex, nofollow\" />"+
 				"<meta name=\"robots\" content=\"noindex, nofollow\">"+
@@ -325,14 +325,14 @@ public class SearchEngineController {
 	
 	private String parseMetaContentAll(String title, String description, String og_url, String og_image, String og_type){
 		String htmlMarkup="<!DOCTYPE html>"+
-		"<html>"+
+		"<html prefix=\"og: http://ogp.me/ns#\">"+
 		"<head>"+
 		"<meta charset=\"utf-8\">"+
 		"<meta name=\"description\" content=\""+description+"\">"+		
 		"<title>"+title+"</title>"+
 		"<meta name=\"robots\" content=\"nofollow\">"+
 		
-		//facebook & WhatsApp
+		//facebook, WhatsApp & twitter
 		"<meta property=\"og:site_name\" content=\"mxphysique.com\">"+
 		"<meta property=\"og:url\" content=\""+og_url+"\" />"+
 		"<meta property=\"og:type\" content=\""+og_type+"\"/>"+

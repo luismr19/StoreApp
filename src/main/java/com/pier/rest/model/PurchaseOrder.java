@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pier.model.security.User;
 
 @Entity
-@Table(name = "PURCHASE_ORDER")
+@Table(name = "purchase_order")
 public class PurchaseOrder implements ObjectModel<Long> {
 
 	@Id

@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javax.persistence.JoinColumn;
 
 @Entity
-@Table(name="TAGS")
+@Table(name="tags")
 public class ArticleTag {
 	
 	@Id

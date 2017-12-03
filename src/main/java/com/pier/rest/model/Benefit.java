@@ -24,7 +24,7 @@ import org.hibernate.annotations.NotFoundAction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="BENEFIT")
+@Table(name="benefit")
 public class Benefit implements ObjectModel<Long>{
 	
 	@Id
@@ -32,7 +32,7 @@ public class Benefit implements ObjectModel<Long>{
 	private Long id;
 	
 	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(name="BENEFIT_PRODUCT", joinColumns=@JoinColumn(name="BENEFIT_ID" ,referencedColumnName="ID"),
+	@JoinTable(name="benefit_product", joinColumns=@JoinColumn(name="BENEFIT_ID" ,referencedColumnName="ID"),
 	inverseJoinColumns={@JoinColumn(name="PRODUCT_ID", referencedColumnName="PRODUCT_ID")})
 	@Fetch(FetchMode.SELECT)
 	private List<Product> products;

@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="PRODUCT_FLAVOR")
+@Table(name="product_flavor")
 public class ProductFlavor {
 	
 	@EmbeddedId

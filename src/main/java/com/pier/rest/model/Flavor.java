@@ -17,7 +17,7 @@ import org.hibernate.annotations.CascadeType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="FLAVOR")
+@Table(name="flavor")
 public class Flavor implements ObjectModel<Long> {
 	
 	@Id

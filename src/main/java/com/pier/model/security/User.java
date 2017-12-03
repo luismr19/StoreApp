@@ -45,7 +45,7 @@ import com.pier.rest.model.ObjectModel;
 import com.pier.rest.model.Product;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "user")
 public class User implements ObjectModel<Long>{
 		
 	/**
@@ -111,7 +111,7 @@ public class User implements ObjectModel<Long>{
 	 private Long phoneNumber;
 	 
 	 @ManyToMany(fetch=FetchType.EAGER)
-	 @JoinTable(name="USER_AUTHORITY", joinColumns={@JoinColumn(name="USER_ID", referencedColumnName="ID")},
+	 @JoinTable(name="user_authority", joinColumns={@JoinColumn(name="USER_ID", referencedColumnName="ID")},
 	 inverseJoinColumns={@JoinColumn(name="AUTHORITY_ID", referencedColumnName="ID")})
 	 private List<Authority> authorities;
 	 
@@ -122,7 +122,7 @@ public class User implements ObjectModel<Long>{
 	 Set<PurchaseOrder> orders;
 	 
 	 @ManyToMany(fetch=FetchType.LAZY)	 
-	 @JoinTable(name="USER_FAVORITES",
+	 @JoinTable(name="user_favorites",
 	        joinColumns = {@JoinColumn(name = "USER_ID")},
 	        inverseJoinColumns = {@JoinColumn(name = "PRODUCT_ID")},
 	        uniqueConstraints = {@UniqueConstraint(columnNames = {"USER_ID", "PRODUCT_ID"})}

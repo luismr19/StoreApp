@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name = "PRODUCT")
+@Table(name = "product")
 //@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="name")
 public class Product implements ObjectModel<Long>{
 	
@@ -67,7 +67,7 @@ public class Product implements ObjectModel<Long>{
 	private String secondaryDescription;
 	
 	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(name="PRODUCT_CATEGORY", joinColumns={@JoinColumn(name="PRODUCT_ID" ,referencedColumnName="PRODUCT_ID")},
+	@JoinTable(name="product_category", joinColumns={@JoinColumn(name="PRODUCT_ID" ,referencedColumnName="PRODUCT_ID")},
 	inverseJoinColumns={@JoinColumn(name="CATEGORY_ID", referencedColumnName="ID")})
 	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
 	@Fetch(FetchMode.SELECT)

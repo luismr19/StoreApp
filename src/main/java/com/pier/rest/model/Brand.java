@@ -20,7 +20,7 @@ import org.hibernate.annotations.FetchMode;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="BRAND")
+@Table(name="brand")
 public class Brand implements ObjectModel<Long>{
 	
 	@Id

@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pier.model.security.User;
 
 @Entity
-@Table(name = "ARTICLE")
+@Table(name = "article")
 public class Article implements ObjectModel<Long> {
 
 	@Id
@@ -49,7 +49,7 @@ public class Article implements ObjectModel<Long> {
 	private String description;
 
 	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(name = "ARTICLE_TAGS", joinColumns = @JoinColumn(name = "ARTICLE_ID", referencedColumnName = "ID"), 
+	@JoinTable(name = "article_tags", joinColumns = @JoinColumn(name = "ARTICLE_ID", referencedColumnName = "ID"), 
 	inverseJoinColumns = @JoinColumn(name = "TAG_ID", referencedColumnName = "ID"))
 	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE})
 	@Fetch(FetchMode.SELECT)

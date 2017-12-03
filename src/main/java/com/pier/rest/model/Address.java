@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "ADDRESS")
+@Table(name = "address")
 public class Address implements ObjectModel<Long>{
 	
 	@Id

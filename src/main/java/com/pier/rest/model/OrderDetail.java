@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name = "ORDER_DETAIL")
+@Table(name = "order_detail")
 public class OrderDetail implements ObjectModel<OrderDetailId> {
 
 	@EmbeddedId	
