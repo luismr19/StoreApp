@@ -98,11 +98,9 @@ public class ManagePromotionsRestController {
 		criteria.add(and);
         
 		criteria.addOrder(Order.asc("displayName"));
-		try{
+		
 			results= criteria.list();
-		}catch(Exception e){
-			
-		}
+		
 		return results;
 	}
 	
@@ -119,11 +117,9 @@ public class ManagePromotionsRestController {
 		criteria.add(and);
         
 		criteria.addOrder(Order.desc("endDate"));
-		try{
+		
 			results= criteria.list();
-		}catch(Exception e){
-			
-		}
+		
 		return results;
 	}
 

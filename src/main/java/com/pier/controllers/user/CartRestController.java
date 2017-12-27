@@ -62,9 +62,7 @@ public class CartRestController {
 		}catch(OutOfStockException ex){
 		return new ResponseEntity<String>("out of stock",HttpStatus.OK);
 		}
-		catch(Exception e){
-			return new ResponseEntity<String>("Error adding product",HttpStatus.CONFLICT);	
-		}
+		
 		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);
 		
 	}
@@ -96,9 +94,7 @@ public class CartRestController {
 		}catch(OutOfStockException ex){
 		return new ResponseEntity<String>("out of stock",HttpStatus.OK);
 		}
-		catch(Exception e){
-			return new ResponseEntity<String>("Error adding product",HttpStatus.CONFLICT);	
-		}
+		
 		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);
 		
 	}
@@ -111,13 +107,9 @@ public class CartRestController {
 		String username=jwtTokenUtil.getUsernameFromToken(token);			
 		User user=userDao.find("username",username).get(0);
 		
-		PurchaseOrder cart=null;
+		PurchaseOrder cart=null;		
 		
-		try{
-			cart=cartOps.removeFromCart(user, product);
-		}catch(Exception e){
-			return new ResponseEntity<String>("unable to remove product",HttpStatus.CONFLICT);
-		}
+			cart=cartOps.removeFromCart(user, product);		
 		
 		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);			
 	}
@@ -130,11 +122,8 @@ public class CartRestController {
 		User user=userDao.find("username",username).get(0);
 		
 		PurchaseOrder cart=null;
-		try{
-			cart=cartOps.updateQuantities(user, details);
-		}catch(Exception e){
-			return new ResponseEntity<String>("unable to remove products",HttpStatus.CONFLICT);
-		}
+		
+			cart=cartOps.updateQuantities(user, details);		
 		
 		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);	
 		
@@ -146,25 +135,16 @@ public class CartRestController {
 		String username=jwtTokenUtil.getUsernameFromToken(token);
 		User user=userDao.find("username",username).get(0);
 		PurchaseOrder cart=new PurchaseOrder();
-		try{
-			cart=cartOps.getUserCart(user);
-		}catch(Exception e){
-			return new ResponseEntity<String>("error retrieving cart",HttpStatus.CONFLICT);
-		}	
-					
+		
+			cart=cartOps.getUserCart(user);	
 		
 		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);
 		
 	}
 	
 	@RequestMapping(value="cart/promos",method=RequestMethod.POST)
-	public ResponseEntity<?> getEligiblePromotions(@RequestBody PurchaseOrder cart){
-		try{
-			return ResponseEntity.ok(cartOps.applyPromotionsReadOnly(cart));
-		}catch(Exception e){
-			return new ResponseEntity<String>("error getting promotions",HttpStatus.CONFLICT);
-		}
-		
+	public ResponseEntity<?> getEligiblePromotions(@RequestBody PurchaseOrder cart){		
+			return ResponseEntity.ok(cartOps.applyPromotionsReadOnly(cart));	
 	}
 	
 

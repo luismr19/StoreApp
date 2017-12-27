@@ -1,5 +1,7 @@
 package com.pier.payment;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadopago.MP;
 import com.pier.business.PaymentErrorException;
@@ -13,10 +15,13 @@ import com.pier.payment.request.Payment;
 import com.pier.payment.request.PaymentEvent;
 import com.pier.payment.request.Phone;
 import com.pier.payment.request.Refund;
+import com.pier.payment.request.ShippingOptions;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.service.impl.OrderService;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Map;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -51,6 +56,12 @@ public class PaymentUtils {
 
 	@Value("${ENVIRONMENT}")
 	String environment;
+	
+	@Value("${client_id}")
+	String clientId;
+	
+	@Value("${client_secret}")
+	String clientSecret;
 
 	@Autowired
 	ObjectMapper jsonMapper;
@@ -251,6 +262,20 @@ public class PaymentUtils {
 		        String.class);
 		
 		return response;
+	}
+	
+	public String getShippingOptions(Map<String,Object> params){
+		MP mp = new MP(clientId,clientSecret);		
+		ShippingOptions options=null;	
+		String shippingResponse=null;
+		
+		try {
+			shippingResponse=mp.get("/shipping_options",params).toString();
+			options = jsonMapper.readValue(shippingResponse, ShippingOptions.class);
+		} catch (Exception e) {
+			//		
+		}
+		return shippingResponse;
 	}
 
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.pier.business.exception.OutOfStockException;
 import com.pier.business.util.OrderDetailUtil;
 import com.pier.model.security.User;
+import com.pier.rest.model.Benefit;
 import com.pier.rest.model.OrderDetail;
 import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
@@ -74,7 +75,7 @@ public class CartOperationsDelegate {
 			return cart;
 	}
 	
-	public PurchaseOrder removeFromCart(User user, ProductFlavor product) throws OutOfStockException{
+	public PurchaseOrder removeFromCart(User user, ProductFlavor product){
 		PurchaseOrder cart=getUserCart(user);			
 		OrderDetail detail=OrderDetailUtil.removeProductFromDetails(cart.getOrderDetails(), product);
 		if(detail.getQuantity()<=0){
@@ -128,6 +129,8 @@ public class CartOperationsDelegate {
 	}
 	
 	public PurchaseOrder applyPromotionsReadOnly(PurchaseOrder cart){
+		//security: reset any promotion first
+		cart.setGift(new Benefit());
 		if(cart.getOrderDetails()!=null && cart.getOrderDetails().size()>0){
 			//first try to see if some promotion can be applied
 		if(PromotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart))){

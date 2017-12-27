@@ -3,7 +3,9 @@ package com.pier.business;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,6 +24,7 @@ import com.pier.model.security.User;
 import com.pier.payment.PaymentUtils;
 import com.pier.payment.request.Payment;
 import com.pier.payment.request.PaymentEvent;
+import com.pier.payment.request.ShippingOptionsRequest;
 import com.pier.payment.request.Statuses;
 import com.pier.rest.model.Address;
 import com.pier.rest.model.CheckoutRequest;
@@ -98,9 +101,8 @@ public class PurchaseOperationsDelegate {
 		 completeOrder(cart,checkoutInfo.getAddress());
 		 //else if status is in process or pending
 		}else if(payment.getStatus().equals(Statuses.authorized) || payment.getStatus().equals(Statuses.in_process) || payment.getStatus().equals(Statuses.pending)){
-		 //only update existence but do not set the order as concluded	
-			this.updateExistence(cart);
-			orderDao.update(cart);		 
+		 //only update existence and address but do not set the order as concluded
+			preCompleteOrder(cart,checkoutInfo);		 
 		}else{		
 			throw new PaymentException(payment.getStatus_detail());
 		}
@@ -112,8 +114,11 @@ public class PurchaseOperationsDelegate {
 	
 	}
 	
-
-	
+	private void preCompleteOrder(PurchaseOrder cart, CheckoutRequest checkoutInfo){
+		cart.setDeliveryAddress(checkoutInfo.getAddress());		
+		this.updateExistence(cart);
+		orderDao.update(cart);		
+	}
 
 	public PurchaseOrder completeOrder(User user) {
 		PurchaseOrder cart = cartOps.getUserCart(user);		
@@ -139,6 +144,7 @@ public class PurchaseOperationsDelegate {
 
 	}
 	
+	
 	public boolean handleNotification(PaymentEvent event) throws Exception{
 		
 		PurchaseOrder order=paymentUtils.handleNotification(event);
@@ -158,6 +164,16 @@ public class PurchaseOperationsDelegate {
 			product.setExistence(product.getExistence() - 1);
 			productFlavorDao.update(product);			
 		}
+	}
+
+	public String calculateShippingOptions(ShippingOptionsRequest shippingOptionsRequest) {
+		Map<String,Object> params=new HashMap<>();
+		params.put("dimensions", shippingOptionsRequest.getDimensions());
+		params.put("zip_code", shippingOptionsRequest.getZip_code());
+		params.put("item_price", shippingOptionsRequest.getItem_price());
+		
+		return	paymentUtils.getShippingOptions(params);
+		
 	}
 
 }

@@ -52,13 +52,13 @@ public class SearchEngineController {
 	@Autowired
 	ArticleDao articleDao;	
 	
-	@Value("${angular.articles}")
+	@Value("${public.angular.articles}")
 	String articlesPaths;
 	
 	@Value("${domain}")
 	String domain;
 	
-	@Value("${angular.images}")
+	@Value("${public.angular.images}")
 	String imagesPath;
 	
 	
@@ -242,11 +242,11 @@ public class SearchEngineController {
 		}else if(entity instanceof Product){
 			Product product=(Product) entity;
 			return parseMetaContentAll(product.getName(),product.getDescription(),"http://"+domain+"/products/"+product.getId(),
-					"http://"+domain+imagesPath+"+products/+prod_"+product.getId()+".jpg","product");			
+					"http://"+domain+imagesPath+"products/prod_"+product.getId()+".jpg","product");			
 		}else if(entity instanceof Brand){
 			Brand brand=(Brand) entity;
 			return parseMetaContentAll(brand.getName(),brand.getName(),"http://"+domain+"/products?brands="+brand.getId(),
-					"http://"+domain+imagesPath+"+brands/"+brand.getId()+".jpg","website");	
+					"http://"+domain+imagesPath+"brands/"+brand.getId()+".jpg","website");	
 		}else if(entity instanceof ProductType ){
 			ProductType productType=(ProductType) entity;
 			return parseMetaContentAll(productType.getName(),productType.getName(),"http://"+domain+"/products?types="+productType.getId(),
@@ -314,7 +314,7 @@ public class SearchEngineController {
 				"<meta property=\"og:url\" content=\"http://www.mxphysique.com\"/>"+
 				"<meta property=\"og:type\" content=\"website\"/><meta property=\"og:title\" content=\"MxPhysique.com\" />"+
 				"<meta property=\"og:description\" content=\"sitio de fitness para Mexicanos \" />"+
-				"<meta property=\"og:image\" content=\"http://www.mxphysique.com//users/pc/workspace/fstore-app/src/assets/images/main_logo.jpg\" />"+
+				"<meta property=\"og:image\" content=\"http://"+domain+imagesPath+"main_logo.jpg\" />"+
 				"</head>"+
 				"</html>";
 				

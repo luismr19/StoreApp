@@ -50,12 +50,9 @@ public class UserRestController {
 	@RequestMapping(value="/user", method=RequestMethod.GET)
 	public ResponseEntity<?> getauthenticatedUser(HttpServletRequest request){
 		JwtUser user=null;
-		try{
+		
 			String token=request.getHeader(tokenHeader);
-			user=userSvc.getJwtUserFromToken(token);
-		}catch(Exception e){
-			return new ResponseEntity<String>("",HttpStatus.NOT_FOUND);
-		}
+			user=userSvc.getJwtUserFromToken(token);		
 		
 		return new ResponseEntity<JwtUser>(user,HttpStatus.OK);
 	}
@@ -64,14 +61,12 @@ public class UserRestController {
 	public ResponseEntity<?> getMyHistory(@RequestParam(value="pageSize") Integer pageSize,@RequestParam(value="index") Integer index,  HttpServletRequest request){
 		JwtUser user=null;
 		List<PurchaseOrder> orders=Collections.emptyList();
-		try{
+		
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);		
 		// we call this method instead of retrieving the user's orders collection to seize the username already present in token claims
 		orders=orderSvc.getOrderHistory(index,pageSize,username);
-		}catch(Exception e){
-			return new ResponseEntity<String>("",HttpStatus.NOT_FOUND);
-		}
+		
 		
 		return new ResponseEntity<List<PurchaseOrder>>(orders,HttpStatus.OK);
 		
@@ -81,15 +76,12 @@ public class UserRestController {
 	public ResponseEntity<?> getMyHistoryOrder(@PathVariable Long id,  HttpServletRequest request){
 		JwtUser user=null;
 		PurchaseOrder order=null;
-		try{
+		
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);		
 		// we call this method instead of retrieving the user's orders collection to seize the username already present in token claims
 		order=orderSvc.getOrder(id, username);
-		}catch(Exception e){
-			return new ResponseEntity<String>("",HttpStatus.NOT_FOUND);
-		}
-		
+				
 		return new ResponseEntity<PurchaseOrder>(order,HttpStatus.OK);
 		
 	}
@@ -97,24 +89,20 @@ public class UserRestController {
 	@RequestMapping(value="addToFavorites", method=RequestMethod.POST)
 	public ResponseEntity<?> addToFavorites(@RequestBody Product product, HttpServletRequest request){
 		Product addedProduct=null;
-		try{
+		
 			String token=request.getHeader(tokenHeader);
 			addedProduct=userSvc.addToFavorites(product,token);
-		}catch(Exception e){
-			return new ResponseEntity<String>("error adding product",HttpStatus.CONFLICT);
-		}
+		
 		return new ResponseEntity<Product>(addedProduct,HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="removeFromFavorites", method=RequestMethod.POST)
 	public ResponseEntity<?> removeFromFavorites(@RequestBody Product product, HttpServletRequest request){
 		Product removedProduct=null;
-		try{
+		
 			String token=request.getHeader(tokenHeader);
 			removedProduct=userSvc.removeFromFavorites(product,token);
-		}catch(Exception e){
-			return new ResponseEntity<String>("error removing product",HttpStatus.CONFLICT);
-		}
+		
 		return new ResponseEntity<Product>(removedProduct,HttpStatus.OK);
 	}
 	
@@ -122,15 +110,11 @@ public class UserRestController {
 	public ResponseEntity<?> getFavorites(HttpServletRequest request){
 		Set<Product> results=new HashSet();
 		
-		try{
 			String token=request.getHeader(tokenHeader);
 			User user=userSvc.getUserFromTokenWithFavs(token);
 			
 			
-			results=userSvc.getFavorites(user);
-		}catch(Exception e){
-			return new ResponseEntity<String>("error getting favorites",HttpStatus.CONFLICT);
-		}
+			results=userSvc.getFavorites(user);		
 		
 		return new ResponseEntity<Set<Product>>(results,HttpStatus.OK);		
 	}
@@ -139,12 +123,10 @@ public class UserRestController {
 	public ResponseEntity<?> getUserInfo(HttpServletRequest request){		
 		User user=null;
 		
-		try{
+		
 			String token=request.getHeader(tokenHeader);
 			user=userSvc.getUserFromToken(token);
-		}catch(Exception e){
-			return new ResponseEntity<String>("error getting user info",HttpStatus.NOT_FOUND);
-		}
+		
 		
 		return new ResponseEntity<User>(user, HttpStatus.OK);
 		
@@ -156,13 +138,10 @@ public class UserRestController {
 		if(user.getPassword()==null || user.getPassword().isEmpty()){
 			return new ResponseEntity<String>("error, must contain password",HttpStatus.CONFLICT);
 		}
-		try{
+		
 			String token=request.getHeader(tokenHeader);
-			currentUser=userSvc.updateAddressAndPassword(user, token);	
-			
-		}catch(Exception e){
-			return new ResponseEntity<String>("error getting user info",HttpStatus.NOT_FOUND);
-		}
+			currentUser=userSvc.updateAddressAndPassword(user, token);				
+		
 		
 		return new ResponseEntity<User>(currentUser, HttpStatus.OK);
 		

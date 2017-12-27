@@ -74,10 +74,7 @@ public class PurchaseRestController {
 			return new ResponseEntity<String>(pe.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}catch(PaymentErrorException perr){
 			return new ResponseEntity<String>(perr.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		catch(Exception e){
-			return new ResponseEntity<String>("error performing operation",HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		}		
 		return new ResponseEntity<PurchaseOrder>(order,HttpStatus.OK);
 		
 		

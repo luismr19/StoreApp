@@ -52,11 +52,8 @@ public class ManageOrdersRestController {
  @RequestMapping(value="/{id}",method=RequestMethod.GET)
  public ResponseEntity<?> getOrder(@PathVariable long id){
 	 PurchaseOrder order=null;
-	 try{
-		 order=orderDao.find(id);
-	 }catch(Exception e){
-		 return new ResponseEntity<String>("error getting order",HttpStatus.INTERNAL_SERVER_ERROR);
-	 }
+	 
+		order=orderDao.find(id);
 	 
 	 if(order==null){
 		 return new ResponseEntity<String>("order not found",HttpStatus.NOT_FOUND);
@@ -76,7 +73,7 @@ public class ManageOrdersRestController {
   if(order==null)order=new String();
   
   order = (order.toLowerCase().equals("asc")) ? order : "desc";
- try{
+ 
   //standard search, returns all orders
   if (filter==null || filter.isEmpty()) {   
    criteria=getAllOrders(order,criteria);
@@ -112,9 +109,9 @@ public class ManageOrdersRestController {
   
   criteria.setFirstResult(index).setMaxResults(pageSize);
   results = criteria.list();
- }catch(Exception e){
-	 return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR); 
- }
+ 
+	 
+ 
 
   return new ResponseEntity<List<PurchaseOrder>>(results,HttpStatus.OK);
 
@@ -139,11 +136,9 @@ public class ManageOrdersRestController {
 	  Criteria criteria = currentSession().createCriteria(PurchaseOrder.class);
 	  List < PurchaseOrder > results = Collections.emptyList();
 	  criteria=getOrdersByUser("desc",criteria,id);
-	  try{
+	  
 	  results=criteria.list();
-	  }catch(Exception e){
-		  return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-	  }
+	  
 	  return new ResponseEntity(results,HttpStatus.OK);
  }
  
@@ -155,15 +150,10 @@ public class ManageOrdersRestController {
 	  
 	  List < PurchaseOrder > results = Collections.emptyList();
 	  criteria=this.getOrdersByDate("asc", criteria, from, to);
-	  criteria.setFirstResult(index).setMaxResults(pageSize);
-	  
-	  try{
+	  criteria.setFirstResult(index).setMaxResults(pageSize);  
 		  
-	  results=criteria.list();
+	  results=criteria.list();	  
 	  
-	  }catch(Exception e){
-		  return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-	  }
 	  return new ResponseEntity(results,HttpStatus.OK);
  }
  
