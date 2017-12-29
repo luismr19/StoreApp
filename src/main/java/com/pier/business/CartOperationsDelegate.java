@@ -1,11 +1,13 @@
 package com.pier.business;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,10 +112,10 @@ public class CartOperationsDelegate {
 	public PurchaseOrder updateQuantities(User user, List<OrderDetail> updatedDetails) throws OutOfStockException {
 		PurchaseOrder cart = getUserCart(user, false);
 		
-		int stockIndicator=isOutOfStockForDetails(updatedDetails);
+		List<String> stockIndicators=isOutOfStockForDetails(updatedDetails);
 		
-		if(stockIndicator<0)
-			throw new OutOfStockException("one or more products are out of stock");
+		if(stockIndicators.size()>0)
+			throw new OutOfStockException(stockIndicators.stream().map(Object::toString).collect(Collectors.joining(",")));
 		
 		Set<OrderDetail> newOrderDetails = OrderDetailUtil.updateOrderDetailsQuantities(cart.getOrderDetails(),
 				updatedDetails);
@@ -152,12 +154,14 @@ public class CartOperationsDelegate {
 
 	public PurchaseOrder applyPromotionsReadOnly(PurchaseOrder cart) {
 		// security: reset any promotion first
-		cart.setGift(new Benefit());
+		Benefit gift=new Benefit();
+		cart.setGift(gift);
 		if (cart.getOrderDetails() != null && cart.getOrderDetails().size() > 0) {
 			// first try to see if some promotion can be applied
-			if (PromotionsAppliance.isPromotionApplied(promotionsAppliance.calculateBenefits(cart))) {
+			gift=promotionsAppliance.calculateBenefits(cart);
+			if (PromotionsAppliance.isPromotionApplied(gift)) {
 				// if something can be applied then add it
-				cart.setGift(promotionsAppliance.calculateBenefits(cart));
+				cart.setGift(gift);
 				cart.getGift().setOrder(cart);
 			}
 		}
@@ -203,19 +207,11 @@ public class CartOperationsDelegate {
 		return getUserCart(user,true);
 	}
 
-	public int isOutOfStockForCart(PurchaseOrder cart) {
-		int index = 0;
-		for (OrderDetail detail : cart.getOrderDetails()) {
-			index++;
-			//gotta fetch the existence from DB to have the most current value, one never knows
-			if (detail.getQuantity() > productFlavorDao.find(detail.getProduct().getId()).getExistence()) {
-				index=-1;
-			}
-		}
-
-		return index;
+	public List<String> isOutOfStockForCart(PurchaseOrder cart) {
+		return isOutOfStockForDetails(cart.getOrderDetails().stream().collect(Collectors.toList()));		
 	}
 	
+	//tells id the product is out of stock considering the items in the cart
 	public int isOutOfStockForProduct(PurchaseOrder cart, ProductFlavor product, int howmany){
 		int index = 0;
 		for (OrderDetail detail : cart.getOrderDetails()) {
@@ -223,7 +219,7 @@ public class CartOperationsDelegate {
 			if(detail.getProduct().equals(product)){
 				//gotta fetch the existence from DB to have the most current value, one never knows
 			if (detail.getQuantity()+howmany > productFlavorDao.find(detail.getProduct().getId()).getExistence()) {
-				index=-1;
+				return -1;
 			}
 			}
 		}
@@ -231,16 +227,20 @@ public class CartOperationsDelegate {
 		return index;
 	}
 	
-	public int isOutOfStockForDetails(List<OrderDetail> items){
-		int index = 0;
-		for (OrderDetail detail : items) {
-			index++;			
+	public List<String> isOutOfStockForDetails(List<OrderDetail> items){
+		List<String> exceedingProducts=new ArrayList<>();
+		
+		int index=0;
+		for (OrderDetail detail : items) {	
+			index++;
 			if (detail.getQuantity() > productFlavorDao.find(detail.getProduct().getId()).getExistence()) {
-				index=-1;
+				exceedingProducts.add(detail.getProduct().toString());	
 			}			
 		}
-
-		return index;
+		if(index==0)
+			return null;
+					
+		return exceedingProducts;
 	}
 
 }

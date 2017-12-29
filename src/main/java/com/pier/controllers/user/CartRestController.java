@@ -152,7 +152,7 @@ public class CartRestController {
 	}
 	
 	@RequestMapping(value="cart/able",method=RequestMethod.GET)
-	public ResponseEntity<?> getEligiblePromotions(HttpServletRequest request){		
+	public ResponseEntity<?> isAbletoPurchase(HttpServletRequest request){		
 		String token=request.getHeader(tokenHeader);
 		String username=jwtTokenUtil.getUsernameFromToken(token);
 		User user=userDao.find("username",username).get(0);
@@ -160,12 +160,12 @@ public class CartRestController {
 		
 			cart=cartOps.getUserCart(user);	
 			
-			int stockInd=cartOps.isOutOfStockForCart(cart);
+			List<String> outOfStockIndicators=cartOps.isOutOfStockForCart(cart);
 			
-			if(stockInd==0){
+			if(outOfStockIndicators==null){
 				return new ResponseEntity<String>("cart is empty",HttpStatus.CONFLICT);
-			}else if(stockInd<0){
-				return new ResponseEntity<String>("one or more products are not in stock for the specified quantity",HttpStatus.CONFLICT);
+			}else if(outOfStockIndicators.size()>0){
+				return new ResponseEntity<List<String>>(outOfStockIndicators,HttpStatus.CONFLICT);
 			}
 			
 			return ResponseEntity.ok(cart);

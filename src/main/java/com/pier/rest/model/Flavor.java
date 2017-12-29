@@ -112,6 +112,13 @@ public class Flavor implements ObjectModel<Long> {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return flavorName.replaceAll("default", "");
+	}
+	
+	
 	
 	
 

@@ -87,7 +87,7 @@ public class PurchaseRestController {
 			if(purchaseOps.handleNotification(event)){
 				return ResponseEntity.ok("success");
 			}
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return new ResponseEntity<String>("failure",HttpStatus.NOT_FOUND);
 		}
 		

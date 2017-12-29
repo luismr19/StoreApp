@@ -127,6 +127,15 @@ public class Brand implements ObjectModel<Long>{
 		return true;
 	}
 
+
+
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	
+
 	
 	
 

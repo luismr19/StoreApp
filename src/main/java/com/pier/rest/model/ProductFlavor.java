@@ -94,6 +94,13 @@ public class ProductFlavor {
 			return false;
 		return true;
 	}
+
+
+	@Override
+	public String toString() {
+		return id.getProduct()+" "+id.getFlavor();
+	}
+	
 	
 	
 

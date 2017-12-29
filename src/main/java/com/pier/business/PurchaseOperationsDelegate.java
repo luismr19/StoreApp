@@ -6,6 +6,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -66,18 +67,18 @@ public class PurchaseOperationsDelegate {
 	public PurchaseOrder checkout(User user, CheckoutRequest checkoutInfo) throws OutOfStockException,EmptyCartException, PaymentException, PaymentErrorException {
 		PurchaseOrder cart = cartOps.getUserCart(user);
         
-		int index=0;
+		
 		
 		if(!AddressValidationUtil.isAddressValid(checkoutInfo.getAddress())){
 			throw new PaymentErrorException("address is incorrect"); 
 		}		
 		
-		index=cartOps.isOutOfStockForCart(cart);
+		List<String> outOfStockIndicators=cartOps.isOutOfStockForCart(cart);
 		
-		if(index==0)
+		if(outOfStockIndicators==null)
 			throw new EmptyCartException("Cart is empty");
-		else if(index<0)
-			throw new OutOfStockException("product is out of stock");
+		else if(outOfStockIndicators.size()>0)
+			throw new OutOfStockException(outOfStockIndicators.stream().map(Object::toString).collect(Collectors.joining(",")));
 		
 		Payment payment=null;
 		//payment api
