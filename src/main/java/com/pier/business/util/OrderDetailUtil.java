@@ -25,7 +25,7 @@ public class OrderDetailUtil {
 	public static OrderDetail mapToOrder(ProductFlavor product, PurchaseOrder order, int quantity) {		
 		
 		OrderDetail orderDetail=null;
-		try {
+		
 			if (!product.getProduct().getEnabled() || product.getExistence() < 1) {
 				return null;
 			}
@@ -48,9 +48,7 @@ public class OrderDetailUtil {
 			}
 			
 			order.setTotal(updateTotals(order));
-		} catch (Exception e) {
-			return null;
-		}
+		
 		return orderDetail;
 	}
 

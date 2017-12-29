@@ -66,6 +66,9 @@ public class ManageArticleRestController {
 
 	@Value("${angular.articles}")
 	String articlesPaths;
+	
+	@Value("${public.angular.articles}")
+	String publicArticlesPaths;
 
 	@Value("${jwt.header}")
 	private String tokenHeader;
@@ -251,7 +254,7 @@ public class ManageArticleRestController {
 			HttpServletRequest request, UriComponentsBuilder ucBuilder) throws JsonProcessingException {
 
 		Article article = objectMapper.treeToValue(articleBody.get("article"), Article.class);
-		String filePath = getArticleFile(article);
+		String filePath = getPublicFile(article);
 		File jsonFile = new File(filePath);
 
 		String token = request.getHeader(tokenHeader);
@@ -319,6 +322,10 @@ public class ManageArticleRestController {
 	
 	private String getArticleFile(Article article){
 		return this.articlesPaths + article.getId() + "_" + article.getTitle().replaceAll(" ", "_")+ ".json";
+	}
+	
+	private String getPublicFile(Article article){
+		return this.publicArticlesPaths + article.getId() + "_" + article.getTitle().replaceAll(" ", "_")+ ".json";
 	}
 
 }

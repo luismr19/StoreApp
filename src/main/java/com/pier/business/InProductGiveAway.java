@@ -1,6 +1,7 @@
 package com.pier.business;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -65,7 +66,7 @@ public class InProductGiveAway implements BenefitGiveAway{
 				
 							
 				if(rule.getPercentage()!=0)
-				discount=total.multiply(new BigDecimal(1).divide(new BigDecimal(rule.getPercentage()))).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+				discount=total.multiply(new BigDecimal(rule.getPercentage()).divide(new BigDecimal(100),2,RoundingMode.HALF_UP)).setScale(2, BigDecimal.ROUND_HALF_DOWN);
 				
 				
 				Benefit result=new Benefit();

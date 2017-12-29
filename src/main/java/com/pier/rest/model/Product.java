@@ -224,6 +224,12 @@ public class Product implements ObjectModel<Long>{
 	}	 
 	
 	//used only when there's no flavor provided see Product controller "create product"
+	 
+	
+	/**
+	 * @return the stock value mapped by the object serializer.
+	 *  WARNING! does not contain current stock, to be used only to read the value provided by the json request
+	 */
 	public Long getExistence() {
 		return existence;
 	}

@@ -92,7 +92,7 @@ public class CartRestController {
 		try{
 			cart=cartOps.addToCart(user,product,howmany);
 		}catch(OutOfStockException ex){
-		return new ResponseEntity<String>("out of stock",HttpStatus.OK);
+		return new ResponseEntity<String>("out of stock",HttpStatus.CONFLICT);
 		}
 		
 		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);
@@ -123,7 +123,11 @@ public class CartRestController {
 		
 		PurchaseOrder cart=null;
 		
-			cart=cartOps.updateQuantities(user, details);		
+		try{
+			cart=cartOps.updateQuantities(user, details);
+		}catch(OutOfStockException e){
+			return new ResponseEntity<String>("One or more of the selected products are out of stock",HttpStatus.CONFLICT);
+		}
 		
 		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);	
 		
@@ -145,6 +149,26 @@ public class CartRestController {
 	@RequestMapping(value="cart/promos",method=RequestMethod.POST)
 	public ResponseEntity<?> getEligiblePromotions(@RequestBody PurchaseOrder cart){		
 			return ResponseEntity.ok(cartOps.applyPromotionsReadOnly(cart));	
+	}
+	
+	@RequestMapping(value="cart/able",method=RequestMethod.GET)
+	public ResponseEntity<?> getEligiblePromotions(HttpServletRequest request){		
+		String token=request.getHeader(tokenHeader);
+		String username=jwtTokenUtil.getUsernameFromToken(token);
+		User user=userDao.find("username",username).get(0);
+		PurchaseOrder cart=new PurchaseOrder();
+		
+			cart=cartOps.getUserCart(user);	
+			
+			int stockInd=cartOps.isOutOfStockForCart(cart);
+			
+			if(stockInd==0){
+				return new ResponseEntity<String>("cart is empty",HttpStatus.CONFLICT);
+			}else if(stockInd<0){
+				return new ResponseEntity<String>("one or more products are not in stock for the specified quantity",HttpStatus.CONFLICT);
+			}
+			
+			return ResponseEntity.ok(cart);
 	}
 	
 

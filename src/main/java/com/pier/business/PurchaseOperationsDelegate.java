@@ -70,18 +70,14 @@ public class PurchaseOperationsDelegate {
 		
 		if(!AddressValidationUtil.isAddressValid(checkoutInfo.getAddress())){
 			throw new PaymentErrorException("address is incorrect"); 
-		}
+		}		
 		
-		// check existence before buying
-		for (OrderDetail detail : cart.getOrderDetails()) {
-			index++;
-			if (detail.getQuantity() > productFlavorDao.find(detail.getProduct().getId()).getExistence()) {				
-				throw new OutOfStockException(detail.getProduct().getProduct().getName() + " is out of stock for that flavor");
-			}
-		}
+		index=cartOps.isOutOfStockForCart(cart);
 		
 		if(index==0)
-			throw new EmptyCartException("Cart is empty");		
+			throw new EmptyCartException("Cart is empty");
+		else if(index<0)
+			throw new OutOfStockException("product is out of stock");
 		
 		Payment payment=null;
 		//payment api
