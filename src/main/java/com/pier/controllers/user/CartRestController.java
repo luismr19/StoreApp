@@ -148,7 +148,8 @@ public class CartRestController {
 	
 	@RequestMapping(value="cart/promos",method=RequestMethod.POST)
 	public ResponseEntity<?> getEligiblePromotions(@RequestBody PurchaseOrder cart){		
-			return ResponseEntity.ok(cartOps.applyPromotionsReadOnly(cart));	
+			return ResponseEntity.ok(cartOps.applyPromotionsReadOnly(cart));
+			
 	}
 	
 	@RequestMapping(value="cart/able",method=RequestMethod.GET)
