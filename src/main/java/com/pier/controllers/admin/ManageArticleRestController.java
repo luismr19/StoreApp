@@ -254,7 +254,7 @@ public class ManageArticleRestController {
 			HttpServletRequest request, UriComponentsBuilder ucBuilder) throws JsonProcessingException {
 
 		Article article = objectMapper.treeToValue(articleBody.get("article"), Article.class);
-		String filePath = getPublicFile(article);
+		String filePath = getArticleFile(article);
 		File jsonFile = new File(filePath);
 
 		String token = request.getHeader(tokenHeader);
@@ -282,7 +282,7 @@ public class ManageArticleRestController {
 			newArticle.setDescription(article.getDescription());
 			//newArticle.setWriteDate(LocalDateTime.now());
 			newArticle.setLastEdited(LocalDateTime.now());
-			newArticle.setLink(filePath);
+			newArticle.setLink(getPublicFile(article));
 
 			newArticle.setTags(new HashSet<ArticleTag>(articleService.handleTags(articleTags)));
 
