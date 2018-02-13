@@ -46,7 +46,6 @@ public class UserProductCallRestController {
 		
 		UserProductCall productCall=productCallSvc.newProductCall(calledProduct, caller);
 		
-		
 		return new ResponseEntity<UserProductCall>(productCall, HttpStatus.CREATED);
 		}else{
 			return new ResponseEntity<String>("Product not found", HttpStatus.NOT_FOUND);		
