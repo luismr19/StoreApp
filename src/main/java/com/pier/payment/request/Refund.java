@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Refund {
 	
 	private int id;
-	private int payment_id;
+	private long payment_id;
 	private float amount;
 	private Object metadata;
 	private Source source; //Who made the refund 
@@ -20,7 +20,7 @@ public class Refund {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getPayment_id() {
+	public long getPayment_id() {
 		return payment_id;
 	}
 	public void setPayment_id(int payment_id) {

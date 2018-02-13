@@ -6,6 +6,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.mercadopago.MP;
 import com.pier.business.exception.EmptyCartException;
@@ -21,6 +23,8 @@ import com.pier.business.util.AddressValidationUtil;
 import com.pier.business.util.OrderDetailUtil;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.hibernate.Hibernate;
+
 import com.pier.model.security.User;
 import com.pier.payment.PaymentUtils;
 import com.pier.payment.request.Payment;
@@ -30,14 +34,18 @@ import com.pier.payment.request.Statuses;
 import com.pier.rest.model.Address;
 import com.pier.rest.model.CheckoutRequest;
 import com.pier.rest.model.OrderDetail;
+import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
+import com.pier.service.ProductDao;
 import com.pier.service.ProductFlavorDao;
 import com.pier.service.PurchaseOrderDao;
 import com.pier.service.UserDao;
+import com.pier.service.impl.FlavorService;
 import com.pier.service.impl.OrderService;
 
 @Component
+@Transactional	
 public class PurchaseOperationsDelegate {
 
 	@Autowired
@@ -48,6 +56,12 @@ public class PurchaseOperationsDelegate {
 
 	@Autowired
 	ProductFlavorDao productFlavorDao;
+	
+	@Autowired
+	ProductDao productDao;
+	
+	@Autowired
+	FlavorService flavorSvc;
 
 	@Autowired
 	CartOperationsDelegate cartOps;
@@ -155,11 +169,19 @@ public class PurchaseOperationsDelegate {
 		
 	
 	public void updateExistence(PurchaseOrder cart){
-		List<ProductFlavor> purchasedProducts = OrderDetailUtil.getAsProductList(cart.getOrderDetails());
-
-		for (ProductFlavor product : purchasedProducts) {
-			product.setExistence(product.getExistence() - 1);
-			productFlavorDao.update(product);			
+	
+		for(OrderDetail item:cart.getOrderDetails()){
+			//if the total stock equals to 0 then disable the product
+			Set<ProductFlavor> flavors=item.getProduct().getProduct().getProductFlavors();
+			Long newStock=item.getProduct().getExistence()-item.getQuantity();
+			item.getProduct().setExistence(newStock);
+			productFlavorDao.update(item.getProduct());
+			Long total=flavors.stream().mapToLong(ProductFlavor::getExistence).sum();
+			if (total<=0){
+				Product generalProduct=item.getProduct().getProduct();
+				generalProduct.setEnabled(false);
+				productDao.update(generalProduct);
+			}
 		}
 	}
 

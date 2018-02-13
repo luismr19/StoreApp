@@ -184,6 +184,11 @@ public class CartOperationsDelegate {
 			if (pendingOrder != null) {
 				cart = pendingOrder;
 				cart.setOwner(user);
+				//if cart was retrived but the delivery cost is now different recalculate totals
+				if(!new BigDecimal(delivery_cost).equals(cart.getDeliveryCost())){
+					cart.setTotal(OrderDetailUtil.updateTotals(cart));
+				}
+				
 			} else {
 				// okay there are orders but none of them is pending
 				cart.setOwner(user);

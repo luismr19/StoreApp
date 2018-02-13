@@ -228,5 +228,45 @@ public class ManageProductsRestController {
         }
     }
 	
+	@PreAuthorize("hasRole('ADMIN')")
+	@RequestMapping(value="/secondary", method=RequestMethod.POST)
+    public ResponseEntity<?> handleSecondaryUpload( @RequestPart("file") MultipartFile file, @RequestParam("id") Long id, HttpServletRequest request){
+            
+        if (!file.isEmpty()) {
+            try {
+                /*byte[] bytes = file.getBytes();
+                BufferedOutputStream stream = 
+                        new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
+                stream.write(bytes);
+                stream.close();*/
+                String uploadsDir = assetsPaths+"products/";
+                //in case we need to change                
+                if(! new File(uploadsDir).exists())
+                {
+                    new File(uploadsDir).mkdir();
+                }
+                String hql= "select max(id) from Product";
+                List list = currentSession().createQuery(hql).list();
+                long maxID = ( (Long)list.get(0) ).longValue();
+                maxID++;
+                if(id==null){
+                	id=maxID;
+                }
+                
+                String name = "secondary_"+id+".jpg";
+                String filePath = uploadsDir + name;
+                File destination = new File(filePath);
+                file.transferTo(destination);
+                return new ResponseEntity<String>(""+id,HttpStatus.OK);
+            } catch (Exception e) {
+                
+            	return new ResponseEntity<String>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            
+        	return new ResponseEntity<String>("file not valid",HttpStatus.BAD_REQUEST);
+        }
+    }
+	
 
 }
