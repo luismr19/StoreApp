@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -32,6 +33,7 @@ import com.pier.service.UserProductCallDao;
 import com.pier.service.impl.UserProductCallService;
 import com.pier.service.impl.UserService;
 
+@RestController
 public class ManageUserProductCallsRestController {
 	
 	@Autowired
@@ -52,17 +54,7 @@ public class ManageUserProductCallsRestController {
 	private Session currentSession() {
 		return userProductCallDao.currentSession();
 	}
-	
-	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = "productcall", method = RequestMethod.GET)
-	public List<Article> list(@RequestParam(value = "index", required = false) int index) {
-
-		Criteria criteria = currentSession().createCriteria(Article.class);
-		criteria.addOrder(Order.desc("id"));
-		criteria.setFirstResult(index).setMaxResults(30);
-		return criteria.list();
-	}
-	
+		
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "productcall", method = RequestMethod.POST)
@@ -85,22 +77,15 @@ public class ManageUserProductCallsRestController {
 	
 	
 	@PreAuthorize("hasRole('ADMIN')")
-	@RequestMapping(value = "productcall", method = RequestMethod.PATCH)
-	public ResponseEntity<?> updateProductCall(@RequestBody ObjectNode body,
-			HttpServletRequest request,UriComponentsBuilder ucBuilder) {
+	@RequestMapping(value = "productcall", method = RequestMethod.PUT)
+	public ResponseEntity<?> updateProductCall(@RequestBody ObjectNode body) {
 		
 		Long id=body.get("id").asLong();
 		String status=body.get("status").asText("DISABLED");
 		
-		String token=request.getHeader(tokenHeader);
-		User caller=userSvc.getUserFromToken(token);
-		
-		
-		UserProductCall productCall=userProductCallDao.find(id);
-		
-		if(productCall!=null)
-			productCall.setStatus(ProductCallStatus.valueOf(status));
-		else
+		UserProductCall productCall=productCallSvc.updateProductCall(id,status);
+
+		if(productCall==null)
 			return new ResponseEntity<String>("user product call not found", HttpStatus.NOT_FOUND);		
 			
 		return new ResponseEntity<UserProductCall>(productCall, HttpStatus.OK);
@@ -111,8 +96,8 @@ public class ManageUserProductCallsRestController {
 	@RequestMapping(value = "productcall", method = RequestMethod.GET)
 	public ResponseEntity<?> find(@RequestParam(value = "index") int index, 
 			@RequestParam(value="status",required=false)String status,
-			@RequestParam(value="status",required=false)String from,
-			@RequestParam(value="status",required=false)String to) {
+			@RequestParam(value="from",required=false)String from,
+			@RequestParam(value="to",required=false)String to) {
 
 			return ResponseEntity.ok(productCallSvc.findUserProductCalls(index, status, from, to));		
 		 

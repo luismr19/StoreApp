@@ -13,7 +13,8 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pier.model.security.User;
 import com.pier.rest.model.Product;
@@ -21,6 +22,8 @@ import com.pier.rest.model.ProductCallStatus;
 import com.pier.rest.model.UserProductCall;
 import com.pier.service.UserProductCallDao;
 
+@Component
+@Transactional
 public class UserProductCallService {
 	
 	@Autowired
@@ -91,6 +94,21 @@ public class UserProductCallService {
 		
 			return productCall;
 		
+	}
+	
+	
+	
+	public UserProductCall updateProductCall(Long id, String status){
+		
+		UserProductCall productCall=dao.find(id);
+		
+		if(productCall!=null){
+			productCall.setStatus(ProductCallStatus.valueOf(status));
+		
+		dao.update(productCall);
+		}
+	
+		return productCall;	
 	}
 
 }

@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pier.model.security.User;
@@ -19,6 +20,7 @@ import com.pier.service.ProductDao;
 import com.pier.service.impl.UserProductCallService;
 import com.pier.service.impl.UserService;
 
+@RestController
 public class UserProductCallRestController {
 	
 	@Autowired
@@ -33,7 +35,7 @@ public class UserProductCallRestController {
 	@Value("${jwt.header}")
 	private String tokenHeader;
 	
-	@PreAuthorize("hasRole('ADMIN')")
+	
 	@RequestMapping(value = "wish", method = RequestMethod.POST)
 	public ResponseEntity<?> newProductCall(@RequestParam(value = "id", required = true) Long id,
 			HttpServletRequest request,UriComponentsBuilder ucBuilder) {

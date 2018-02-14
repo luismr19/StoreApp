@@ -27,7 +27,7 @@ import com.pier.model.security.User;
 public class UserProductCall {
 	
 	@Id
-	@Column(name="PRODUCT_ID")
+	@Column(name="ID")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
@@ -71,14 +71,6 @@ public class UserProductCall {
 
 	public void setCaller(User caller) {
 		this.caller = caller;
-	}	
-
-	public LocalDate getCallDate() {
-		return callDate;
-	}
-
-	public void setCallDate(LocalDate callDate) {
-		this.callDate = callDate;
 	}
 
 	public ProductCallStatus getStatus() {
@@ -88,6 +80,16 @@ public class UserProductCall {
 	public void setStatus(ProductCallStatus status) {
 		this.status = status;
 	}
+
+	public LocalDate getCallDate() {
+		return callDate;
+	}
+
+	public void setCallDate(LocalDate callDate) {
+		this.callDate = callDate;
+	}
+
+	
 	
 		
 	
