@@ -23,7 +23,7 @@ import org.hibernate.annotations.Type;
 import com.pier.model.security.User;
 
 @Entity
-@Table(name = "userProductCall")
+@Table(name = "userproductcall")
 public class UserProductCall {
 	
 	@Id

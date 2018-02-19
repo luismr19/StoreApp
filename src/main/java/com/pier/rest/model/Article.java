@@ -40,8 +40,8 @@ public class Article implements ObjectModel<Long> {
 	@Size(max = 300)
 	private String link;
 
-	@Column(name = "TITLE", length = 40)
-	@Size(max = 40)
+	@Column(name = "TITLE", length = 50)
+	@Size(max = 50)
 	private String title;
 	
 	@Column(name="DESCRIPTION", length=180)
