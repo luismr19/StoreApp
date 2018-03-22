@@ -43,6 +43,8 @@ public class InProductGiveAway implements BenefitGiveAway{
 		BigDecimal discount=BigDecimal.ZERO;
 		
 				if(order.getTotal().compareTo(rule.getMinPurchase())>=0 && productsInOrder.size()>=rule.getMinAmount()){
+					//if no brand/product type/products/category filters are applied then all products are elligible
+					if(!(rule.getProducts().isEmpty() && rule.getCategories().isEmpty() && rule.getProductTypes().isEmpty() && rule.getBrands().isEmpty())){
 					Predicate<Product> isProductPresent=rule.getProducts()::contains;
 					Predicate<Product> isInCategories=p->p.getCategories().stream().anyMatch(rule.getCategories()::contains);
 					Predicate<Product> isInTypes=p->rule.getProductTypes().contains(p.getProductType());
@@ -52,6 +54,9 @@ public class InProductGiveAway implements BenefitGiveAway{
 					
 					affectedProducts=productsInOrder
 							.stream().filter(isEligibleForPromotion).collect(Collectors.toList());
+					}else{
+						affectedProducts=productsInOrder;	
+					}
 					
 					//total is equal to the minimum price of the affected products
 					try{

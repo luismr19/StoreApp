@@ -52,7 +52,10 @@ public class UserRestController {
 		JwtUser user=null;
 		
 			String token=request.getHeader(tokenHeader);
-			user=userSvc.getJwtUserFromToken(token);		
+			if(token!=null)
+			user=userSvc.getJwtUserFromToken(token);
+			else
+				return new ResponseEntity<Object>(null,HttpStatus.FORBIDDEN);		
 		
 		return new ResponseEntity<JwtUser>(user,HttpStatus.OK);
 	}

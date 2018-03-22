@@ -42,6 +42,7 @@ public class InSameProductGiveAway implements BenefitGiveAway {
 		
 		//check if total purchase surpasses minimum required
 		if(order.getTotal().compareTo(rule.getMinPurchase())>=0){
+			
 			Predicate<Product> isProductPresent=rule.getProducts()::contains;
 			Predicate<Product> isInCategories=p->p.getCategories().stream().anyMatch(rule.getCategories()::contains);
 			Predicate<Product> isInTypes=p->rule.getProductTypes().contains(p.getProductType());

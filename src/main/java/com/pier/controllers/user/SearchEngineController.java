@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import com.pier.business.EntityUtils;
 import com.pier.config.Crawlers;
 import com.pier.rest.model.Article;
 import com.pier.rest.model.Brand;
@@ -51,6 +52,9 @@ public class SearchEngineController {
 	
 	@Autowired
 	ArticleDao articleDao;	
+	
+	@Autowired
+	EntityUtils entityUtil;
 	
 	@Value("${public.angular.articles}")
 	String articlesPaths;
@@ -150,6 +154,69 @@ public class SearchEngineController {
 		
 	}
 	
+	@RequestMapping(value="robots.txt",method=RequestMethod.GET)
+	@ResponseBody
+	public String getRobotsTxt(){
+		return "User-agent: Googlebot"
+				+"\nDisallow: /admin/"
+				+"\nDisallow: /editor/"
+
+				+"\n\nUser-agent: *"
+				+"\nAllow: /"
+
+				+"\n\nSitemap: https://www.mxphysique.com/sitemap.xml";
+	}
+	
+	@RequestMapping(value="sitemap.xml",method=RequestMethod.GET,produces = MediaType.TEXT_XML_VALUE,headers= { "Accept=*/*" })
+	@ResponseBody
+	public String getSiteMap(){	
+		
+		
+		String initial= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+				+ "\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" "
+				+ "\nxmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+				+ "\nxsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 "								
+				+ "\nhttp://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\" "				
+				+ "\nxmlns:xhtml=\"http://www.w3.org/1999/xhtml\">"
+			    +"\n<url>"
+			        +"\n<loc>https://www.mxphysique.com/</loc>"			        
+			        +"\n<lastmod>2018-01-01</lastmod>"
+			        +"\n<changefreq>weekly</changefreq>"
+			        +"\n<priority>1.0</priority>"
+			    +"\n</url>";
+		
+		StringBuilder xmlresponse=new StringBuilder(initial);
+		
+		List<Long> allProducts=entityUtil.<Long>getIdsForEntity(Product.class);
+		List<Long> allArticles=entityUtil.<Long>getIdsForEntity(Article.class,"enabled",true);
+		
+		for(Long productId:allProducts){
+			xmlresponse.append("\n<url>");
+			xmlresponse.append("\n<loc>");
+			xmlresponse.append("https://www.mxphysique.com/products/");
+			xmlresponse.append(productId);
+			xmlresponse.append("</loc>");
+			xmlresponse.append("\n<changefreq>weekly</changefreq>");
+			xmlresponse.append("\n</url>");
+		}
+		
+		for(Long articleId:allArticles){
+			xmlresponse.append("\n<url>");
+			xmlresponse.append("\n<loc>");
+			xmlresponse.append("\nhttps://www.mxphysique.com/articles/");
+			xmlresponse.append(articleId);
+			xmlresponse.append("\n</loc>");
+			xmlresponse.append("\n<changefreq>weekly</changefreq>");
+			xmlresponse.append("\n</url>");
+		}
+		
+		String end="\n</urlset>";
+		
+		xmlresponse.append(end);
+		
+		return xmlresponse.toString();
+	}
+	
 	
 	@RequestMapping(value="{entityType}/{id}",method=RequestMethod.GET)
 	@ResponseBody
@@ -206,24 +273,24 @@ public class SearchEngineController {
 		if(entity instanceof Article){
 			Article article=(Article) entity;
 			return parseMetaContentFacebook(article.getTitle(),article.getDescription(),"http://"+domain+"/articles/"+article.getId(),
-					"http://"+domain+this.articlesPaths+ "images/art"+article.getId()+".jpg","article"); 
+					"https://"+domain+this.articlesPaths+ "images/art"+article.getId()+".jpg","article"); 
 		}else if(entity instanceof Product){
 			Product product=(Product) entity;
 			return parseMetaContentFacebook(product.getName(),product.getDescription(),"http://"+domain+"/products/"+product.getId(),
-					"http://"+domain+imagesPath+"products/prod_"+product.getId()+".jpg","product");			
+					"https://"+domain+imagesPath+"products/prod_"+product.getId()+".jpg","product");			
 		}else if(entity instanceof Brand){
 			Brand brand=(Brand) entity;
 			return parseMetaContentFacebook(brand.getName(),brand.getName(),"http://"+domain+"/products?brands="+brand.getId(),
-					"http://"+domain+imagesPath+"brands/"+brand.getId()+".jpg","website");	
+					"https://"+domain+imagesPath+"brands/"+brand.getId()+".jpg","website");	
 		}else if(entity instanceof ProductType ){
 			ProductType productType=(ProductType) entity;
 			return parseMetaContentFacebook(productType.getName(),productType.getName(),"http://"+domain+"/products?types="+productType.getId(),
-					"http://"+domain+imagesPath+"main_logo.jpg","website");	
+					"https://"+domain+imagesPath+"main_logo.jpg","website");	
 		}
 		else if(entity instanceof Category){
 			Category category=(Category) entity;
 			return parseMetaContentFacebook(category.getName(),category.getName(),"http://"+domain+"/products?categories="+category.getId(),
-					"http://"+domain+imagesPath+"main_logo.jpg","website");	
+					"https://"+domain+imagesPath+"main_logo.jpg","website");	
 		}else{
 			return "";
 		}
@@ -238,24 +305,24 @@ public class SearchEngineController {
 		if(entity instanceof Article){
 			Article article=(Article) entity;
 			return parseMetaContentAll(article.getTitle(),article.getDescription(),"http://"+domain+"/articles/"+article.getId(),
-					"http://"+domain+this.articlesPaths+ "images/art"+article.getId()+".jpg","article"); 
+					"https://"+domain+this.articlesPaths+ "images/art"+article.getId()+".jpg","article"); 
 		}else if(entity instanceof Product){
 			Product product=(Product) entity;
 			return parseMetaContentAll(product.getName(),product.getDescription(),"http://"+domain+"/products/"+product.getId(),
-					"http://"+domain+imagesPath+"products/prod_"+product.getId()+".jpg","product");			
+					"https://"+domain+imagesPath+"products/prod_"+product.getId()+".jpg","product");			
 		}else if(entity instanceof Brand){
 			Brand brand=(Brand) entity;
 			return parseMetaContentAll(brand.getName(),brand.getName(),"http://"+domain+"/products?brands="+brand.getId(),
-					"http://"+domain+imagesPath+"brands/"+brand.getId()+".jpg","website");	
+					"https://"+domain+imagesPath+"brands/"+brand.getId()+".jpg","website");	
 		}else if(entity instanceof ProductType ){
 			ProductType productType=(ProductType) entity;
 			return parseMetaContentAll(productType.getName(),productType.getName(),"http://"+domain+"/products?types="+productType.getId(),
-					"http://"+domain+imagesPath+"main_logo.jpg","website");	
+					"https://"+domain+imagesPath+"main_logo.jpg","website");	
 		}
 		else if(entity instanceof Category){
 			Category category=(Category) entity;
 			return parseMetaContentAll(category.getName(),category.getName(),"http://"+domain+"/products?categories="+category.getId(),
-					"http://"+domain+"/"+imagesPath+"main_logo.jpg","website");	
+					"https://"+domain+"/"+imagesPath+"main_logo.jpg","website");	
 		}else{
 			return "";
 		}
@@ -311,7 +378,7 @@ public class SearchEngineController {
 				"<meta name=\"googlebot\" content=\"noindex, nofollow\" />"+
 				"<meta name=\"robots\" content=\"noindex, nofollow\">"+
 				"<meta property=\"og:site_name\" content=\"mxphysique.com\">"+
-				"<meta property=\"og:url\" content=\"http://www.mxphysique.com\"/>"+
+				"<meta property=\"og:url\" content=\"https://www.mxphysique.com\"/>"+
 				"<meta property=\"og:type\" content=\"website\"/><meta property=\"og:title\" content=\"MxPhysique.com\" />"+
 				"<meta property=\"og:description\" content=\"sitio de fitness para Mexicanos \" />"+
 				"<meta property=\"og:image\" content=\"http://"+domain+imagesPath+"main_logo.jpg\" />"+

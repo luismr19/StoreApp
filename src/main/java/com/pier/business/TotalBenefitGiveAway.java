@@ -42,7 +42,10 @@ public class TotalBenefitGiveAway implements BenefitGiveAway{
 		BigDecimal discount=BigDecimal.ZERO;
 		//check if order surpasses the min purchase
 		if(order.getTotal().compareTo(rule.getMinPurchase())>=0 && productsInOrder.size()>=rule.getMinAmount()){
-						
+			//if no brand/product type/products/category filters are applied then all products are elligible			
+			if(!(rule.getProducts().isEmpty() && rule.getCategories().isEmpty() && rule.getProductTypes().isEmpty() && rule.getBrands().isEmpty())){
+				
+			
 			Predicate<Product> isProductPresent=rule.getProducts()::contains;
 			Predicate<Product> isInCategories=p->p.getCategories().stream().anyMatch(rule.getCategories()::contains);
 			Predicate<Product> isInTypes=p->rule.getProductTypes().contains(p.getProductType());
@@ -50,8 +53,12 @@ public class TotalBenefitGiveAway implements BenefitGiveAway{
 			
 			Predicate<Product> isEligibleForPromotion=isProductPresent.or(isInCategories).or(isInTypes).or(isInBrands);
 			
+			
 			affectedProducts=productsInOrder
 					.stream().filter(isEligibleForPromotion).collect(Collectors.toList());
+			}else{
+				affectedProducts=productsInOrder;	
+			}
 			try{
 			total=affectedProducts.stream().map(product->product.getPrice()).reduce(BigDecimal.ZERO, BigDecimal::add);
 			}catch(NoSuchElementException no){
