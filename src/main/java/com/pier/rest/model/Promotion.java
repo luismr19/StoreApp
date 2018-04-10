@@ -50,6 +50,9 @@ public class Promotion implements ObjectModel<Long>{
 	@NotNull
 	private String description;
 	
+	@Column(name="VISIBLE")
+	private Boolean visible;
+	
 	@OneToOne
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private PromotionRule promotionRule;
@@ -62,6 +65,12 @@ public class Promotion implements ObjectModel<Long>{
 	
 	@Column(name="FEATURED", columnDefinition="tinyint(1) default 0")
 	private Boolean featured=false;
+	
+	@Column(name="REACHED")
+	private Long reached=0L;
+	
+	@Column(name="SPONSORSHIP")
+	private String sponsorship;
 
 	@Override
 	public Long getId() {
@@ -114,6 +123,15 @@ public class Promotion implements ObjectModel<Long>{
 	public void setPromotionrule(PromotionRule promotionrule) {
 		this.promotionRule = promotionrule;
 	}	
+	
+	
+	public Boolean getVisible() {
+		return visible;
+	}
+
+	public void setVisible(Boolean visible) {
+		this.visible = visible;
+	}
 
 	public Boolean getEnabled() {
 		return enabled;
@@ -137,6 +155,22 @@ public class Promotion implements ObjectModel<Long>{
 
 	public void setFeatured(Boolean featured) {
 		this.featured = featured;
+	}
+
+	public long getReached() {
+		return reached;
+	}
+
+	public void setReached(Long reached) {
+		this.reached = reached;
+	}
+
+	public String getSponsorship() {
+		return sponsorship;
+	}
+
+	public void setSponsorship(String sponsorship) {
+		this.sponsorship = sponsorship;
 	}
 
 	@Override

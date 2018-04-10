@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.pier.business.PaymentErrorException;
 import com.pier.business.PaymentException;
-import com.pier.business.PromotionsAppliance;
+import com.pier.business.PromotionsApplianceEtc;
 import com.pier.business.PurchaseOperationsDelegate;
 import com.pier.business.exception.EmptyCartException;
 import com.pier.business.exception.OutOfStockException;
@@ -49,7 +49,7 @@ public class PurchaseRestController {
 	ProductDao productDao;
 	
 	@Autowired
-	PromotionsAppliance promotionsAppliance;
+	PromotionsApplianceEtc promotionsAppliance;
 	
 	@Autowired
 	PurchaseOperationsDelegate purchaseOps;

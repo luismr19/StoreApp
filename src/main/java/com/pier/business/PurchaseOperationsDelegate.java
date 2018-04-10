@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,7 @@ import com.pier.rest.model.CheckoutRequest;
 import com.pier.rest.model.OrderDetail;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductFlavor;
+import com.pier.rest.model.Promotion;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.service.ProductDao;
 import com.pier.service.ProductFlavorDao;
@@ -71,6 +73,9 @@ public class PurchaseOperationsDelegate {
 	
 	@Autowired
 	OrderService orderService;
+	
+	@Autowired
+	PromotionsApplianceEtc promotionsAppliance;
 	
 	@Value("${access_token}")
 	String access_token;
@@ -108,7 +113,8 @@ public class PurchaseOperationsDelegate {
 		cart.setPaymentId(payment.getId());
 		//if status is approved
 		if(payment.getStatus().equals(Statuses.approved)){  
-		 this.updateExistence(cart);			
+		 this.updateExistence(cart);		
+		 updatePromotionsReachCount(cart); 
 		 completeOrder(cart,checkoutInfo.getAddress());
 		 //else if status is in process or pending
 		}else if(payment.getStatus().equals(Statuses.authorized) || payment.getStatus().equals(Statuses.in_process) || payment.getStatus().equals(Statuses.pending)){
@@ -193,6 +199,14 @@ public class PurchaseOperationsDelegate {
 		
 		return	paymentUtils.getShippingOptions(params);
 		
+	}
+	
+	@Async
+	private void updatePromotionsReachCount(PurchaseOrder cart){
+		List<Promotion> effectivePromotions=promotionsAppliance.getEffectivePromotions(cart);
+		for(Promotion promotion:effectivePromotions){
+			promotionsAppliance.updatedReachedCount(promotion);
+		}
 	}
 
 }

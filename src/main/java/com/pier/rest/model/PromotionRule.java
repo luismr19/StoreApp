@@ -71,6 +71,9 @@ public class PromotionRule implements ObjectModel<Long> {
 	@Column(name="MIN_AMOUNT")
 	Integer minAmount;
 	
+	@Column(name="PROMOTION_CODE")
+	String promotionCode;
+	
 	
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="rule_product", joinColumns=@JoinColumn(name="RULE_ID" ,referencedColumnName="ID"),
@@ -168,8 +171,6 @@ public class PromotionRule implements ObjectModel<Long> {
 	public void setGiveAway(List<Product> giveAway) {
 		this.giveAway = giveAway;
 	}
-	
-	
 
 	public Integer getMinAmount() {
 		return minAmount;
@@ -177,6 +178,17 @@ public class PromotionRule implements ObjectModel<Long> {
 
 	public void setMinAmount(Integer minAmount) {
 		this.minAmount = minAmount;
+	}
+
+	public String getPromotionCode() {
+		return promotionCode;
+	}
+
+	public void setPromotionCode(String promotionCode) {
+		if(promotionCode.length()>0)
+		this.promotionCode = promotionCode;
+		else
+			this.promotionCode=null;	
 	}
 
 	public PromotionRule(PromotionBehavior behavior, Set<Product> products, Set<ProductType> productTypes,

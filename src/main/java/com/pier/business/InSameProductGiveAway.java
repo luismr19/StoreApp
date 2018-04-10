@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.mysql.jdbc.StringUtils;
 import com.pier.business.util.OrderDetailUtil;
 import com.pier.rest.model.Benefit;
 import com.pier.rest.model.Product;
@@ -39,9 +40,14 @@ public class InSameProductGiveAway implements BenefitGiveAway {
 		List<Product> productsInOrder=OrderDetailUtil.getAsProductList(order.getOrderDetails())
 				.stream().map(prodFlav->prodFlav.getProduct()).collect(Collectors.toList());
 		BigDecimal discount=BigDecimal.ZERO;
-		
+		//check if order sponsorship is valid in case of any
+		boolean isSponsoshipValid=((order.getPromoCodeEntry()!=null && rule.getPromotionCode()!=null) && order.getPromoCodeEntry().equals(rule.getPromotionCode())
+				|| (StringUtils.isNullOrEmpty(order.getPromoCodeEntry()) && StringUtils.isNullOrEmpty(rule.getPromotionCode())));
+		//check if order surpasses the min purchase
+		boolean isCompliant=order.getTotal().compareTo(rule.getMinPurchase())>=0 ;	
+			
 		//check if total purchase surpasses minimum required
-		if(order.getTotal().compareTo(rule.getMinPurchase())>=0){
+		if((isCompliant && isSponsoshipValid)){
 			
 			Predicate<Product> isProductPresent=rule.getProducts()::contains;
 			Predicate<Product> isInCategories=p->p.getCategories().stream().anyMatch(rule.getCategories()::contains);

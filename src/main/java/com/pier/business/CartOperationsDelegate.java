@@ -51,7 +51,7 @@ public class CartOperationsDelegate {
 	ProductDao productDao;
 
 	@Autowired
-	PromotionsAppliance promotionsAppliance;
+	PromotionsApplianceEtc promotionsAppliance;
 
 	@Autowired
 	FlavorService flavorSvc;
@@ -132,7 +132,7 @@ public class CartOperationsDelegate {
 		if (cart.getOrderDetails() != null && cart.getOrderDetails().size() > 0) {
 			// first try to see if some promotion can be applied
 			Benefit gift=promotionsAppliance.calculateBenefits(cart);
-			if (PromotionsAppliance.isPromotionApplied(gift)) {
+			if (PromotionsApplianceEtc.isPromotionApplied(gift)) {
 				// if something can be applied then add it
 				cart.setGift(gift);
 				cart.getGift().setOrder(cart);
@@ -159,7 +159,7 @@ public class CartOperationsDelegate {
 		if (cart.getOrderDetails() != null && cart.getOrderDetails().size() > 0) {
 			// first try to see if some promotion can be applied
 			gift=promotionsAppliance.calculateBenefits(cart);
-			if (PromotionsAppliance.isPromotionApplied(gift)) {
+			if (PromotionsApplianceEtc.isPromotionApplied(gift)) {
 				// if something can be applied then add it
 				cart.setGift(gift);
 				cart.getGift().setOrder(cart);

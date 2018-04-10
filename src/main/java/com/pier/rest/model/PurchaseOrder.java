@@ -88,6 +88,9 @@ public class PurchaseOrder implements ObjectModel<Long> {
 
 	@Column(name = "PAYMENT_ID")
 	private String paymentId; // id of the payment corresponding to the payments API
+	
+	@Column(name="PROMOTION_CODE_ENTRY")
+	private String promoCodeEntry;
 
 	public PurchaseOrder() {
 
@@ -220,6 +223,15 @@ public class PurchaseOrder implements ObjectModel<Long> {
 
 	public void setDeliveryCost(BigDecimal deliveryCost) {
 		this.deliveryCost = deliveryCost;
+	}
+		
+
+	public String getPromoCodeEntry() {
+		return promoCodeEntry;
+	}
+
+	public void setPromoCodeEntry(String promoCodeEntry) {
+		this.promoCodeEntry = promoCodeEntry;
 	}
 
 	@Override
