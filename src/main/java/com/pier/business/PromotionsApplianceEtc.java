@@ -10,17 +10,25 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pier.business.exception.OutOfStockException;
 import com.pier.rest.model.Benefit;
 import com.pier.rest.model.Promotion;
 import com.pier.rest.model.PromotionRule;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.service.PromotionDao;
+import com.pier.service.impl.PromotionService;
 
 @Component
 public class PromotionsApplianceEtc {
 	
 	@Autowired
 	PromotionDao dao;
+	
+	@Autowired
+	CartOperationsDelegate cartOps;
+	
+	@Autowired
+	PromotionService promotionSvc;	
 		
 	
 	public Benefit calculateBenefits(PurchaseOrder order){
@@ -38,6 +46,15 @@ public class PromotionsApplianceEtc {
 				//does calculations to see what the gift will be 
 				Benefit currentBenefit=rule.getBehavior().getGift(order, rule);
 				
+				
+				//check benefit give away in case of out of stock products
+				if(currentBenefit!=null) {
+				long productOutOfStock=cartOps.isOutOfStockForGiveAway(currentBenefit.getProducts());
+				if(productOutOfStock>0L){
+					continue;
+				}
+				}
+				
 				//checks if there was indeed something to give away or if the order was elegible for a promotion
 				//note that in the first iteration this will always be false
 				if(isPromotionApplied(totalBenefit)){
@@ -46,7 +63,6 @@ public class PromotionsApplianceEtc {
 					totalBenefit.setPoints(totalBenefit.getPoints()+currentBenefit.getPoints());
 					totalBenefit.getProducts().addAll(currentBenefit.getProducts());
 				}else{//if no promotion has been applied then try to apply it
-				
 					totalBenefit=currentBenefit;
 				//checks if indeed something was given or the order was elegible for a promotion
 				if(isPromotionApplied(totalBenefit)){
@@ -59,6 +75,7 @@ public class PromotionsApplianceEtc {
 				}				
 							
 			}
+		
 		}
 		//if after everything else no promotion was applied we return a null object to avoid having empty entities in table
 				
@@ -66,12 +83,13 @@ public class PromotionsApplianceEtc {
 	}
 	
 	private List<Promotion> fetchActivePromotions(){
-		List<Promotion> promotions=dao.list();
+		/*List<Promotion> promotions=dao.list();
 		List<Promotion> activePromotions=promotions.stream().filter(p->p.getEnabled())
 				.filter(p->p.getStartDate().isBefore(LocalDateTime.now())).filter(p->p.getEndDate().isAfter(LocalDateTime.now()))
 				.collect(Collectors.toList());
 		
-		return activePromotions;
+		return activePromotions;*/
+		return promotionSvc.getActive();
 	}
 	
 	public static boolean isPromotionApplied(Benefit gift){

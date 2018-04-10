@@ -99,6 +99,25 @@ public class CartRestController {
 		
 	}
 	
+	@RequestMapping(value="addPromotionCode",method=RequestMethod.POST)
+	public ResponseEntity<?> addPromotionCode(@RequestBody ObjectNode json, HttpServletRequest request){
+			
+		ObjectMapper mapper=new ObjectMapper();
+		
+		String code=json.get("code").asText();
+		
+		String token=request.getHeader(tokenHeader);
+		String username=jwtTokenUtil.getUsernameFromToken(token);			
+		User user=userDao.find("username",username).get(0);		
+		
+		PurchaseOrder cart=null;		
+		
+		cart=cartOps.addPromotionCodeToCart(user,code);		
+		
+		
+		return new ResponseEntity<PurchaseOrder>(cart,HttpStatus.OK);
+	}
+	
 	
 	
 	@RequestMapping(value="removeFromCart",method=RequestMethod.POST)

@@ -185,7 +185,7 @@ public class PromotionRule implements ObjectModel<Long> {
 	}
 
 	public void setPromotionCode(String promotionCode) {
-		if(promotionCode.length()>0)
+		if(promotionCode!=null && promotionCode.length()>0)
 		this.promotionCode = promotionCode;
 		else
 			this.promotionCode=null;	
