@@ -157,7 +157,7 @@ public class Promotion implements ObjectModel<Long>{
 		this.featured = featured;
 	}
 
-	public long getReached() {
+	public Long getReached() {
 		return reached;
 	}
 

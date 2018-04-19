@@ -19,6 +19,7 @@ import com.pier.business.util.OrderDetailUtil;
 import com.pier.model.security.User;
 import com.pier.rest.model.Benefit;
 import com.pier.rest.model.OrderDetail;
+import com.pier.rest.model.Product;
 import com.pier.rest.model.ProductFlavor;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.service.OrderDetailDao;
@@ -34,6 +35,9 @@ import com.pier.service.impl.FlavorService;
  * 
  *         this class is like a controller delegate to handle and manipulate
  *         complex logic outside the controller
+ *         
+ *         make sure to always and that is always apply promotions after updating the user cart, 
+ *         benefits should never be persisted those are read only until the time of purchase
  */
 @Component
 public class CartOperationsDelegate {
@@ -85,6 +89,16 @@ public class CartOperationsDelegate {
 			throw new OutOfStockException("out of stock");
 		}
 		applyPromotions(cart);
+		
+		return cart;
+	}
+	
+	public PurchaseOrder addPromotionCodeToCart(User user,String code) {
+		PurchaseOrder cart = getUserCart(user);
+		cart.setPromoCodeEntry(code);
+		orderDao.update(cart);		
+		applyPromotions(cart);
+		
 		return cart;
 	}
 
@@ -101,9 +115,9 @@ public class CartOperationsDelegate {
 			cart.setOrderDetails(OrderDetailUtil.removeDetail(purchaseItems, detail));
 		}
 
-		cart.setTotal(OrderDetailUtil.updateTotals(cart));
-		applyPromotions(cart);
+		cart.setTotal(OrderDetailUtil.updateTotals(cart));		
 		orderDao.update(cart);
+		applyPromotions(cart);
 
 		return cart;
 
@@ -121,9 +135,10 @@ public class CartOperationsDelegate {
 				updatedDetails);
 		cart.setOrderDetails(newOrderDetails);
 
-		cart.setTotal(OrderDetailUtil.updateTotals(cart));
-		applyPromotions(cart);
+		cart.setTotal(OrderDetailUtil.updateTotals(cart));		
 		orderDao.update(cart);
+		
+		applyPromotions(cart);
 
 		return cart;
 	}
@@ -147,6 +162,7 @@ public class CartOperationsDelegate {
 			if (cart.getGift() != null)
 				cartService.clearBenefit(cart);
 		}
+		
 
 		return cart;
 
@@ -216,7 +232,7 @@ public class CartOperationsDelegate {
 		return isOutOfStockForDetails(cart.getOrderDetails().stream().collect(Collectors.toList()));		
 	}
 	
-	//tells id the product is out of stock considering the items in the cart
+	//tells if the product is out of stock considering the items in the cart
 	public int isOutOfStockForProduct(PurchaseOrder cart, ProductFlavor product, int howmany){
 		int index = 0;
 		for (OrderDetail detail : cart.getOrderDetails()) {
@@ -227,6 +243,21 @@ public class CartOperationsDelegate {
 				return -1;
 			}
 			}
+		}
+
+		return index;
+	}
+	
+	//tells if the product is out of stock considering the items in the giveaway
+	public Long isOutOfStockForGiveAway(List<Product> products){
+		if(products==null)
+			return 0L;
+		
+		Long index = 0L;
+		for (Product product : products) {
+			product=productDao.find(product.getId());
+			if(!product.getEnabled())
+				return product.getId() ;
 		}
 
 		return index;

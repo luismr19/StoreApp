@@ -160,7 +160,7 @@ public class ManageProductsRestController {
 			
 			currentProduct.setName(product.getName());
 			currentProduct.setDescription(product.getDescription());
-			currentProduct.setEnabled(true);
+			currentProduct.setEnabled(product.getEnabled());
 			currentProduct.setPrice(product.getPrice());			
 			
 			dao.update(product);
