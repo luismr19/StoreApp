@@ -135,22 +135,7 @@ public class PurchaseOperationsDelegate {
 		cart.setDeliveryAddress(checkoutInfo.getAddress());		
 		this.updateExistence(cart);
 		orderDao.update(cart);		
-	}
-
-	public PurchaseOrder completeOrder(User user) {
-		PurchaseOrder cart = cartOps.getUserCart(user);		
-		List<ProductFlavor> purchasedProducts = OrderDetailUtil.getAsProductList(cart.getOrderDetails());
-
-		for (ProductFlavor product : purchasedProducts) {
-			product.setExistence(product.getExistence() - 1);
-			productFlavorDao.update(product);			
-		}
-		cart.setConcluded(true);
-		orderDao.update(cart);
-		
-		return cart;
-
-	}
+	}	
 	
 	public void completeOrder(PurchaseOrder cart,Address deliveryAddress) {			
 		

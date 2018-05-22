@@ -40,12 +40,12 @@ public class Article implements ObjectModel<Long> {
 	@Size(max = 300)
 	private String link;
 
-	@Column(name = "TITLE", length = 50)
-	@Size(max = 50)
+	@Column(name = "TITLE", length = 60)
+	@Size(max = 60)
 	private String title;
 	
-	@Column(name="DESCRIPTION", length=180)
-	@Size(max=180)
+	@Column(name="DESCRIPTION", length=250)
+	@Size(max=250)
 	private String description;
 
 	@ManyToMany(fetch=FetchType.EAGER)

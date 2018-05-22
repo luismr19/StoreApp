@@ -2,6 +2,7 @@ package com.pier.security.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.validator.routines.EmailValidator;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -58,20 +59,24 @@ public class AuthenticationRestController {
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest request, Device device){
 		
-			
-		User user=userDao.find("username", request.getUsername()).get(0);
+		EmailValidator validator=EmailValidator.getInstance(false, true);
+		boolean result=validator.isValid(request.getUsername());
+		User user=null;
+		if(result)
+			user=userDao.find("email", request.getUsername()).get(0);		
+		else if(user==null)
+			user=userDao.find("username", request.getUsername()).get(0);
 		//User user=userDao.find(new Long(1));
 		
 		if(user!=null && user.getEnabled()){
-			
+			request.setUsername(user.getUsername());
 			final Authentication authentication=authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(request.getUsername(),request.getPassword()));
 			
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			
-			// Reload password post-security so we can generate token
-			final UserDetails userDetails=userDetailsService.loadUserByUsername(request.getUsername());
-			final String token=jwtTokenUtil.generateToken(userDetails, device);	
+			
+			final String token=jwtTokenUtil.generateToken(request.getUsername(), device);	
 			
 			return ResponseEntity.ok(new JwtAuthenticationResponse(token));
 		}

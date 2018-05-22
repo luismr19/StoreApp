@@ -175,7 +175,11 @@ public class PaymentUtils {
 		User owner = order.getOwner();
 		PayerAddress address = new PayerAddress();
 		address.setStreet_name(owner.getAddress().getStreet());
-		address.setStreet_number(owner.getAddress().getNumber());
+		try {
+		address.setStreet_number(Integer.parseInt(owner.getAddress().getNumber()));
+		}catch(NumberFormatException numEx) {			
+			// do nothing
+		}
 		address.setZip_code(String.valueOf(owner.getAddress().getZipCode()));
 		payer.setAddress(address);
 

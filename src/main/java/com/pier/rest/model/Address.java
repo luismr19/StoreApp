@@ -18,39 +18,32 @@ public class Address implements ObjectModel<Long>{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name="COUNTRY",length=15)	
-	@NotNull
-	@Size(min=3, max=15)
+	@Column(name="COUNTRY",length=15)
+	@Size(max=15)
 	private String country;
 	
 	@Column(name="CITY",length=17)	
-	@NotNull
-	@Size(min=3, max=15)
+	@Size(max=17)
 	private String city;
 	
 	@Column(name="STATE",length=15)	
-	@NotNull
-	@Size(min=3, max=15)
+	@Size(max=15)
 	private String state;
 	
-	@Column(name="STREET",length=40)	
-	@NotNull
-	@Size(min=3, max=40)
+	@Column(name="STREET",length=40)
+	@Size(max=40)
 	private String street;
 	
 	@Column(name="DISTRICT",length=40)
-	@NotNull
-	@Size(min=3, max=40)
+	@Size(max=40)
 	private String district;
 	
-	@Column(name="ZIPCODE")	
-	@NotNull
+	@Column(name="ZIPCODE")
 	@Min(value=1)
 	private Integer zipCode;
 	
 	@Column(name="NUM")
-	@NotNull	
-	private Integer number;
+	private String number;
 	
 	@Column(name="INTERIOR")
 	private String interior;
@@ -59,7 +52,7 @@ public class Address implements ObjectModel<Long>{
 		
 	}
 	
-	public Address(String country, String city, String state, String street, String district, Integer zipCode, Integer number) {
+	public Address(String country, String city, String state, String street, String district, Integer zipCode, String number) {
 		super();
 		this.country = country;
 		this.city=city;
@@ -127,11 +120,11 @@ public class Address implements ObjectModel<Long>{
 		this.zipCode = zipCode;
 	}
 
-	public Integer getNumber() {
+	public String getNumber() {
 		return number;
 	}
 
-	public void setNumber(Integer number) {
+	public void setNumber(String number) {
 		this.number = number;
 	}
 

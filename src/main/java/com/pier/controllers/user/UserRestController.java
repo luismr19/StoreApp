@@ -138,11 +138,10 @@ public class UserRestController {
 	@RequestMapping(value="/user/info",method=RequestMethod.PUT)
 	public ResponseEntity<?> changeUserInfo(@RequestBody User user, HttpServletRequest request){		
 		User currentUser=null;
-		if(user.getPassword()==null || user.getPassword().isEmpty()){
-			return new ResponseEntity<String>("error, must contain password",HttpStatus.CONFLICT);
-		}
+	
 		
 			String token=request.getHeader(tokenHeader);
+			
 			currentUser=userSvc.updateAddressAndPassword(user, token);				
 		
 		
