@@ -120,8 +120,7 @@ public class UserService {
 		User currentUser=getUserFromToken(token);
 		currentUser.setAddress(user.getAddress());		
 		
-		userDao.update(currentUser);
-		
+		userDao.update(currentUser);		
 		return currentUser;
 	}
 	
