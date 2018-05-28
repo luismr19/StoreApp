@@ -15,10 +15,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pier.business.util.EmailService;
+import com.pier.business.validation.UserIntegrityChecker;
+import com.pier.model.security.AuthorityName;
 import com.pier.model.security.User;
 import com.pier.rest.model.Product;
 import com.pier.security.JwtUser;
 import com.pier.security.util.JwtTokenUtil;
+import com.pier.service.AuthorityDao;
 import com.pier.service.UserDao;
 
 
@@ -38,6 +42,15 @@ public class UserService {
 	
 	@Autowired
 	PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private AuthorityDao authDao;
+	
+	@Autowired
+	EmailService emailSvc;
+	
+	@Autowired
+	UserIntegrityChecker userCheker;
 	
 	public Product addToFavorites(Product product, String token){
         User user=getUserFromTokenWithFavs(token);
@@ -132,6 +145,48 @@ public class UserService {
 		userDao.update(currentUser);
 		
 		return currentUser;
+	}
+	
+	public User createUser(User user) {
+		if(!userCheker.checkIfDuplicate(user) && userCheker.checkIfValid(user)) {
+		user.setUsername(user.getUsername().toLowerCase());
+		user.setEmail(user.getEmail().toLowerCase());
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		user.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
+		user.setLastPasswordResetDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
+		user.setAuthorities(authDao.find("name", AuthorityName.ROLE_USER));
+		user.setPhoneNumber(user.getPhoneNumber());
+		user.setEnabled(false);
+		userDao.add(user);		
+		try {
+		emailSvc.sendSimpleMessage(user.getEmail(), "Bienvenido a Mxphysique.com", "http://www.mxphysique.com");
+		}catch(Exception e) {
+			// do nothing
+		}
+		
+		return user;
+		}else {
+			return null;
+		}
+	}
+	
+	public User updateUser(User currentUser, User newUser) {
+		if(userCheker.checkIfValid(newUser)){
+		currentUser.setFirstname(newUser.getFirstname());	        
+        currentUser.setLastname(newUser.getLastname());
+        currentUser.setEnabled(newUser.getEnabled());
+        currentUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        currentUser.setAddress(newUser.getAddress());
+        currentUser.setEmail(newUser.getEmail());	       
+        
+        userDao.update(currentUser);
+        return currentUser;
+		}
+		
+		return null;
+        
+        
+		
 	}
 
 }

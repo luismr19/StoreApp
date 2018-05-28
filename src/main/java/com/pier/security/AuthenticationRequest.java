@@ -11,6 +11,7 @@ public class AuthenticationRequest implements Serializable{
 		
 	private String username;
 	private String password;
+	private String socialAccessToken;
 	
 	public AuthenticationRequest() {
 		
@@ -36,7 +37,17 @@ public class AuthenticationRequest implements Serializable{
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getSocialAccessToken() {
+		return socialAccessToken;
+	}
+
+	public void setSocialAccessToken(String socialAccessToken) {
+		this.socialAccessToken = socialAccessToken;
 	}	
+	
+	
 	
 
 }

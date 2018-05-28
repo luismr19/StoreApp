@@ -7,7 +7,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,6 @@ import com.pier.model.security.User;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.PurchaseOrder;
 import com.pier.security.JwtUser;
-import com.pier.security.JwtUserFactory;
 import com.pier.security.util.JwtTokenUtil;
 import com.pier.service.impl.OrderService;
 import com.pier.service.impl.UserService;
@@ -133,6 +131,11 @@ public class UserRestController {
 		
 		return new ResponseEntity<User>(user, HttpStatus.OK);
 		
+	}
+	
+	@RequestMapping(value="/activate")
+	public ResponseEntity<?> activateUser(@RequestParam(value="pageSize") Integer pageSize,HttpServletRequest request){
+		return ResponseEntity.ok("");
 	}
 	
 	@RequestMapping(value="/user/info",method=RequestMethod.PUT)

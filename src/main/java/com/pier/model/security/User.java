@@ -59,7 +59,7 @@ public class User implements ObjectModel<Long>{
 	
 	@Column(name="USERNAME", length=50, unique=true)
 	@NotNull
-	@Size(min=4, max=20)
+	@Size(min=4, max=40)
 	private String username;
 	
 	@Column(name="PASSWORD", length=100)
@@ -103,8 +103,7 @@ public class User implements ObjectModel<Long>{
 	 
 	 @JoinColumn(name="ADDRESS",updatable=true)	
 	 @OneToOne
-	 @Cascade(CascadeType.ALL)
-	 @NotNull
+	 @Cascade(CascadeType.ALL)	 
 	 private Address address;	 
 
 	 @Column(name="PHONE")
@@ -138,6 +137,11 @@ public class User implements ObjectModel<Long>{
 	 
 	 @Column(name="POINTS")
 	 Long points;
+	 
+	 @Column(name="VERIFY_TOKEN",length = 100)
+	 String verifyToken;
+	 
+	 
 	 
 	 public Long getId() {
 	        return id;
@@ -281,6 +285,16 @@ public class User implements ObjectModel<Long>{
 
 		public void setArticles(Set<Article> articles) {
 			this.articles = articles;
+		}
+		
+		
+		@JsonIgnore
+		public String getVerifyToken() {
+			return verifyToken;
+		}
+		@JsonIgnore
+		public void setVerifyToken(String verifyToken) {
+			this.verifyToken = verifyToken;
 		}
 
 		@Override

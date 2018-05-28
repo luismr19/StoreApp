@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.pier.business.util.EmailService;
 import com.pier.business.util.PurchaseOrderComparator;
 import com.pier.business.validation.UserIntegrityChecker;
 import com.pier.model.security.Authority;
@@ -40,6 +41,7 @@ import com.pier.rest.model.PurchaseOrder;
 import com.pier.rest.model.UserOrder;
 import com.pier.service.AuthorityDao;
 import com.pier.service.UserDao;
+import com.pier.service.impl.UserService;
 
 @RestController
 @Transactional
@@ -55,10 +57,11 @@ public class ManageUserRestController {
 	UserIntegrityChecker userCheker;
 	
 	@Autowired
-	private SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;	
 	
 	@Autowired
-	private AuthorityDao authDao;
+	UserService userSvc;
+
 	
 	private Session currentSession(){
 		return sessionFactory.getCurrentSession();
@@ -134,15 +137,7 @@ public class ManageUserRestController {
 	@RequestMapping(value="users",method=RequestMethod.POST)
 	public ResponseEntity<?> createUser(@RequestBody User user,UriComponentsBuilder ucBuilder){
 		
-		if(!userCheker.checkIfDuplicate(user) && userCheker.checkIfValid(user)){
-		user.setUsername(user.getUsername().toLowerCase());
-		user.setEmail(user.getEmail().toLowerCase());
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		user.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
-		user.setLastPasswordResetDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
-		user.setAuthorities(authDao.find("name", AuthorityName.ROLE_USER));
-		user.setPhoneNumber(user.getPhoneNumber());
-		userDao.add(user);		
+		if(userSvc.createUser(user)!=null){		
 		HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());
         
@@ -155,24 +150,15 @@ public class ManageUserRestController {
 	
 	 @PreAuthorize("hasRole('ADMIN')")
 	 @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
-	    public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) {
-	        System.out.println("Updating User " + id);
-	         
+	    public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody User user) { 
 	        User currentUser = userDao.find(id);
 	         
 	        if (currentUser==null) {
 	            System.out.println("User with id " + id + " not found");
 	            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
 	        }
-	        if(userCheker.checkIfValid(user)){
-	        currentUser.setFirstname(user.getFirstname());	        
-	        currentUser.setLastname(user.getLastname());
-	        currentUser.setEnabled(user.getEnabled());
-	        currentUser.setPassword(passwordEncoder.encode(user.getPassword()));
-	        currentUser.setAddress(user.getAddress());
-	        currentUser.setEmail(user.getEmail());	       
-	        
-	        userDao.update(currentUser);
+	        if(userSvc.updateUser(currentUser,user)!=null){
+	        	
 	        return new ResponseEntity<User>(currentUser, HttpStatus.OK);
 	        }else{
 	        	return new ResponseEntity<List<String>>(userCheker.getErrors(),HttpStatus.CONFLICT);
