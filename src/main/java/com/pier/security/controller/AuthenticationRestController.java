@@ -66,7 +66,7 @@ public class AuthenticationRestController {
 		EmailValidator validator = EmailValidator.getInstance(false, true);
 		boolean result = validator.isValid(request.getUsername());
 		User user = null;			
-		UserDetails userDetails = null;
+		UserDetails socialUserDetails = null;
 
 		try {
 		//try to get the user by email	
@@ -80,12 +80,15 @@ public class AuthenticationRestController {
 			// do nothing
 		}
 
-		 userDetails=loginManager.handleSocialAuthentication(request, user);
+		 socialUserDetails=loginManager.handleSocialAuthentication(request, user);
+		 //in case the user was not found before but was then resolved through socialAuthentication
+		 if(user==null && socialUserDetails!=null)
+			 user = userDao.find("username", socialUserDetails.getUsername()).get(0);
 
 		if (user != null && user.getEnabled()) {
 			request.setUsername(user.getUsername());
 			
-			loginManager.authenticateUser(userDetails,request);
+			loginManager.authenticateUser(socialUserDetails,request);
 
 			final String token = jwtTokenUtil.generateToken(request.getUsername(), device);
 

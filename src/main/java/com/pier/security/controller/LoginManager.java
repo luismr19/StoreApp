@@ -56,19 +56,27 @@ public class LoginManager {
 							String middle_name=userObject.get("middle_name")!=null?userObject.get("middle_name").textValue():"";	
 							String last_name=userObject.get("last_name").textValue();	
 							
+							last_name=middle_name.length()>0?middle_name+" "+last_name:last_name;
+							
 							//normally if the user logs in using facebook the username field has the email
 							if(!email.equals(request.getUsername()))
 								return null;
 							
-							//if user was not found in the previous step create a new one
+							//if user was found in the previous step just load it, automatically enable if hasn't been enabled
 							if(user!=null) {
 								userDetails = userDetailsService.loadUserByUsername(user.getUsername());
-								}else{
-									User newUser=createSocialAccount(email,first_name,middle_name+" "+last_name);
-									userDetails = userDetailsService.loadUserByUsername(newUser.getUsername());
+								if(!user.getEnabled()) {
+									user.setEnabled(true);
+									userService.updateUser(user, user);
+								}
+								}
+							//else if the user was not found create one with the social account info
+								else{
+									user=createSocialAccount(email,first_name,last_name);
+									userDetails = userDetailsService.loadUserByUsername(user.getUsername());
 								}
 							
-						} catch (IOException e) {
+						} catch (Exception e) {
 							return null;								
 						}	
 					}

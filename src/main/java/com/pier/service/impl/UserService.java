@@ -165,9 +165,9 @@ public class UserService {
 			
 		}
 		userDao.add(user);
-		if(user.getEnabled()) {
+		if(!user.getEnabled()) {
 		try {
-			emailSvc.sendSimpleMessage(user.getEmail(), "Bienvenido a Mxphysique.com", "http://www.mxphysique.com/activate?verify_token="+user.getVerifyToken());
+			emailSvc.sendSimpleMessage(user.getEmail(), "Bienvenido a Mxphysique.com", "Hola "+user.getFirstname()+" gracias por registrarte en Mxphysique.com, para poder ingresar activa tu cuenta siguiendo el siguiente enlace http://www.mxphysique.com/activate?verify_token="+user.getVerifyToken());
 			}catch(Exception e) {
 				// do nothing
 			}
@@ -204,7 +204,7 @@ public class UserService {
 		try {
 			user=userDao.find("email",email).get(0);
 			if(!user.getEnabled())
-			emailSvc.sendSimpleMessage(user.getEmail(), "Bienvenido a Mxphysique.com", "http://www.mxphysique.com/activate?verify_token="+user.getVerifyToken());
+			emailSvc.sendSimpleMessage(user.getEmail(), "Bienvenido a Mxphysique.com", "Hola "+user.getFirstname()+" gracias por registrarte en Mxphysique.com, para poder ingresar activa tu cuenta siguiendo el siguiente enlace http://www.mxphysique.com/activate?verify_token="+user.getVerifyToken());
 			return user;
 		}catch(Exception ex) {
 			return null;
