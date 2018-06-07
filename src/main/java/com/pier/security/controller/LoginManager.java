@@ -53,7 +53,7 @@ public class LoginManager {
 							
 							String email=userObject.get("email").textValue();
 							String first_name=userObject.get("first_name").textValue();
-							String middle_name=userObject.get("middle_name").textValue();	
+							String middle_name=userObject.get("middle_name")!=null?userObject.get("middle_name").textValue():"";	
 							String last_name=userObject.get("last_name").textValue();	
 							
 							//normally if the user logs in using facebook the username field has the email
