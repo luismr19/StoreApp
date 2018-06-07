@@ -70,7 +70,7 @@ public class User implements ObjectModel<Long>{
 	
 	 @Column(name = "FIRSTNAME", length = 50)
 	 @NotNull
-	 @Size(min = 4, max = 50)
+	 @Size(min = 3, max = 50)
 	 private String firstname;
 
 	 @Column(name = "LASTNAME", length = 50)
@@ -86,6 +86,9 @@ public class User implements ObjectModel<Long>{
 	 @Column(name = "ENABLED")
 	 @NotNull
 	 private Boolean enabled;
+	 
+	 @Column(name = "SOCIAL_ACC")	 
+	 private boolean socialAcc;
 	 
 	 @Column(name="LASTPASSWORDRESETSTATE", nullable=false)	 
 	 @NotNull	 
@@ -295,6 +298,16 @@ public class User implements ObjectModel<Long>{
 		@JsonIgnore
 		public void setVerifyToken(String verifyToken) {
 			this.verifyToken = verifyToken;
+		}
+		
+		
+
+		public boolean isSocialAcc() {
+			return socialAcc;
+		}
+
+		public void setSocialAcc(boolean socialAcc) {
+			this.socialAcc = socialAcc;
 		}
 
 		@Override

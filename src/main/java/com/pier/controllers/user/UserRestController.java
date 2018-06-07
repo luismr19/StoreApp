@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pier.model.security.User;
 import com.pier.rest.model.Product;
 import com.pier.rest.model.PurchaseOrder;
@@ -134,8 +135,21 @@ public class UserRestController {
 	}
 	
 	@RequestMapping(value="/activate")
-	public ResponseEntity<?> activateUser(@RequestParam(value="pageSize") Integer pageSize,HttpServletRequest request){
+	public ResponseEntity<?> activateUser(@RequestParam(value="verify_token") String verifyToken,HttpServletRequest request){
+		User user=this.userSvc.activateUser(verifyToken);
+		if(user!=null)
 		return ResponseEntity.ok("");
+		else
+			return new ResponseEntity<String>("invalid token",HttpStatus.CONFLICT);	
+	}
+	
+	@RequestMapping(value="/send-activation",method=RequestMethod.POST)
+	public ResponseEntity<?> sendActivation(@RequestBody ObjectNode body,HttpServletRequest request){
+		User user=this.userSvc.sendActivationEmail(body.get("email").textValue());
+		if(user!=null)
+		return ResponseEntity.ok(body);
+		else
+			return new ResponseEntity<String>("invalid email",HttpStatus.CONFLICT);	
 	}
 	
 	@RequestMapping(value="/user/info",method=RequestMethod.PUT)

@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pier.business.util.RandomGenerator;
 import com.pier.model.security.User;
 import com.pier.security.AuthenticationRequest;
 import com.pier.service.impl.UserService;
@@ -93,16 +94,14 @@ public class LoginManager {
 	}
 	
 	private User createSocialAccount(String email,String firstName,String lastName) {
-		User newUser=new User();
-		newUser.setUsername(null);
-		
-		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
-		String pwd = RandomStringUtils.random( 10, characters );
+		User newUser=new User();		
+		String pwd=RandomGenerator.generateText(7,false);
 		newUser.setUsername(email);
 		newUser.setPassword(pwd);
 		newUser.setEmail(email);
 		newUser.setFirstname(firstName);
 		newUser.setLastname(lastName);
+		newUser.setSocialAcc(true);
 		userService.createUser(newUser);
 		
 		return newUser;

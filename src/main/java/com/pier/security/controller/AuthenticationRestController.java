@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,6 +56,9 @@ public class AuthenticationRestController {
 	
 	@Autowired
 	LoginManager loginManager;
+	
+	@Autowired
+	PasswordEncoder encoder;
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest request, Device device) {
@@ -86,6 +90,10 @@ public class AuthenticationRestController {
 			final String token = jwtTokenUtil.generateToken(request.getUsername(), device);
 
 			return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+		}else if(!user.getEnabled()) {
+			request.setUsername(user.getUsername());
+			if(encoder.matches(request.getPassword(), user.getPassword()))
+			return new ResponseEntity<String>(user.getEmail(),HttpStatus.LOCKED);	
 		}
 		return new ResponseEntity(HttpStatus.BAD_REQUEST);
 

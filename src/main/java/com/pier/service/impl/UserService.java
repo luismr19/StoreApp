@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pier.business.util.EmailService;
+import com.pier.business.util.RandomGenerator;
 import com.pier.business.validation.UserIntegrityChecker;
 import com.pier.model.security.AuthorityName;
 import com.pier.model.security.User;
@@ -156,12 +157,20 @@ public class UserService {
 		user.setLastPasswordResetDate(LocalDateTime.now(ZoneId.of("America/Mexico_City")));
 		user.setAuthorities(authDao.find("name", AuthorityName.ROLE_USER));
 		user.setPhoneNumber(user.getPhoneNumber());
-		user.setEnabled(false);
-		userDao.add(user);		
+		if(user.isSocialAcc()) {
+		user.setEnabled(true);
+		}else {
+			user.setEnabled(false);	
+			user.setVerifyToken(RandomGenerator.generateText(40,true));			
+			
+		}
+		userDao.add(user);
+		if(user.getEnabled()) {
 		try {
-		emailSvc.sendSimpleMessage(user.getEmail(), "Bienvenido a Mxphysique.com", "http://www.mxphysique.com");
-		}catch(Exception e) {
-			// do nothing
+			emailSvc.sendSimpleMessage(user.getEmail(), "Bienvenido a Mxphysique.com", "http://www.mxphysique.com/activate?verify_token="+user.getVerifyToken());
+			}catch(Exception e) {
+				// do nothing
+			}
 		}
 		
 		return user;
@@ -187,6 +196,33 @@ public class UserService {
         
         
 		
+	}
+	
+	public User sendActivationEmail(String email) {
+		User user=null;	
+		
+		try {
+			user=userDao.find("email",email).get(0);
+			if(!user.getEnabled())
+			emailSvc.sendSimpleMessage(user.getEmail(), "Bienvenido a Mxphysique.com", "http://www.mxphysique.com/activate?verify_token="+user.getVerifyToken());
+			return user;
+		}catch(Exception ex) {
+			return null;
+		}
+		
+		
+	}
+	
+	public User activateUser(String verifyToken) {
+		User user=null;
+		try {
+		user=userDao.find("verifyToken", verifyToken).get(0);
+		user.setEnabled(true);
+        userDao.update(user);
+		}catch(Exception e) {
+			return null;
+		}
+        return user;
 	}
 
 }
