@@ -66,6 +66,36 @@ public class SearchEngineController {
 	String imagesPath;
 	
 	
+	@RequestMapping(value="calculator",method=RequestMethod.GET)	
+	@ResponseBody
+	public String getCalculatorPreview(HttpServletRequest request,HttpServletResponse response){
+		
+		
+		String htmlMarkup="<!DOCTYPE html>"+
+				"<html prefix=\"og: http://ogp.me/ns#\">"+
+				"<head>"+	
+				"<meta charset=\"utf-8\">"+
+				"<meta name=\"description\" content=\"Calcula tus calorías y macros con nuestra calculadora en línea\">"+		
+				"<title>Calculadora de Macronutrientes en Línea</title>"+
+				"<meta name=\"robots\" content=\"nofollow\">"+
+				//facebook & WhatsApp
+				"<meta property=\"og:site_name\" content=\"mxphysique.com\">"+
+				"<meta property=\"og:url\" content=\"https://www.mxphysique.com/calculator\" />"+
+				"<meta property=\"og:type\" content=\"website\"/>"+
+				"<meta property=\"og:title\" content=\"Calculadora de Macronutrientes\" />"+
+				"<meta property=\"og:description\" content=\"Calcula tus calorías y macros con nuestra calculadora\" />"+
+				"<meta property=\"og:image\" content=\"https://"+domain+imagesPath+"tools/ccc.jpg\" />"+
+				"</head>"+
+				"</html>";
+		
+		response.setContentType(MediaType.TEXT_HTML_VALUE);
+	    response.setCharacterEncoding("UTF-8");
+	    
+				
+				return htmlMarkup;
+	}
+	
+	
 	@RequestMapping(value="google/{entityType}/{id}",method=RequestMethod.GET)	
 	public String getGoogleResult(@PathVariable String entityType, @PathVariable Long id,HttpServletRequest request,HttpServletResponse response){
 		ObjectModel entity=null;
